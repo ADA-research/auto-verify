@@ -1,11 +1,31 @@
 [build-system]
-requires = ["setuptools>=42.0", "wheel"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
 testpaths = [
     "tests",
 ]
+
+[project]
+name = "auto-verify"
+version = "0.0.1"
+authors = [
+  { name="Corné Spek"},
+]
+description = "Automated verification of neural network properties"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: Unix",
+    "Programming Language :: Python :: 3.9",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/ADA-research/auto-verify"
+"Bug Tracker" = "https://github.com/ADA-research/auto-verify/issues"
 
 [tool.mypy]
 mypy_path = "autoverify"
