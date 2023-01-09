@@ -1,1 +1,2 @@
 ConfigSpace==0.6.0
+smac==1.4.0
