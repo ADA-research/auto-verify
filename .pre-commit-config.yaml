@@ -5,6 +5,7 @@ repos:
       - id: isort
         name: isort auto-verify
         files: autoverify
+        args: ["--profile", "black"]
 
   - repo: https://github.com/ambv/black
     rev: 22.10.0
