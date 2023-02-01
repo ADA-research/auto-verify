@@ -1,14 +1,17 @@
 import json
 from dataclasses import dataclass
 
-from ConfigSpace import ConfigurationSpace
+from ConfigSpace import Configuration
 from ConfigSpace.read_and_write import json as cs_json
 
 
 @dataclass
-class VerifierConfiguration:
+class AbstractVerifierConfiguration:
     verifier: str
-    configuration: ConfigurationSpace
+    configuration: Configuration
+
+    def sample(self) -> Configuration:
+        return self.configuration.sample_configuration()
 
     def write_to_json(self, file_name: str):
         cs_string = cs_json.write(self.configuration)
