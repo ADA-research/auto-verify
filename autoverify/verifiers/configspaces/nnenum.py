@@ -58,9 +58,9 @@ quick_overapprox_types = Categorical(
 )
 split_order = Categorical("SPLIT_ORDER", [e.value for e in SplitOrder])
 result_save_polys_epsilon = Float(
-    "RESULT_SAVE_POLYS_EPSILON", default=1e-7, bounds=[1e-6, 1e-8]
+    "RESULT_SAVE_POLYS_EPSILON", default=1e-7, bounds=[1e-8, 1e-6]
 )
-split_tolerance = Float("SPLIT_TOLERANCE", default=1e-8, bounds=[1e-7, 1e-9])
+split_tolerance = Float("SPLIT_TOLERANCE", default=1e-8, bounds=[1e-9, 1e-7])
 split_if_idle = Categorical("SPLIT_IF_IDLE", [True, False])
 shuffle_time = Categorical("SHUFFLE_TIME", [True, False])
 glpk_timeout = Integer("GLPK_TIMEOUT", default=60, bounds=[30, 90])
