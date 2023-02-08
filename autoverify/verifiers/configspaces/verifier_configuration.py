@@ -1,17 +1,19 @@
 import json
 from dataclasses import dataclass
 
-from ConfigSpace import Configuration
 from ConfigSpace.read_and_write import json as cs_json
 
 
 @dataclass
-class AbstractVerifierConfiguration:
-    verifier: str
-    configuration: Configuration
+class VerifierConfiguration:
+    verifier: str  # define some verifier enum/whatever later
 
-    def sample(self) -> Configuration:
-        return self.configuration.sample_configuration()
+    def __post_init__(self):
+        if self.verifier == "oval_bab":
+            self.configuration = None  # TODO: Get the oval-bab configspace
+
+    # def sample(self) -> Configuration:
+    #     return self.configuration.sample_configuration()
 
     def write_to_json(self, file_name: str):
         cs_string = cs_json.write(self.configuration)

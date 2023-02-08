@@ -28,7 +28,6 @@ classifiers = [
 "Bug Tracker" = "https://github.com/ADA-research/auto-verify/issues"
 
 [tool.mypy]
-mypy_path = "autoverify"
 check_untyped_defs = true
 disallow_any_generics = true
 ignore_missing_imports = true
