@@ -3,8 +3,30 @@ site_name: Auto-Verify Docs
 theme:
   name: "material"
 
+  palette:
+
+  # Palette toggle for light mode
+  - scheme: default
+    toggle:
+      icon: material/weather-night
+      name: Switch to dark mode
+
+  # Palette toggle for dark mode
+  - scheme: slate
+    toggle:
+      icon: material/weather-sunny
+      name: Switch to light mode
+
+  icon:
+    repo: fontawesome/brands/github
+
+repo_url: https://github.com/ADA-research/auto-verify
+repo_name: auto-verify
+
 plugins: 
   - mkdocstrings
+  - search:
+      lang: en
 
 nav:
   - Auto-Verify Docs: index.md
