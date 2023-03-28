@@ -1,30 +1,31 @@
 repos:
   - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
+    rev: 5.12.0
     hooks:
       - id: isort
-        name: isort auto-verify
-        files: autoverify
-        args: ["--profile", "black"]
+        name: isort src and tests
+        args: [--profile=black, --line-length=80]
+        files: "autoverify|tests"
 
   - repo: https://github.com/ambv/black
-    rev: 22.10.0
+    rev: 23.1.0
     hooks:
       - id: black
-        name: black auto-verify
-        files: autoverify
-        args: ["--line-length", "88"]
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.991
-    hooks:
-      - id: mypy
-        name: mypy auto-verify
-        files: autoverify
+        name: black src and tests
+        args: [--line-length=80]
+        files: "autoverify|tests"
 
   - repo: https://github.com/pycqa/flake8
-    rev: 5.0.4
+    rev: 6.0.0
     hooks:
       - id: flake8
-        name: flake8 auto-verify
+        name: flake8 src and tests
+        files: "autoverify|tests"
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.1.1
+    hooks:
+      - id: mypy
+        name: mypy src
+        args: [--config-file=pyproject.toml]
         files: autoverify

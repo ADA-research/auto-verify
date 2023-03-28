@@ -2,30 +2,44 @@
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[tool.pytest.ini_options]
-testpaths = [
-    "tests",
-]
-
 [project]
 name = "auto-verify"
 version = "0.0.1"
-authors = [
-  { name="Corné Spek"},
-]
-description = "Automated verification of neural network properties"
+description = "Efficient portfolio-based verification of neural network properties"
 readme = "README.md"
-requires-python = ">=3.9"
+authors = [{ name = "Corné Spek" }]
+license = { file = "LICENSE" }
+keywords = ["auto-verify", "Neural networks", "Robustness"]
 classifiers = [
-    "Development Status :: 1 - Planning",
-    "License :: OSI Approved :: BSD License",
     "Operating System :: Unix",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "hydra-smac == 0.1.11"
 ]
 
-[project.urls]
-"Homepage" = "https://github.com/ADA-research/auto-verify"
-"Bug Tracker" = "https://github.com/ADA-research/auto-verify/issues"
+[project.optional-dependencies]
+dev = [
+    "black", 
+    "isort", 
+    "tox", 
+    "pytest",
+    "pre-commit",
+    "flake8",
+    "mypy",
+    "bumpver",
+    "coverage",
+    "mkdocs",
+]
+
+[tool.black]
+line_length = 80
+target-version = ['py310']
+
+[tool.isort]
+line_length = 80
+profile = "black"
 
 [tool.mypy]
 check_untyped_defs = true
@@ -39,3 +53,19 @@ warn_return_any = true
 warn_unreachable = true
 warn_unused_configs = true
 no_implicit_reexport = true
+
+[tool.bumpver]
+current_version = "0.0.1"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "bump version {old_version} -> {new_version}"
+commit = true
+tag = false
+push = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'version = "{version}"',
+]
+"README.md" = [
+    "{version}",
+]
