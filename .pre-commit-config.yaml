@@ -27,7 +27,8 @@ repos:
     hooks:
       - id: pydocstyle
         name: pydocstyle src
-        args: [--convention=google]
+        additional_dependencies: ["tomli"] # needed for pasing .toml config
+        args: [--config=pyproject.toml]
         files: autoverify
   
   - repo: https://github.com/pre-commit/mirrors-mypy
