@@ -44,6 +44,9 @@ profile = "black"
 
 [tool.pydocstyle]
 convention = "google"
+add-ignore = [
+    "D104", # Missing docstring in public package
+]
 
 [tool.mypy]
 check_untyped_defs = true
