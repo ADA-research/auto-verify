@@ -22,6 +22,14 @@ repos:
         name: flake8 src and tests
         files: "autoverify|tests"
 
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        name: pydocstyle src
+        args: [--convention=google]
+        files: autoverify
+  
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.1.1
     hooks:
