@@ -1,3 +1,6 @@
+"""Test test test."""
+
+
 def add(a: float, b: float) -> float:
     """Compute and return the sum of two numbers.
 
