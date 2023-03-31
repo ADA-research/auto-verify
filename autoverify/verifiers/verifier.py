@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from autoverify.verifiers.types import CompleteVerificationResult
+from autoverify.verifiers.verification_result import CompleteVerificationResult
 
 
 @dataclass
