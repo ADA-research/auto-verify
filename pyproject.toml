@@ -80,3 +80,6 @@ push = false
 "README.md" = [
     "{version}",
 ]
+"autoverify/__init__.py" = [
+    '__version__ = "{version}"',
+]
