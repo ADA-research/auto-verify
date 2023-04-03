@@ -49,6 +49,9 @@ add-ignore = [
     "D104", # Missing docstring in public package
 ]
 
+[project.scripts]
+auto-verify = "autoverify.cli.main:main"
+
 [tool.mypy]
 check_untyped_defs = true
 disallow_any_generics = true
