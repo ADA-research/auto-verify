@@ -2,11 +2,11 @@
 
 from result import Ok
 
-from autoverify.verifier import CompleteVerifier
 from autoverify.verifier.verification_result import (
     CompleteVerificationOutcome,
     CompleteVerificationResult,
 )
+from autoverify.verifier.verifier import CompleteVerifier
 
 
 class DummyVerifier(CompleteVerifier):
