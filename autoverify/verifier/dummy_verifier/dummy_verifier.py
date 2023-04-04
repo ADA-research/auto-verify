@@ -1,5 +1,7 @@
 """Temporary dummy verifier."""
 
+from copy import deepcopy
+
 from result import Ok
 
 from autoverify.verifier.verification_result import (
@@ -11,15 +13,16 @@ from autoverify.verifier.verifier_configuration_space import (
     VerifierConfigurationSpace,
 )
 
-from .dummy_configspace import get_configspace
+from .dummy_configspace import DummyConfigspace
 
 
 class DummyVerifier(CompleteVerifier):
     """_summary_."""
 
     _name: str = "DummyVerifier"
-    # TODO Init the configspace in a separate file, real ones will be too large
-    _verifier_configuration_space: VerifierConfigurationSpace
+    _verifier_configuration_space: VerifierConfigurationSpace = deepcopy(
+        DummyConfigspace
+    )
 
     def verify_property(self, property, network) -> CompleteVerificationResult:
         """_summary_."""
