@@ -27,7 +27,7 @@ repos:
     hooks:
       - id: pydocstyle
         name: pydocstyle src
-        additional_dependencies: ["tomli"] # needed for pasing .toml config
+        additional_dependencies: ["tomli"] # for passing .toml config
         args: [--config=pyproject.toml]
         files: autoverify
   
