@@ -1,34 +1,28 @@
 """TODO docstring."""
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+
+from attrs import define, field
 
 from autoverify.verifier.verification_result import CompleteVerificationResult
+from autoverify.verifier.verifier_configuration_space import (
+    VerifierConfigurationSpace,
+)
 
 
-@dataclass
+@define
 class Verifier(ABC):
-    """Abstract class to represent a verifier tool.
+    """Abstract class to represent a verifier tool."""
 
-    _detailed_
-
-    Args:
-        name:
-            The unique name of the verifier.
-        kind:
-            Defines if the verifier is of the complete or incomplete kind.
-        config_levels:
-            Defines the available configuration levels that can be
-            sampled from for this verifier.
-    """
-
-    name: str
-    config_levels: set[int]
+    _name: str = field(init=False)
+    _verifier_configuration_space: VerifierConfigurationSpace = field(
+        init=False
+    )
 
 
-@dataclass
+@define
 class CompleteVerifier(Verifier):
-    """Abstract class to represent complete verification tools."""
+    """Abstract class to represent complete verification tool."""
 
     @abstractmethod  # TODO: param types
     def verify_property(self, property, network) -> CompleteVerificationResult:

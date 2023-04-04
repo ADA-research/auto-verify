@@ -1,5 +1,7 @@
 """Temporary dummy verifier."""
 
+from copy import deepcopy
+
 from result import Ok
 
 from autoverify.verifier.verification_result import (
@@ -7,10 +9,20 @@ from autoverify.verifier.verification_result import (
     CompleteVerificationResult,
 )
 from autoverify.verifier.verifier import CompleteVerifier
+from autoverify.verifier.verifier_configuration_space import (
+    VerifierConfigurationSpace,
+)
+
+from .dummy_configspace import DummyConfigspace
 
 
 class DummyVerifier(CompleteVerifier):
     """_summary_."""
+
+    _name: str = "DummyVerifier"
+    _verifier_configuration_space: VerifierConfigurationSpace = deepcopy(
+        DummyConfigspace
+    )
 
     def verify_property(self, property, network) -> CompleteVerificationResult:
         """_summary_."""
