@@ -7,10 +7,17 @@ from autoverify.verifier.verification_result import (
     CompleteVerificationResult,
 )
 from autoverify.verifier.verifier import CompleteVerifier
+from autoverify.verifier.verifier_configuration_space import (
+    VerifierConfigurationSpace,
+)
 
 
 class DummyVerifier(CompleteVerifier):
     """_summary_."""
+
+    _name: str = "DummyVerifier"
+    # TODO Init the configspace in a separate file, real ones will be too large
+    _verifier_configuration_space: VerifierConfigurationSpace
 
     def verify_property(self, property, network) -> CompleteVerificationResult:
         """_summary_."""
