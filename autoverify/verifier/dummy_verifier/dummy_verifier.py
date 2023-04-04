@@ -11,6 +11,8 @@ from autoverify.verifier.verifier_configuration_space import (
     VerifierConfigurationSpace,
 )
 
+from .dummy_configspace import get_configspace
+
 
 class DummyVerifier(CompleteVerifier):
     """_summary_."""
