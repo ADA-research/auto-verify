@@ -1,6 +1,7 @@
 """Verifier configuration class to sample configurations from."""
 
 # from dataclasses import dataclass
+from dataclasses import dataclass
 from enum import Enum, auto
 
 from ConfigSpace import ConfigurationSpace
@@ -16,14 +17,11 @@ class ConfigurationLevel(Enum):
     """Verification tool level"""
 
 
+@dataclass
 class VerifierConfigurationSpace:
     """_summary_."""
 
-    def __init__(
-        self, config_spaces: dict[ConfigurationLevel, ConfigurationSpace]
-    ):
-        """_summary_."""
-        self._config_spaces = config_spaces
+    config_spaces: dict[ConfigurationLevel, ConfigurationSpace]
 
     def sample_configuration(
         self, config_levels: set[ConfigurationLevel], size: int
