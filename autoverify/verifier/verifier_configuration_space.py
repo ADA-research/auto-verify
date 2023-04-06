@@ -3,7 +3,6 @@
 # from dataclasses import dataclass
 from enum import Enum, auto
 
-from attr import define
 from ConfigSpace import ConfigurationSpace
 
 
@@ -17,11 +16,14 @@ class ConfigurationLevel(Enum):
     """Verification tool level"""
 
 
-@define
 class VerifierConfigurationSpace:
     """_summary_."""
 
-    _configuration_spaces: dict[ConfigurationLevel, ConfigurationSpace]
+    def __init__(
+        self, config_spaces: dict[ConfigurationLevel, ConfigurationSpace]
+    ):
+        """_summary_."""
+        self._config_spaces = config_spaces
 
     def sample_configuration(
         self, config_levels: set[ConfigurationLevel], size: int

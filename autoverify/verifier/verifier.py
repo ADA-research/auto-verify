@@ -2,29 +2,33 @@
 
 from abc import ABC, abstractmethod
 
-from attrs import define, field
-
 from autoverify.verifier.verification_result import CompleteVerificationResult
 from autoverify.verifier.verifier_configuration_space import (
+    ConfigurationLevel,
     VerifierConfigurationSpace,
 )
 
 
-@define
 class Verifier(ABC):
     """Abstract class to represent a verifier tool."""
 
-    _name: str = field(init=False)
-    _verifier_configuration_space: VerifierConfigurationSpace = field(
-        init=False
-    )
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """Unique verifier name."""
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def verifier_configspace(self) -> VerifierConfigurationSpace:
+        """Verifier configuration space to sample from."""
+        raise NotImplementedError
 
 
-@define
 class CompleteVerifier(Verifier):
-    """Abstract class to represent complete verification tool."""
+    """_summary_."""
 
-    @abstractmethod  # TODO: param types
+    @abstractmethod
     def verify_property(self, property, network) -> CompleteVerificationResult:
         """_summary_.
 
@@ -40,7 +44,9 @@ class CompleteVerifier(Verifier):
         pass
 
     @abstractmethod  # TODO: return type
-    def sample_configuration(self, config_levels: set[int], size: int):
+    def sample_configuration(
+        self, config_levels: set[ConfigurationLevel], size: int
+    ):
         """_summary_.
 
         _detailed_
