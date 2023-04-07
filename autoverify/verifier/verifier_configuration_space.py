@@ -1,6 +1,5 @@
 """Verifier configuration class to sample configurations from."""
 
-# from dataclasses import dataclass
 from dataclasses import dataclass
 from enum import Enum, auto
 
