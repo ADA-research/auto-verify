@@ -41,7 +41,7 @@ class CompleteVerifier(Verifier):
         Returns:
             CompleteVerificationResult: _description_
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod  # TODO: return type
     def sample_configuration(
@@ -58,4 +58,4 @@ class CompleteVerifier(Verifier):
         Returns:
             list[VerifierConfiguration]: _description_
         """
-        pass
+        raise NotImplementedError

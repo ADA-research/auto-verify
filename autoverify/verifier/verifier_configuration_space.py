@@ -26,4 +26,4 @@ class VerifierConfigurationSpace:
         self, config_levels: set[ConfigurationLevel], size: int
     ):
         """_summary_."""
-        pass
+        raise NotImplementedError
