@@ -5,6 +5,8 @@ import sys
 from autoverify import __version__ as AV_VERSION
 from autoverify.util.verifiers import get_all_complete_verifier_names
 
+from .install import install_verifiers
+
 
 def build_arg_parser() -> argparse.ArgumentParser:
     """Setup the cli arg options."""
