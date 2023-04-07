@@ -51,6 +51,8 @@ convention = "google"
 add-ignore = [
     "D104", # Missing docstring in public package
 ]
+ignore-decorators = "property" # TODO: Dont ignore abstractmethod properties
+
 
 [tool.mypy]
 check_untyped_defs = true
