@@ -1,5 +1,5 @@
-from .install import install_verifiers
+from .install import try_install_verifiers
 
 __all__ = [
-    "install_verifiers",
+    "try_install_verifiers",
 ]
