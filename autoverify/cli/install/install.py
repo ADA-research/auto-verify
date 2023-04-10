@@ -1,18 +1,51 @@
 """TODO summary."""
+# TODO: Logging instead of prints
+import shutil
+
 from result import Err, Ok, Result
 from xdg_base_dirs import xdg_data_home
 
-XDG_DATA_HOME = xdg_data_home()
-AV_HOME = XDG_DATA_HOME / "autoverify"
+from .installers import installers
+
+AV_HOME = xdg_data_home() / "autoverify"
+AV_HOME.mkdir(exist_ok=True)
+VERIFIER_DIR = AV_HOME / "verifiers"
+VERIFIER_DIR.mkdir(exist_ok=True)
+
+
+def _remove_verifier_dir(verifier: str):
+    """_summary_."""
+    print("Removing verifier directory")
+    shutil.rmtree(VERIFIER_DIR / verifier, ignore_errors=True)
+
+
+def _init_new_verifier_dir(dir_name: str):
+    """_summary_."""
+    dir_path = VERIFIER_DIR / dir_name
+    dir_path.mkdir()
+
+    (dir_path / "venv").mkdir()
+    (dir_path / "tool").mkdir()
 
 
 def _install_verifier(verifier: str) -> Result[None, str]:
     """_summary_."""
-    if verifier == "DummyVerifier":
-        # Do some installing, and if it all goes well:
-        return Ok()
+    if verifier not in installers:
+        return Err(f"No installer found for verifier {verifier}")
 
-    return Err("Oops")
+    try:
+        _init_new_verifier_dir(verifier)
+    except Exception as err:
+        print(f"Error initializing new verifier directory: {err=}")
+        return Err("Directory initialization failed")
+
+    try:
+        installers[verifier]()
+        return Ok()
+    except Exception as err:
+        print(f"Error installing verifier: {err=}")
+        _remove_verifier_dir(verifier)
+        return Err("Exception during installation")
 
 
 # TODO: Real logging, not prints
@@ -26,4 +59,4 @@ def try_install_verifiers(verifiers: list[str]):
         if isinstance(install_result, Ok):
             print(f"Succesfully installed {verifier}")
         elif isinstance(install_result, Err):
-            print(f"Error installing {verifier}: \n{install_result.err()}")
+            print(f"Error installing {verifier}: {install_result.err()}")
