@@ -7,11 +7,14 @@ from xdg_base_dirs import xdg_data_home
 
 from .installers import installers
 
-# TODO: Only create the directories once needed
 AV_HOME = xdg_data_home() / "autoverify"
-AV_HOME.mkdir(exist_ok=True)
 VERIFIER_DIR = AV_HOME / "verifiers"
-VERIFIER_DIR.mkdir(exist_ok=True)
+
+
+def _create_base_dirs():
+    """Creates the XDG_DATA_HOME/autoverify/verifiers directories."""
+    AV_HOME.mkdir(exist_ok=True)
+    VERIFIER_DIR.mkdir(exist_ok=True)
 
 
 def _remove_verifier_dir(verifier: str):
@@ -51,9 +54,10 @@ def _install_verifier(verifier: str) -> Result[None, str]:
         return Err("Exception during installation")
 
 
-# TODO: Real logging, not prints
 def try_install_verifiers(verifiers: list[str]):
     """_summary_."""
+    _create_base_dirs()
+
     for verifier in verifiers:
         print(f"Installing {verifier}...")
 
