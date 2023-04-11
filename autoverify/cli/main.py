@@ -2,20 +2,22 @@
 import argparse
 import sys
 
-import autoverify
+from autoverify import __version__ as AV_VERSION
+from autoverify.util.verifiers import get_all_complete_verifier_names
+
+from .install import try_install_verifiers
 
 
-def build_arg_parser() -> argparse.ArgumentParser:
+def _build_arg_parser() -> argparse.ArgumentParser:
     """Setup the cli arg options."""
     parser = argparse.ArgumentParser()
 
-    parser.add_argument(
-        "-V", "--version", action="version", version=autoverify.__version__
-    )
-    # TODO: set choices to real verifiers
+    parser.add_argument("-V", "--version", action="version", version=AV_VERSION)
+
     parser.add_argument(
         "--install",
-        choices=["a", "b", "c"],
+        nargs="+",
+        choices=get_all_complete_verifier_names(),
         help="install specified verifiers and exit",
     )
 
@@ -24,13 +26,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
 
 def main():
     """Parse and process cli args."""
-    parser = build_arg_parser()
-
-    # print the help message if no args were specified
+    parser = _build_arg_parser()
     args = parser.parse_args(args=None if sys.argv[1:] else ["--help"])
-    print(args)
 
-    return 1
+    if args.install:
+        try_install_verifiers(args.install)
 
 
 if __name__ == "__main__":
