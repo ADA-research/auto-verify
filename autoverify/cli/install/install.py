@@ -7,6 +7,7 @@ from xdg_base_dirs import xdg_data_home
 
 from .installers import installers
 
+# TODO: Only create the directories once needed
 AV_HOME = xdg_data_home() / "autoverify"
 AV_HOME.mkdir(exist_ok=True)
 VERIFIER_DIR = AV_HOME / "verifiers"
@@ -39,8 +40,10 @@ def _install_verifier(verifier: str) -> Result[None, str]:
         print(f"Error initializing new verifier directory: {err=}")
         return Err("Directory initialization failed")
 
+    dir_path = VERIFIER_DIR / verifier / "tool"
+
     try:
-        installers[verifier]()
+        installers[verifier](dir_path)
         return Ok()
     except Exception as err:
         print(f"Error installing verifier: {err=}")

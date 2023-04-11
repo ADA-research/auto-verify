@@ -1,6 +1,8 @@
 """_summary_."""
+import os
+from pathlib import Path
 
 
-def install():
+def install(install_dir: Path):
     """_summary_."""
-    raise NotImplementedError
+    os.mknod(install_dir / "test")
