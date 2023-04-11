@@ -18,13 +18,8 @@ from .dummy_configspace import DummyConfigspace
 class DummyVerifier(CompleteVerifier):
     """_summary_."""
 
-    @property
-    def name(self):
-        return "DummyVerifier"
-
-    @property
-    def verifier_configspace(self) -> VerifierConfigurationSpace:
-        return DummyConfigspace
+    name: str = "DummyVerifier"
+    verifier_configspace: VerifierConfigurationSpace = DummyConfigspace
 
     def verify_property(self, property, network) -> CompleteVerificationResult:
         """_summary_."""
