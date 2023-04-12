@@ -3,13 +3,22 @@ import os
 import subprocess
 from pathlib import Path
 
-from .util.env import create_env_file
+from .util.env import CondaEnv, create_empty_env_file
 from .util.git import GitRepoInfo
 
 NnenumRepoInfo = GitRepoInfo(
     MAIN_BRANCH="master",
     COMMIT_HASH="cf7c0e7",
     CLONE_URL="https://github.com/stanleybak/nnenum.git",
+)
+
+
+NnenumEnv = CondaEnv(
+    name="av_nnenum",
+    channels=None,
+    dependencies=[
+        "sklearn",
+    ],
 )
 
 
@@ -26,4 +35,4 @@ def install(install_dir: Path):
 
     subprocess.run(NnenumRepoInfo.checkout, check=True, capture_output=True)
 
-    create_env_file(install_dir)
+    create_empty_env_file(install_dir)
