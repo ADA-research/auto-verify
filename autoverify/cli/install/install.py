@@ -10,13 +10,12 @@ from .installers import installers
 AV_HOME = xdg_data_home() / "autoverify"
 VERIFIER_DIR = AV_HOME / "verifiers"
 TOOL_DIR_NAME = "tool"
-VENV_DIR_NAME = "venv"
+VENV_DIR_NAME = "env"
 
 
 def _create_base_dirs():
-    """Creates the XDG_DATA_HOME/autoverify/verifiers directories."""
-    AV_HOME.mkdir(exist_ok=True)
-    VERIFIER_DIR.mkdir(exist_ok=True)
+    """Creates the $XDG_DATA_HOME/autoverify/verifiers directories."""
+    VERIFIER_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def _remove_verifier_dir(verifier: str):
