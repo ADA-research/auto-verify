@@ -1,7 +1,8 @@
 """TODO summary."""
 # TODO: Logging instead of prints
+import logging
 import shutil
-import traceback
+from subprocess import CalledProcessError
 
 from result import Err, Ok, Result
 from xdg_base_dirs import xdg_data_home
@@ -47,7 +48,10 @@ def _install_verifier(verifier: str) -> Result[None, str]:
         installers[verifier](dir_path)
         return Ok()
     except Exception as err:
-        print(f"Error installing verifier: {err=}")
+        if isinstance(err, CalledProcessError):
+            err = err.stderr.decode("utf-8")
+
+        logging.exception(err)
         _remove_verifier_dir(verifier)
         return Err("Exception during installation")
 

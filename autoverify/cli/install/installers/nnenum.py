@@ -9,10 +9,12 @@ from .util.git import GitRepoInfo
 NnenumRepoInfo = GitRepoInfo(
     MAIN_BRANCH="master",
     COMMIT_HASH="cf7c0e7",
-    CLONE_URL="https://github.com/stanleybak/Xnnenum.git",
+    CLONE_URL="https://github.com/stanleybak/nnenum.git",
 )
 
 
+# TODO: clone + checkout to a util function, other installers will probably
+# do the same thing.
 def install(install_dir: Path):
     """_summary_."""
     os.chdir(install_dir)
