@@ -1,6 +1,7 @@
 """TODO summary."""
 # TODO: Logging instead of prints
 import shutil
+import traceback
 
 from result import Err, Ok, Result
 from xdg_base_dirs import xdg_data_home
@@ -56,7 +57,7 @@ def try_install_verifiers(verifiers: list[str]):
     _create_base_dirs()
 
     for verifier in verifiers:
-        print(f"Installing {verifier}...")
+        print(f"\nInstalling {verifier}...")
 
         install_result = _install_verifier(verifier)
 
