@@ -10,7 +10,7 @@ from .installers import installers
 AV_HOME = xdg_data_home() / "autoverify"
 VERIFIER_DIR = AV_HOME / "verifiers"
 TOOL_DIR_NAME = "tool"
-VENV_DIR_NAME = "env"
+ENV_DIR_NAME = "env"
 
 
 def _create_base_dirs():
@@ -29,7 +29,7 @@ def _init_new_verifier_dir(dir_name: str):
     dir_path = VERIFIER_DIR / dir_name
     dir_path.mkdir()
 
-    (dir_path / VENV_DIR_NAME).mkdir()
+    (dir_path / ENV_DIR_NAME).mkdir()
     (dir_path / TOOL_DIR_NAME).mkdir()
 
 
@@ -44,7 +44,7 @@ def _install_verifier(verifier: str) -> Result[None, str]:
         print(f"Error initializing new verifier directory: {err=}")
         return Err("Directory initialization failed")
 
-    dir_path = VERIFIER_DIR / verifier / TOOL_DIR_NAME
+    dir_path = VERIFIER_DIR / verifier
 
     try:
         installers[verifier](dir_path)
