@@ -18,7 +18,7 @@ from .nnenum_configspace import DummyConfigspace
 class Nnenum(CompleteVerifier):
     """_summary_."""
 
-    name: str = "Nnenum"
+    name: str = "nnenum"
     verifier_configspace: VerifierConfigurationSpace = DummyConfigspace
 
     # TODO:
