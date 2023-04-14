@@ -23,7 +23,7 @@ def copy_env_file_to(installer_py_file: Path, install_dir: Path):
 
     Args:
         installer_py_file: The path to the installer directory (e.g. nnenum),
-        this is used to find the `conda_env.yml` file.
+            this is used to find the `conda_env.yml` file.
         install_dir: The directory the file is copied to.
     """
     file_path = get_file_path(installer_py_file)
