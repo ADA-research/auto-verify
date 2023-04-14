@@ -25,4 +25,8 @@ def install(install_dir: Path):
     os.chdir(install_dir / "tool")
 
     subprocess.run(NnenumRepoInfo.checkout, check=True, capture_output=True)
-    copy_env_file_to(Path(__file__), install_dir)
+    copy_env_file_to(Path(__file__), "conda_env.yaml", install_dir)
+
+    # TODO: Add absl-py and requests reqs to nnenum reqs.txt
+    # export OPENBLAS_NUM_THREADS=1
+    # export OMP_NUM_THREADS=1
