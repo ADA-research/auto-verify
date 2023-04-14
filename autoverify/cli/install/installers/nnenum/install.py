@@ -14,7 +14,7 @@ NnenumRepoInfo = GitRepoInfo(
 )
 
 
-# TODO: clone + checkout to a util function, other installers will probably
+# TODO: clone + checkout to a util function or something, other installers will
 # do the same thing.
 def install(install_dir: Path):
     """_summary_."""

@@ -1,3 +1,4 @@
+"""Git and repo utilities."""
 import shlex
 from dataclasses import dataclass
 
