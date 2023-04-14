@@ -1,10 +1,9 @@
 """nnenum installer."""
 import os
-import shutil
 import subprocess
 from pathlib import Path
 
-from ..util.env import get_file_path
+from ..util.env import copy_env_file_to
 from ..util.git import GitRepoInfo
 
 NnenumRepoInfo = GitRepoInfo(
@@ -26,8 +25,4 @@ def install(install_dir: Path):
     os.chdir(install_dir / "tool")
 
     subprocess.run(NnenumRepoInfo.checkout, check=True, capture_output=True)
-
-    installer_path = Path(get_file_path(__file__))
-    shutil.copy(
-        installer_path / "environment.yaml", install_dir / "environment.yaml"
-    )
+    copy_env_file_to(Path(__file__), install_dir)
