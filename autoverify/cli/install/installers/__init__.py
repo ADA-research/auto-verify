@@ -9,5 +9,4 @@ installers: dict[str, Callable[[Path], None]] = {
     "nnenum": install_nnenum,
 }
 
-
 __all__ = ["installers"]
