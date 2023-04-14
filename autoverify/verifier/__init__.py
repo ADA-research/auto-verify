@@ -1,5 +1,6 @@
-from .complete import DummyVerifier
+from .complete import DummyVerifier, Nnenum
 
 __all__ = [
     "DummyVerifier",
+    "Nnenum",
 ]
