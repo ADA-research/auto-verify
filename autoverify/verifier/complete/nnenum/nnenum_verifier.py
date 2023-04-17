@@ -1,4 +1,6 @@
-"""Temporary dummy verifier."""
+"""Nnenum verifier."""
+# TODO: More links and details in above docstring
+from pathlib import Path
 
 from result import Ok
 
@@ -21,15 +23,12 @@ class Nnenum(CompleteVerifier):
     name: str = "nnenum"
     verifier_configspace: VerifierConfigurationSpace = DummyConfigspace
 
-    # TODO:
-    def verify_property(self, property, network) -> CompleteVerificationResult:
-        """_summary_."""
-        # temp silence warnings
-        property, network = 0, 0
-        property, network = network, property
-
-        outcome = CompleteVerificationOutcome("SAT", None)
-        return Ok(outcome)
+    def verify_property(
+        self, property: Path, network: Path
+    ) -> CompleteVerificationResult:
+        print(self.tool_path)
+        result = CompleteVerificationOutcome("UNSAT", None)
+        return Ok(result)
 
     # TODO:
     def sample_configuration(
