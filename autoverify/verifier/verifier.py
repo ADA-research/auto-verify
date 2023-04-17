@@ -27,7 +27,7 @@ class Verifier(ABC):
 
     @property
     def tool_path(self) -> Path:
-        """Returns the path to where the tool is installed."""
+        """Returns the path to where the verifier is installed."""
         tool_path = VERIFIER_DIR / self.name / TOOL_DIR_NAME
 
         if not tool_path.exists():
