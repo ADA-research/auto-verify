@@ -3,9 +3,9 @@ import os
 import subprocess
 from pathlib import Path
 
-from ..util.conda import create_env_from_file
-from ..util.env import copy_env_file_to
-from ..util.git import GitRepoInfo
+from autoverify.cli.util.conda import create_env_from_file
+from autoverify.cli.util.env import copy_env_file_to
+from autoverify.cli.util.git import GitRepoInfo
 
 NnenumRepoInfo = GitRepoInfo(
     MAIN_BRANCH="master",
@@ -28,4 +28,4 @@ def install(install_dir: Path):
     subprocess.run(NnenumRepoInfo.checkout, check=True, capture_output=True)
 
     copy_env_file_to(Path(__file__), install_dir)
-    create_env_from_file(install_dir / "conda_env.yaml")
+    create_env_from_file(install_dir / "conda_env.yml")
