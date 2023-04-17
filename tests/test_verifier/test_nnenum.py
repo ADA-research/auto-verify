@@ -1,4 +1,5 @@
 import pytest
+from result import Ok
 
 from autoverify.verifier import Nnenum
 
@@ -10,7 +11,17 @@ def nnenum() -> Nnenum:
     return Nnenum()
 
 
-def test_idk(nnenum: Nnenum, trivial_nano: VerificationInstance):
-    result = nnenum.verify_property(trivial_nano.property, trivial_nano.network)
-    print(result)
-    assert 0
+def test_sat(nnenum: Nnenum, trivial_sat: VerificationInstance):
+    result = nnenum.verify_property(trivial_sat.property, trivial_sat.network)
+
+    assert isinstance(result, Ok)
+    assert result.value.result == "SAT"
+
+
+def test_unsat(nnenum: Nnenum, trivial_unsat: VerificationInstance):
+    result = nnenum.verify_property(
+        trivial_unsat.property, trivial_unsat.network
+    )
+
+    assert isinstance(result, Ok)
+    assert result.value.result == "UNSAT"

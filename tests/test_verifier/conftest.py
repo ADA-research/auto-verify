@@ -20,3 +20,19 @@ def trivial_nano() -> VerificationInstance:
         property=trivial / "test_nano.vnnlib",
         network=trivial / "test_nano.onnx",
     )
+
+
+@pytest.fixture
+def trivial_sat() -> VerificationInstance:
+    return VerificationInstance(
+        property=trivial / "test_prop.vnnlib",
+        network=trivial / "test_sat.onnx",
+    )
+
+
+@pytest.fixture
+def trivial_unsat() -> VerificationInstance:
+    return VerificationInstance(
+        property=trivial / "test_prop.vnnlib",
+        network=trivial / "test_unsat.onnx",
+    )
