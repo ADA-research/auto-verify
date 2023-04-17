@@ -70,3 +70,13 @@ def get_verifier_conda_env_name(verifier: str) -> str | None:
     """
     # TODO: Check for if this env actually exists
     return AV_ENV_BASE_NAME + verifier
+
+
+def activate_conda_env(env_name: str):
+    """Activate a conda environment.
+
+    Args:
+        env_name: The name of the environment to be activated.
+    """
+    cmd = shlex.split(f"conda activate {env_name}")
+    subprocess.run(cmd, shell=True, check=True, capture_output=True)
