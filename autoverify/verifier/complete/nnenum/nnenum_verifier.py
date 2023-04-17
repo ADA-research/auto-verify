@@ -1,9 +1,12 @@
 """Nnenum verifier."""
 # TODO: More links and details in above docstring
+import os
+import subprocess
 from pathlib import Path
 
-from result import Ok
+from result import Err, Ok
 
+from autoverify.util import find_substring
 from autoverify.verifier.verification_result import (
     CompleteVerificationOutcome,
     CompleteVerificationResult,
@@ -23,12 +26,38 @@ class Nnenum(CompleteVerifier):
     name: str = "nnenum"
     verifier_configspace: VerifierConfigurationSpace = DummyConfigspace
 
+    # TODO: Counterexamples
+    # TODO: Error handling
+    # TODO: Modular way of sourcing conda env
+    # TODO: Modular way to determine conda.sh path
+    # TODO: Use a contextmanager for exporting env vars
+    # TODO: Configspace
     def verify_property(
         self, property: Path, network: Path
     ) -> CompleteVerificationResult:
-        print(self.tool_path)
-        result = CompleteVerificationOutcome("UNSAT", None)
-        return Ok(result)
+        """_summary_."""
+        os.chdir(self.tool_path / "src")
+        result = subprocess.run(
+            f"""
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda activate __av__nnenum
+            export OPENBLAS_NUM_THREADS=1
+            export OMP_NUM_THREADS=1
+            python -m nnenum.nnenum {str(network)} {str(property)}
+            """,
+            executable="/bin/bash",
+            capture_output=True,
+            shell=True,
+        )
+        stdout = result.stdout.decode("utf-8")
+        # stderr = result.stderr.decode("utf-8")
+
+        if find_substring("UNSAFE", stdout):
+            return Ok(CompleteVerificationOutcome("SAT", None))
+        elif find_substring("SAFE", stdout):
+            return Ok(CompleteVerificationOutcome("UNSAT", None))
+
+        return Err("Uhm???")
 
     # TODO:
     def sample_configuration(

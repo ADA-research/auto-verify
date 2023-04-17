@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
-from autoverify.cli.install import AV_HOME, TOOL_DIR_NAME, VERIFIER_DIR
+from autoverify.cli.install import TOOL_DIR_NAME, VERIFIER_DIR
 from autoverify.verifier.verification_result import CompleteVerificationResult
 from autoverify.verifier.verifier_configuration_space import (
     ConfigurationLevel,
@@ -27,7 +27,7 @@ class Verifier(ABC):
 
     @property
     def tool_path(self) -> Path:
-        """Returns the path to where the verifier is installed."""
+        """The path where the verifier is installed."""
         tool_path = VERIFIER_DIR / self.name / TOOL_DIR_NAME
 
         if not tool_path.exists():
@@ -35,7 +35,7 @@ class Verifier(ABC):
                 f"Could not find installation for tool {self.name}"
             )
 
-        return tool_path
+        return Path(tool_path)  # mypy complains tool_path is any
 
 
 class CompleteVerifier(Verifier):
