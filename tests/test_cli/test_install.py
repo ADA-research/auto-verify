@@ -5,8 +5,7 @@ from pathlib import Path
 import pytest
 
 import autoverify
-
-from ..util import run_av_cli
+from tests.util import run_av_cli
 
 
 def test_version():
