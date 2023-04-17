@@ -19,6 +19,7 @@ def test_no_args():
     assert output.find("usage: auto-verify") >= 0
 
 
+@pytest.mark.install
 def test_install(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path))

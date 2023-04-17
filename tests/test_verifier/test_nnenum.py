@@ -15,7 +15,7 @@ def nnenum() -> Nnenum:
 
 
 # TODO: Needs proper cleanup mechanisms
-@pytest.mark.slow
+@pytest.mark.install
 def test_install_nnenum(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path))
