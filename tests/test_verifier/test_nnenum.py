@@ -4,8 +4,8 @@ import pytest
 from result import Ok
 
 from autoverify.verifier import Nnenum
+from tests.util import run_av_cli
 
-from ..util import run_av_cli
 from .conftest import VerificationInstance
 
 
@@ -15,13 +15,14 @@ def nnenum() -> Nnenum:
 
 
 # TODO: Needs proper cleanup mechanisms
+@pytest.mark.slow
 def test_install_nnenum(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path))
 
     output = run_av_cli(["--install", "nnenum"])
 
-    yield output.find("Succesfully installed") >= 0
+    assert output.find("Succesfully installed") >= 0
 
     output = run_av_cli(["--uninstall", "nnenum"])
 
