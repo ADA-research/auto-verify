@@ -56,7 +56,7 @@ class Nnenum(CompleteVerifier):
         elif find_substring("SAFE", stdout):
             return Ok(CompleteVerificationOutcome("UNSAT", None))
 
-        return Err("Uhm???")
+        return Err("Failed to parse verification output.")
 
     # TODO:
     def sample_configuration(
