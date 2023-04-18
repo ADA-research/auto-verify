@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from autoverify.cli.util.env import get_file_path
+from autoverify.util.env import get_file_path
 
 trivial = get_file_path(Path(__file__)) / "trivial/"
 
