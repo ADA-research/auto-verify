@@ -1,5 +1,6 @@
 """Nnenum verifier."""
 # TODO: More links and details in above docstring
+import logging
 import os
 import subprocess
 from pathlib import Path
@@ -28,8 +29,6 @@ class Nnenum(CompleteVerifier):
     name: str = "nnenum"
     verifier_configspace: VerifierConfigurationSpace = DummyConfigspace
 
-    # TODO: Counterexamples
-    # TODO: Error handling
     # TODO: Configspace
     def verify_property(
         self, property: Path, network: Path
@@ -40,30 +39,45 @@ class Nnenum(CompleteVerifier):
         with environment(OPENBLAS_NUM_THREADS="1", OMP_NUM_THREADS="1"):
             run_cmd = self._get_runner_cmd(property, network)
 
-            result = subprocess.run(
-                run_cmd,
-                executable="/bin/bash",
-                capture_output=True,
-                check=True,
-                shell=True,
-            )
+            try:
+                result = subprocess.run(
+                    run_cmd,
+                    executable="/bin/bash",
+                    capture_output=True,
+                    check=True,
+                    shell=True,
+                )
+            except Exception as err:
+                logging.exception(f"Exception during call to nnenum, {err=}")
+                return Err("Exception during call to nnenum")
 
         stdout = result.stdout.decode()
-        # stderr = result.stderr.decode()
 
         if find_substring("UNSAFE", stdout):
-            return Ok(CompleteVerificationOutcome("SAT", None))
+            counter_example = self._parse_counter_example(stdout)
+            return Ok(CompleteVerificationOutcome("SAT", counter_example))
         elif find_substring("SAFE", stdout):
             return Ok(CompleteVerificationOutcome("UNSAT", None))
 
         return Err("Failed to parse verification output.")
 
-    # TODO:
-    def sample_configuration(
-        self, config_levels: set[ConfigurationLevel], size: int
-    ):
-        """_summary_."""
-        return super().sample_configuration(config_levels, size)
+    # TODO: A standard for counterexamples was defined in vnncomp2022
+    # https://github.com/stanleybak/vnncomp2022/issues/1#issuecomment-1074022041
+    def _parse_counter_example(self, tool_output: str) -> tuple[str, str]:
+        counter_input: str = ""
+        counter_output: str = ""
+
+        tool_output_lines = tool_output.splitlines()
+
+        for i, line in enumerate(tool_output_lines):
+            if line.startswith("Result:"):
+                input_line = tool_output_lines[i + 1]
+                output_line = tool_output_lines[i + 2]
+
+                counter_input = input_line.split(maxsplit=1)[1]
+                counter_output = output_line.split(maxsplit=1)[1]
+
+        return counter_input, counter_output
 
     def _get_runner_cmd(self, property: Path, network: Path) -> str:
         source_cmd = get_conda_source_cmd(get_conda_path())
@@ -73,3 +87,10 @@ class Nnenum(CompleteVerifier):
         conda activate {self.conda_env_name}
         python -m nnenum.nnenum {str(network)} {str(property)}
         """
+
+    # TODO:
+    def sample_configuration(
+        self, config_levels: set[ConfigurationLevel], size: int
+    ):
+        """_summary_."""
+        return super().sample_configuration(config_levels, size)
