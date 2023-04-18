@@ -1,6 +1,7 @@
 """TODO docstring."""
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import Any
 
 from autoverify.cli.install import TOOL_DIR_NAME, VERIFIER_DIR
 from autoverify.verifier.verification_result import CompleteVerificationResult
@@ -29,7 +30,6 @@ class Verifier(ABC):
     def tool_path(self) -> Path:
         """The path where the verifier is installed."""
         tool_path = VERIFIER_DIR / self.name / TOOL_DIR_NAME
-        print(tool_path)
 
         if not tool_path.exists():
             raise FileNotFoundError(
