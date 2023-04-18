@@ -3,9 +3,9 @@ import os
 import subprocess
 from pathlib import Path
 
-from autoverify.cli.util.conda import create_env_from_file
 from autoverify.cli.util.env import copy_env_file_to
 from autoverify.cli.util.git import GitRepoInfo
+from autoverify.util.conda import create_env_from_file
 
 NnenumRepoInfo = GitRepoInfo(
     MAIN_BRANCH="master",
