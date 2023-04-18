@@ -29,8 +29,6 @@ class Nnenum(CompleteVerifier):
     name: str = "nnenum"
     verifier_configspace: VerifierConfigurationSpace = DummyConfigspace
 
-    # TODO: Counterexamples
-    # TODO: Error handling
     # TODO: Configspace
     def verify_property(
         self, property: Path, network: Path
