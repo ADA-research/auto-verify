@@ -1,6 +1,7 @@
 """Utilities for managing environments."""
 import os
 import shutil
+from contextlib import contextmanager
 from pathlib import Path
 
 
@@ -29,3 +30,19 @@ def copy_env_file_to(installer_py_file: Path, install_dir: Path):
     file_path = get_file_path(installer_py_file)
 
     shutil.copy(file_path / "conda_env.yml", install_dir / "conda_env.yml")
+
+
+@contextmanager
+def environment(**env: str):
+    """Temporarily set env vars and restore values aferwards."""
+    original_env = {key: os.getenv(key) for key in env}
+    os.environ.update(env)
+
+    try:
+        yield
+    finally:
+        for key, value in original_env.items():
+            if value is None:
+                del os.environ[key]
+            else:
+                os.environ[key] = value

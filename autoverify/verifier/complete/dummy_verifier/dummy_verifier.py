@@ -1,5 +1,4 @@
 """Temporary dummy verifier."""
-
 from result import Ok
 
 from autoverify.verifier.verification_result import (

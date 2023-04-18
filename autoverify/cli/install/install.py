@@ -7,7 +7,7 @@ from subprocess import CalledProcessError
 from result import Err, Ok, Result
 from xdg_base_dirs import xdg_data_home
 
-from autoverify.cli.util.conda import (
+from autoverify.util.conda import (
     delete_conda_env,
     get_av_conda_envs,
     get_verifier_conda_env_name,

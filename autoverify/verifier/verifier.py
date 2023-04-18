@@ -1,7 +1,9 @@
 """TODO docstring."""
-
 from abc import ABC, abstractmethod
+from pathlib import Path
 
+from autoverify.cli.install import TOOL_DIR_NAME, VERIFIER_DIR
+from autoverify.util.conda import get_verifier_conda_env_name
 from autoverify.verifier.verification_result import CompleteVerificationResult
 from autoverify.verifier.verifier_configuration_space import (
     ConfigurationLevel,
@@ -24,12 +26,30 @@ class Verifier(ABC):
         """Verifier configuration space to sample from."""
         raise NotImplementedError
 
+    @property
+    def tool_path(self) -> Path:
+        """The path where the verifier is installed."""
+        tool_path = VERIFIER_DIR / self.name / TOOL_DIR_NAME
+
+        if not tool_path.exists():
+            raise FileNotFoundError(
+                f"Could not find installation for tool {self.name}"
+            )
+
+        return Path(tool_path)  # mypy complains tool_path is any
+
+    @property
+    def conda_env_name(self) -> str:
+        return get_verifier_conda_env_name(self.name)
+
 
 class CompleteVerifier(Verifier):
     """_summary_."""
 
     @abstractmethod
-    def verify_property(self, property, network) -> CompleteVerificationResult:
+    def verify_property(
+        self, property: Path, network: Path
+    ) -> CompleteVerificationResult:
         """_summary_.
 
         _detailed_
