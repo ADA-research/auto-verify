@@ -1,15 +1,11 @@
 from pathlib import Path
 
 import pytest
+from result import Ok
 
 from autoverify.verifier import Nnenum
 
-# from result import Ok
-
-
-# from .conftest import VerificationInstance
-
-# from tests.util import run_av_cli
+from .conftest import VerificationInstance
 
 
 @pytest.fixture
@@ -34,18 +30,19 @@ def test_install_nnenum(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     assert 1
 
 
-#
-# def test_sat(nnenum: Nnenum, trivial_sat: VerificationInstance):
-#     result = nnenum.verify_property(trivial_sat.property, trivial_sat.network)
-#
-#     assert isinstance(result, Ok)
-#     assert result.value.result == "SAT"
-#
-#
-# def test_unsat(nnenum: Nnenum, trivial_unsat: VerificationInstance):
-#     result = nnenum.verify_property(
-#         trivial_unsat.property, trivial_unsat.network
-#     )
-#
-#     assert isinstance(result, Ok)
-#     assert result.value.result == "UNSAT"
+@pytest.mark.install
+def test_sat(nnenum: Nnenum, trivial_sat: VerificationInstance):
+    result = nnenum.verify_property(trivial_sat.property, trivial_sat.network)
+
+    assert isinstance(result, Ok)
+    assert result.value.result == "SAT"
+
+
+@pytest.mark.install
+def test_unsat(nnenum: Nnenum, trivial_unsat: VerificationInstance):
+    result = nnenum.verify_property(
+        trivial_unsat.property, trivial_unsat.network
+    )
+
+    assert isinstance(result, Ok)
+    assert result.value.result == "UNSAT"
