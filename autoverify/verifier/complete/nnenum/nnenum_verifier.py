@@ -7,6 +7,8 @@ from pathlib import Path
 from result import Err, Ok
 
 from autoverify.util import find_substring
+from autoverify.util.conda import get_conda_path, get_conda_source_cmd
+from autoverify.util.env import environment
 from autoverify.verifier.verification_result import (
     CompleteVerificationOutcome,
     CompleteVerificationResult,
@@ -28,29 +30,26 @@ class Nnenum(CompleteVerifier):
 
     # TODO: Counterexamples
     # TODO: Error handling
-    # TODO: Modular way of sourcing conda env
-    # TODO: Modular way to determine conda.sh path
-    # TODO: Use a contextmanager for exporting env vars
     # TODO: Configspace
     def verify_property(
         self, property: Path, network: Path
     ) -> CompleteVerificationResult:
         """_summary_."""
         os.chdir(self.tool_path / "src")
-        result = subprocess.run(
-            f"""
-            source ~/miniconda3/etc/profile.d/conda.sh
-            conda activate __av__nnenum
-            export OPENBLAS_NUM_THREADS=1
-            export OMP_NUM_THREADS=1
-            python -m nnenum.nnenum {str(network)} {str(property)}
-            """,
-            executable="/bin/bash",
-            capture_output=True,
-            shell=True,
-        )
-        stdout = result.stdout.decode("utf-8")
-        # stderr = result.stderr.decode("utf-8")
+
+        with environment(OPENBLAS_NUM_THREADS="1", OMP_NUM_THREADS="1"):
+            run_cmd = self._get_runner_cmd(property, network)
+
+            result = subprocess.run(
+                run_cmd,
+                executable="/bin/bash",
+                capture_output=True,
+                check=True,
+                shell=True,
+            )
+
+        stdout = result.stdout.decode()
+        # stderr = result.stderr.decode()
 
         if find_substring("UNSAFE", stdout):
             return Ok(CompleteVerificationOutcome("SAT", None))
@@ -65,3 +64,12 @@ class Nnenum(CompleteVerifier):
     ):
         """_summary_."""
         return super().sample_configuration(config_levels, size)
+
+    def _get_runner_cmd(self, property: Path, network: Path) -> str:
+        source_cmd = get_conda_source_cmd(get_conda_path())
+
+        return f"""
+        {" ".join(source_cmd)}
+        conda activate {self.conda_env_name}
+        python -m nnenum.nnenum {str(network)} {str(property)}
+        """

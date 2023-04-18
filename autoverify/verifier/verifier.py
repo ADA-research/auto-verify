@@ -1,9 +1,9 @@
 """TODO docstring."""
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any
 
 from autoverify.cli.install import TOOL_DIR_NAME, VERIFIER_DIR
+from autoverify.util.conda import get_verifier_conda_env_name
 from autoverify.verifier.verification_result import CompleteVerificationResult
 from autoverify.verifier.verifier_configuration_space import (
     ConfigurationLevel,
@@ -37,6 +37,10 @@ class Verifier(ABC):
             )
 
         return Path(tool_path)  # mypy complains tool_path is any
+
+    @property
+    def conda_env_name(self) -> str:
+        return get_verifier_conda_env_name(self.name)
 
 
 class CompleteVerifier(Verifier):
