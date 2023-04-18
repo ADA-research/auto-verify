@@ -1,12 +1,11 @@
+"""Environment util functions."""
 import os
 from contextlib import contextmanager
 
 
 @contextmanager
 def environment(**env: str):
-    """Temporarily set environment variables inside the context manager and
-    fully restore previous environment afterwards.
-    """
+    """Temporarily set env vars and restore values aferwards."""
     original_env = {key: os.getenv(key) for key in env}
     os.environ.update(env)
 
