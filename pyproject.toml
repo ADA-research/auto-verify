@@ -26,6 +26,7 @@ dev = [
     "black", 
     "isort", 
     "tox", 
+    "tox-docker",
     "pytest",
     "pre-commit",
     "flake8",
