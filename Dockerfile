@@ -27,6 +27,7 @@ RUN auto-verify --install nnenum
 RUN echo $'set +euo pipefail \n\
 conda activate av \n\
 set -euo pipefail' > ./entrypoint.sh
+RUN chmod +x entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
 # Clean up all images: docker rmi -f $(docker images -aq)
