@@ -18,7 +18,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 #     cd auto-verify && \
 #     pip install -e .
 COPY . .
-RUN pip install -e .[dev]
+RUN pip install -e '.[dev]'
 
 # Check if installation was succesful
 RUN auto-verify --version
@@ -28,6 +28,9 @@ RUN echo $'set +euo pipefail \n\
 conda activate av \n\
 set -euo pipefail' > ./entrypoint.sh
 RUN chmod +x entrypoint.sh
+
+# Integration tests, should fail if installing went wrong. 
+RUN if ! python -m pytest --runinstall; then exit 1; fi
 
 ENTRYPOINT ["./entrypoint.sh"]
 # Clean up all images: docker rmi -f $(docker images -aq)
