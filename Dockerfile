@@ -30,7 +30,7 @@ set -euo pipefail' > ./entrypoint.sh
 RUN chmod +x entrypoint.sh
 
 # Integration tests, should fail if installing went wrong. 
-RUN if ! python -m pytest --runinstall; then exit 1; fi
+RUN if ! python -m pytest --nn_props; then exit 1; fi
 
 ENTRYPOINT ["./entrypoint.sh"]
 # Clean up all images: docker rmi -f $(docker images -aq)

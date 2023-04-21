@@ -15,7 +15,7 @@ def nnenum() -> Nnenum:
     return Nnenum()
 
 
-@pytest.mark.install
+@pytest.mark.nn_prop
 def test_sat(nnenum: Nnenum, trivial_sat: VerificationInstance):
     result = nnenum.verify_property(trivial_sat.property, trivial_sat.network)
 
@@ -23,7 +23,7 @@ def test_sat(nnenum: Nnenum, trivial_sat: VerificationInstance):
     assert result.value.result == "SAT"
 
 
-@pytest.mark.install
+@pytest.mark.nn_prop
 def test_unsat(nnenum: Nnenum, trivial_unsat: VerificationInstance):
     result = nnenum.verify_property(
         trivial_unsat.property, trivial_unsat.network
@@ -33,7 +33,7 @@ def test_unsat(nnenum: Nnenum, trivial_unsat: VerificationInstance):
     assert result.value.result == "UNSAT"
 
 
-@pytest.mark.install
+@pytest.mark.nn_prop
 def test_err(nnenum: Nnenum):
     result = nnenum.verify_property(Path(), Path())
 
