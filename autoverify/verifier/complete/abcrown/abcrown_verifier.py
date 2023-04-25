@@ -12,7 +12,7 @@ from autoverify.verifier.verifier_configuration_space import (
 class AbCrown(CompleteVerifier):
     """_summary_."""
 
-    name: str = "ab-crown"
+    name: str = "abcrown"
     verifier_configspace: VerifierConfigurationSpace
 
     def verify_property(
