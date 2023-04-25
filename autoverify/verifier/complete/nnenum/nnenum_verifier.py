@@ -20,16 +20,18 @@ from autoverify.verifier.verifier_configuration_space import (
     VerifierConfigurationSpace,
 )
 
-from .nnenum_configspace import DummyConfigspace
+from .nnenum_configspace import NnenumConfigspace
 
 
 class Nnenum(CompleteVerifier):
     """_summary_."""
 
     name: str = "nnenum"
-    verifier_configspace: VerifierConfigurationSpace = DummyConfigspace
+    verifier_configspace: VerifierConfigurationSpace = NnenumConfigspace
 
     # TODO: Configspace
+    # kwarg for cfgspace?
+    # set an optional default cfgspace attr?
     def verify_property(
         self, property: Path, network: Path
     ) -> CompleteVerificationResult:

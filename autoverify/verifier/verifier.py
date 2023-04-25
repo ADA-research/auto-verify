@@ -2,6 +2,8 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+from ConfigSpace import Configuration
+
 from autoverify.cli.install import TOOL_DIR_NAME, VERIFIER_DIR
 from autoverify.util.conda import get_verifier_conda_env_name
 from autoverify.verifier.verification_result import CompleteVerificationResult
@@ -48,7 +50,9 @@ class CompleteVerifier(Verifier):
 
     @abstractmethod
     def verify_property(
-        self, property: Path, network: Path
+        self,
+        property: Path,
+        network: Path,
     ) -> CompleteVerificationResult:
         """_summary_.
 

@@ -6,7 +6,7 @@ from autoverify.verifier.verifier_configuration_space import (
     VerifierConfigurationSpace,
 )
 
-DummyConfigspace = VerifierConfigurationSpace(
+NnenumConfigspace = VerifierConfigurationSpace(
     {
         ConfigurationLevel.SOLVER: ConfigurationSpace(
             space={"uniform_integer_solver": (1, 10)}
