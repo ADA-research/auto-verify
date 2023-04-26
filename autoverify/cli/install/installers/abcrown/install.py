@@ -18,7 +18,7 @@ def install(install_dir: Path):
     copy_env_file_to(Path(__file__), install_dir)
 
     try:
-        create_env_from_file(install_dir / "conda_env.yml")
+        create_env_from_file(install_dir / "environment.yml")
     except Exception as err:
         print("abcrown install err:")
         print(err)
