@@ -16,9 +16,4 @@ def install(install_dir: Path):
     """_summary_."""
     clone_checkout_verifier(AbCrownRepoInfo, install_dir)
     copy_env_file_to(Path(__file__), install_dir)
-
-    try:
-        create_env_from_file(install_dir / "environment.yml")
-    except Exception as err:
-        print("abcrown install err:")
-        print(err)
+    create_env_from_file(install_dir / "environment.yml")
