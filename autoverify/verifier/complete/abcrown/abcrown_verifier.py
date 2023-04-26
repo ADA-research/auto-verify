@@ -33,7 +33,7 @@ class AbCrown(CompleteVerifier):
         """_summary_."""
         yaml_config = simple_abcrown_config(property, network)
         with open(yaml_config.name, "r") as f:
-            print(yaml_config.read())
+            print(f.read())
         return Ok(CompleteVerificationOutcome("SAT", ("a", "a")))
 
     def sample_configuration(
