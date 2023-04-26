@@ -18,11 +18,12 @@ SHELL ["/bin/bash", "--login", "-c"]
 #     cd auto-verify && \
 #     pip install -e .
 COPY . .
-RUN pip install -e '.[dev]'
+RUN pip install -e '.[dev]' # dev reqs needed for tests
 
 # Check if installation was succesful
 RUN auto-verify --version
 RUN auto-verify --install nnenum
+RUN auto-verify --install abcrown
 
 RUN echo $'set +euo pipefail \n\
 conda activate av \n\
