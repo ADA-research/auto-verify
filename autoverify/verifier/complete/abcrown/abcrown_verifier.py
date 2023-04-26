@@ -32,7 +32,6 @@ class AbCrown(CompleteVerifier):
         self, property: Path, network: Path
     ) -> CompleteVerificationResult:
         """_summary_."""
-        os.chdir(self.tool_path / "src")
         yaml_file = self.make_minimal_abcrown_config(property, network)
         print(yaml_file)
         # return Ok(CompleteVerificationOutcome("SAT", ("a", "a")))
