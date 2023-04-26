@@ -22,7 +22,7 @@ RUN pip install -e '.[dev]'
 
 # Check if installation was succesful
 RUN auto-verify --version
-RUN auto-verify --install nnenum
+RUN auto-verify install nnenum
 
 RUN echo $'set +euo pipefail \n\
 conda activate av \n\
