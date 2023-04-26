@@ -1,4 +1,4 @@
-"""ab-crown verifier"""
+"""ab-crown verifier."""
 from pathlib import Path
 
 from autoverify.verifier.verification_result import CompleteVerificationResult
@@ -18,9 +18,11 @@ class AbCrown(CompleteVerifier):
     def verify_property(
         self, property: Path, network: Path
     ) -> CompleteVerificationResult:
+        """_summary_."""
         return super().verify_property(property, network)
 
     def sample_configuration(
         self, config_levels: set[ConfigurationLevel], size: int
     ):
+        """_summary_."""
         return super().sample_configuration(config_levels, size)
