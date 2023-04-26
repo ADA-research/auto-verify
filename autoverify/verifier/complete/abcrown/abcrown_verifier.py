@@ -1,10 +1,7 @@
 """ab-crown verifier."""
-import os
-import tempfile
 from pathlib import Path
 from typing import IO
 
-import yaml
 from result import Ok
 
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
@@ -21,6 +18,8 @@ from autoverify.verifier.verifier_configuration_space import (
     VerifierConfigurationSpace,
 )
 
+from .abcrown_yaml_generator import simple_abcrown_config
+
 
 class AbCrown(CompleteVerifier):
     """_summary_."""
@@ -32,9 +31,10 @@ class AbCrown(CompleteVerifier):
         self, property: Path, network: Path
     ) -> CompleteVerificationResult:
         """_summary_."""
-        yaml_file = self.make_minimal_abcrown_config(property, network)
-        print(yaml_file)
-        # return Ok(CompleteVerificationOutcome("SAT", ("a", "a")))
+        yaml_config = simple_abcrown_config(property, network)
+        with open(yaml_config, "r") as f:
+            print(yaml_config.read())
+        return Ok(CompleteVerificationOutcome("SAT", ("a", "a")))
 
     def sample_configuration(
         self, config_levels: set[ConfigurationLevel], size: int
@@ -50,12 +50,3 @@ class AbCrown(CompleteVerifier):
         conda activate {self.conda_env_name}
         python -m nnenum.nnenum {str(network)} {str(property)}
         """
-
-    @staticmethod
-    def make_minimal_abcrown_config(prop: Path, network: Path) -> IO[bytes]:
-        """Creates a barebones .yaml config for 1 onnx and 1 vnnlib."""
-        yaml_file = tempfile.TemporaryFile(suffix="yaml")
-
-        yaml.dump({"a": 1}, yaml_file)
-
-        return yaml_file
