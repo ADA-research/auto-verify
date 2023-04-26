@@ -35,30 +35,22 @@ class AbCrown(CompleteVerifier):
         os.chdir(self.tool_path / "complete_verifier")
         yaml_config = simple_abcrown_config(property, network)
         run_cmd = self._get_runner_cmd(Path(yaml_config.name))
-        print("-" * 80)
-        print(run_cmd)
-        print("-" * 80)
+
         try:
             result = subprocess.run(
                 run_cmd,
                 executable="/bin/bash",
-                # capture_output=True,
+                capture_output=True,
                 check=True,
                 shell=True,
             )
         except Exception as err:
-            # stderr = result.stderr.decode()
-            # print("-" * 80)
-            # print(stderr)
-            # print("-" * 80)
-            #
-            print(f"Exception during call to abcrown, {err}")
-            return Err("Exception during call to abcrown")
+            print(f"Exception during call to ab-crown, {str(err)}")
+            return Err("Exception during call to ab-crown")
 
+        # TODO: Parse ab-crown output
+        # TODO: Parse counterexample
         stdout = result.stdout.decode()
-        print("=" * 80)
-        print(stdout)
-        print("=" * 80)
 
         return Ok(CompleteVerificationOutcome("SAT", ("a", "a")))
 
