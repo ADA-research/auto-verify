@@ -42,16 +42,16 @@ class AbCrown(CompleteVerifier):
             result = subprocess.run(
                 run_cmd,
                 executable="/bin/bash",
-                capture_output=True,
+                # capture_output=True,
                 check=True,
                 shell=True,
             )
         except Exception as err:
-            stderr = result.stderr.decode()
-            print("-" * 80)
-            print(stderr)
-            print("-" * 80)
-
+            # stderr = result.stderr.decode()
+            # print("-" * 80)
+            # print(stderr)
+            # print("-" * 80)
+            #
             print(f"Exception during call to abcrown, {err}")
             return Err("Exception during call to abcrown")
 
