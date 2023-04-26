@@ -47,6 +47,11 @@ class AbCrown(CompleteVerifier):
                 shell=True,
             )
         except Exception as err:
+            stderr = result.stderr.decode()
+            print("-" * 80)
+            print(stderr)
+            print("-" * 80)
+
             print(f"Exception during call to abcrown, {err}")
             return Err("Exception during call to abcrown")
 
