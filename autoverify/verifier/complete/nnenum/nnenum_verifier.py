@@ -50,7 +50,7 @@ class Nnenum(CompleteVerifier):
                     shell=True,
                 )
             except Exception as err:
-                logging.exception(f"Exception during call to nnenum, {err=}")
+                print(f"Exception during call to nnenum, {err=}")
                 return Err("Exception during call to nnenum")
 
         stdout = result.stdout.decode()
