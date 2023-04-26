@@ -13,6 +13,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-V", "--version", action="version", version=AV_VERSION)
+
     subparsers = parser.add_subparsers(
         title="subcommands",
         help="(un)install specified verifiers and exit",
