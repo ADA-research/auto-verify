@@ -13,8 +13,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-V", "--version", action="version", version=AV_VERSION)
-    subparsers = parser.add_subparsers()
+    subparsers = parser.add_subparsers(
+        title="subcommands",
+        help="(un)install specified verifiers and exit",
+    )
+
     install_parser = subparsers.add_parser("install")
+    uninstall_parser = subparsers.add_parser("uninstall")
 
     install_parser.add_argument(
         "install",
@@ -23,7 +28,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="install specified verifiers and exit",
     )
 
-    install_parser.add_argument(
+    uninstall_parser.add_argument(
         "uninstall",
         nargs="+",
         choices=get_all_complete_verifier_names(),
@@ -38,9 +43,9 @@ def main():
     parser = _build_arg_parser()
     args = parser.parse_args(args=None if sys.argv[1:] else ["--help"])
 
-    if args.install:
+    if hasattr(args, "install"):
         try_install_verifiers(args.install)
-    elif args.uninstall:
+    elif hasattr(args, "uninstall"):
         try_uninstall_verifiers(args.uninstall)
 
 
