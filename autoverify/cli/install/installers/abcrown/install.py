@@ -16,4 +16,9 @@ def install(install_dir: Path):
     """_summary_."""
     clone_checkout_verifier(AbCrownRepoInfo, install_dir)
     copy_env_file_to(Path(__file__), install_dir)
-    create_env_from_file(install_dir / "conda_env.yml")
+
+    try:
+        create_env_from_file(install_dir / "conda_env.yml")
+    except Exception as err:
+        print("abcrown install err:")
+        print(err)
