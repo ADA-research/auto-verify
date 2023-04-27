@@ -54,14 +54,21 @@ class Nnenum(CompleteVerifier):
                 return Err("Exception during call to nnenum")
 
         stdout = result.stdout.decode()
+        verification_outcome = self._parse_result(stdout)
 
-        if find_substring("UNSAFE", stdout):
-            counter_example = self._parse_counter_example(stdout)
-            return Ok(CompleteVerificationOutcome("SAT", counter_example))
-        elif find_substring("SAFE", stdout):
-            return Ok(CompleteVerificationOutcome("UNSAT", None))
+        if isinstance(verification_outcome, CompleteVerificationOutcome):
+            return Ok(verification_outcome)
+        else:
+            return Err("Failed to parse output")
 
-        return Err("Failed to parse verification output.")
+    def _parse_result(
+        self, tool_result: str
+    ) -> CompleteVerificationOutcome | None:
+        if find_substring("UNSAFE", tool_result):
+            counter_example = self._parse_counter_example(tool_result)
+            return CompleteVerificationOutcome("SAT", counter_example)
+        elif find_substring("SAFE", tool_result):
+            return CompleteVerificationOutcome("UNSAT", None)
 
     # TODO: A standard for counterexamples was defined in vnncomp2022
     # https://github.com/stanleybak/vnncomp2022/issues/1#issuecomment-1074022041

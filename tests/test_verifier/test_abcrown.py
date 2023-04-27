@@ -1,13 +1,26 @@
+import os
 from pathlib import Path
 
 import pytest
 from result import Err, Ok
 
+from autoverify.util.env import get_file_path
 from autoverify.verifier import AbCrown
 
 from .conftest import VerificationInstance
 
-# from tests.util import run_av_cli
+
+@pytest.fixture(autouse=True)
+def cleanup_compiled_vnnlib():
+    """Cleans up any .vnnlib.compiled files that get left behind by abcrown."""
+    yield
+
+    abs_path = get_file_path(Path(__file__))
+    dir_name = abs_path / "trivial/"
+
+    for item in os.listdir(dir_name):
+        if item.endswith(".vnnlib.compiled"):
+            os.remove(dir_name / item)
 
 
 @pytest.fixture

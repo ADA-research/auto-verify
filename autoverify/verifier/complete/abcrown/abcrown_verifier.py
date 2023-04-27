@@ -5,6 +5,7 @@ from pathlib import Path
 
 from result import Err, Ok
 
+from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 from autoverify.verifier.complete.abcrown.abcrown_configspace import (
     AbCrownConfigspace,
@@ -48,11 +49,27 @@ class AbCrown(CompleteVerifier):
             print(f"Exception during call to ab-crown, {str(err)}")
             return Err("Exception during call to ab-crown")
 
-        # TODO: Parse ab-crown output
         # TODO: Parse counterexample
         stdout = result.stdout.decode()
+        verification_outcome = self._parse_result(stdout)
 
-        return Ok(CompleteVerificationOutcome("SAT", ("a", "a")))
+        if isinstance(verification_outcome, CompleteVerificationOutcome):
+            return Ok(verification_outcome)
+        else:
+            return Err("Failed to parse output")
+
+    def _parse_result(
+        self, tool_result: str
+    ) -> CompleteVerificationOutcome | None:
+        """_summary_."""
+        if find_substring("Result: sat", tool_result):
+            counter_example = self._parse_counter_example(tool_result)
+            return CompleteVerificationOutcome("SAT", counter_example)
+        elif find_substring("Result: unsat", tool_result):
+            return CompleteVerificationOutcome("UNSAT", None)
+
+    def _parse_counter_example(self, tool_output: str) -> tuple[str, str]:
+        return ("TODO", "TODO")
 
     def sample_configuration(
         self, config_levels: set[ConfigurationLevel], size: int
