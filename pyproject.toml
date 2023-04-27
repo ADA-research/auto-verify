@@ -34,6 +34,7 @@ dev = [
     "coverage",
     "mkdocs",
     "pydocstyle",
+    "types-PyYAML"
 ]
 
 [project.scripts]
