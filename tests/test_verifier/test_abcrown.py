@@ -28,7 +28,7 @@ def abcrown() -> AbCrown:
     return AbCrown()
 
 
-@pytest.mark.nn_prop
+@pytest.mark.gpu_prop
 def test_sat(abcrown: AbCrown, trivial_sat: VerificationInstance):
     result = abcrown.verify_property(trivial_sat.property, trivial_sat.network)
 
@@ -36,7 +36,7 @@ def test_sat(abcrown: AbCrown, trivial_sat: VerificationInstance):
     assert result.value.result == "SAT"
 
 
-@pytest.mark.nn_prop
+@pytest.mark.gpu_prop
 def test_unsat(abcrown: AbCrown, trivial_unsat: VerificationInstance):
     result = abcrown.verify_property(
         trivial_unsat.property, trivial_unsat.network
@@ -46,7 +46,7 @@ def test_unsat(abcrown: AbCrown, trivial_unsat: VerificationInstance):
     assert result.value.result == "UNSAT"
 
 
-@pytest.mark.nn_prop
+@pytest.mark.gpu_prop
 def test_err(abcrown: AbCrown):
     result = abcrown.verify_property(Path(), Path())
 
