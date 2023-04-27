@@ -1,3 +1,4 @@
+"""File for generating abcrown configs."""
 import tempfile
 from pathlib import Path
 from typing import IO, Any

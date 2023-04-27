@@ -68,6 +68,8 @@ class AbCrown(CompleteVerifier):
         elif find_substring("Result: unsat", tool_result):
             return CompleteVerificationOutcome("UNSAT", None)
 
+        return None
+
     def _parse_counter_example(self, tool_output: str) -> tuple[str, str]:
         return ("TODO", "TODO")
 

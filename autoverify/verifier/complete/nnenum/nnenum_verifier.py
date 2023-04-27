@@ -1,6 +1,5 @@
 """Nnenum verifier."""
 # TODO: More links and details in above docstring
-import logging
 import os
 import subprocess
 from pathlib import Path
@@ -69,6 +68,8 @@ class Nnenum(CompleteVerifier):
             return CompleteVerificationOutcome("SAT", counter_example)
         elif find_substring("SAFE", tool_result):
             return CompleteVerificationOutcome("UNSAT", None)
+
+        return None
 
     # TODO: A standard for counterexamples was defined in vnncomp2022
     # https://github.com/stanleybak/vnncomp2022/issues/1#issuecomment-1074022041
