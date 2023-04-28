@@ -73,7 +73,7 @@ class AbCrown(CompleteVerifier):
         if find_substring("Result: sat", tool_result):
             return CompleteVerificationOutcome("SAT", result_file.read_text())
         elif find_substring("Result: unsat", tool_result):
-            return CompleteVerificationOutcome("UNSAT", None)
+            return CompleteVerificationOutcome("UNSAT")
 
         return None
 

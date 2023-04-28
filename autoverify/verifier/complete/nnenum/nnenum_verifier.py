@@ -70,7 +70,7 @@ class Nnenum(CompleteVerifier):
             counter_example = self._parse_counter_example(tool_result)
             return CompleteVerificationOutcome("SAT", counter_example)
         elif find_substring("SAFE", tool_result):
-            return CompleteVerificationOutcome("UNSAT", None)
+            return CompleteVerificationOutcome("UNSAT")
 
         return None
 
