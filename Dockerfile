@@ -18,8 +18,8 @@ RUN pip install -e '.[dev]' # dev reqs needed for tests
 
 # Check if installation was succesful
 RUN auto-verify --version
-RUN auto-verify --install nnenum
-RUN auto-verify --install abcrown
+RUN auto-verify install nnenum
+RUN auto-verify install abcrown
 
 RUN echo $'set +euo pipefail \n\
 conda activate av \n\
