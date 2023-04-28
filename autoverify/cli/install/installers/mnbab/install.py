@@ -12,6 +12,7 @@ MnBabRepoInfo = GitRepoInfo(
 )
 
 
+# TODO: Make the env file, most deps are on anaconda
 def install(install_dir: Path):
     """_summary_."""
     clone_checkout_verifier(MnBabRepoInfo, install_dir)
