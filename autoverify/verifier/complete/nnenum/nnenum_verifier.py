@@ -48,6 +48,9 @@ class Nnenum(CompleteVerifier):
                     check=True,
                     shell=True,
                 )
+            except subprocess.CalledProcessError as err:
+                print(f"nnenum Error:\n{err.stderr}")
+                return Err("Exception during call to nnenum")
             except Exception as err:
                 print(f"Exception during call to nnenum, {err=}")
                 return Err("Exception during call to nnenum")

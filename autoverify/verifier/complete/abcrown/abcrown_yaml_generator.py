@@ -25,6 +25,7 @@ def simple_abcrown_config(property: Path, network: Path) -> IO[str]:
         "model": {"onnx_path": str(network)},
         "specification": {"vnnlib_path": str(property)},
         "solver": {"batch_size": 2048},
+        "general": {"save_adv_example": True},
     }
 
     return tmp_yaml_file_from_dict(simple_config)

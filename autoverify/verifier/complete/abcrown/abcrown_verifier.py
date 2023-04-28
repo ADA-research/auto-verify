@@ -1,6 +1,7 @@
 """ab-crown verifier."""
 import os
 import subprocess
+import tempfile
 from pathlib import Path
 
 from result import Err, Ok
@@ -34,8 +35,11 @@ class AbCrown(CompleteVerifier):
     ) -> CompleteVerificationResult:
         """_summary_."""
         os.chdir(self.tool_path / "complete_verifier")
+
         yaml_config = simple_abcrown_config(property, network)
-        run_cmd = self._get_runner_cmd(Path(yaml_config.name))
+        result_file = Path(tempfile.NamedTemporaryFile("w").name)
+
+        run_cmd = self._get_runner_cmd(Path(yaml_config.name), result_file)
 
         try:
             result = subprocess.run(
@@ -47,7 +51,6 @@ class AbCrown(CompleteVerifier):
             )
         except subprocess.CalledProcessError as err:
             print(f"AbCrown Error:\n{err.stderr}")
-            print(f"AbCrown Output:\n{err.stdout}")
             return Err("Exception during call to ab-crown")
         except Exception as err:
             print(f"Exception during call to ab-crown, {str(err)}")
@@ -55,7 +58,7 @@ class AbCrown(CompleteVerifier):
 
         # TODO: Parse counterexample
         stdout = result.stdout.decode()
-        verification_outcome = self._parse_result(stdout)
+        verification_outcome = self._parse_result(stdout, result_file)
 
         if isinstance(verification_outcome, CompleteVerificationOutcome):
             return Ok(verification_outcome)
@@ -63,19 +66,17 @@ class AbCrown(CompleteVerifier):
             return Err("Failed to parse output")
 
     def _parse_result(
-        self, tool_result: str
+        self,
+        tool_result: str,
+        result_file: Path,
     ) -> CompleteVerificationOutcome | None:
         """_summary_."""
         if find_substring("Result: sat", tool_result):
-            counter_example = self._parse_counter_example(tool_result)
-            return CompleteVerificationOutcome("SAT", counter_example)
+            return CompleteVerificationOutcome("SAT", result_file.read_text())
         elif find_substring("Result: unsat", tool_result):
             return CompleteVerificationOutcome("UNSAT", None)
 
         return None
-
-    def _parse_counter_example(self, tool_output: str) -> tuple[str, str]:
-        return ("TODO", "TODO")
 
     def sample_configuration(
         self, config_levels: set[ConfigurationLevel], size: int
@@ -83,11 +84,12 @@ class AbCrown(CompleteVerifier):
         """_summary_."""
         return
 
-    def _get_runner_cmd(self, abcrown_config: Path) -> str:
+    def _get_runner_cmd(self, abcrown_config: Path, result_file: Path) -> str:
         source_cmd = get_conda_source_cmd(get_conda_path())
 
         return f"""
         {" ".join(source_cmd)}
         conda activate {self.conda_env_name}
-        python abcrown.py --config {str(abcrown_config)}
+        python abcrown.py --config {str(abcrown_config)} \
+        --results_file {str(result_file)}
         """
