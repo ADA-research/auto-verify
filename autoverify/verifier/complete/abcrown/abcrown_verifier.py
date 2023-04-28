@@ -56,7 +56,6 @@ class AbCrown(CompleteVerifier):
             print(f"Exception during call to ab-crown, {str(err)}")
             return Err("Exception during call to ab-crown")
 
-        # TODO: Parse counterexample
         stdout = result.stdout.decode()
         verification_outcome = self._parse_result(stdout, result_file)
 
