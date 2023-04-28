@@ -4,6 +4,8 @@ import shlex
 import subprocess
 from pathlib import Path
 
+from .loggers import install_logger
+
 AV_ENV_BASE_NAME = "__av__"
 
 
@@ -29,6 +31,7 @@ def delete_conda_env(env_name: str):
     Args:
         env_name: The name of the environment to be deleted.
     """
+    install_logger.info(f"Deleting conda environment {env_name}")
     cmd = shlex.split(f"conda remove -n {env_name} --all -y")
     subprocess.run(cmd, check=True, capture_output=True)
 
@@ -39,8 +42,15 @@ def create_env_from_file(file: Path):
     Args:
         file: The file to create the environment from, should be a yaml file
     """
+    install_logger.info(f"Creating conda environment from file {file}")
     cmd = shlex.split(f"conda env create -f {str(file)}")
-    subprocess.run(cmd, check=True, capture_output=True)
+
+    try:
+        subprocess.run(cmd, check=True, capture_output=True)
+    except Exception as err:
+        print(
+            f"Failed to create conda environment from file {str(Path)}\n", err
+        )
 
 
 def get_av_conda_envs() -> list[str]:

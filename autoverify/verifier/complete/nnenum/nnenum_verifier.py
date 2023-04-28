@@ -1,6 +1,5 @@
 """Nnenum verifier."""
 # TODO: More links and details in above docstring
-import logging
 import os
 import subprocess
 from pathlib import Path
@@ -20,16 +19,18 @@ from autoverify.verifier.verifier_configuration_space import (
     VerifierConfigurationSpace,
 )
 
-from .nnenum_configspace import DummyConfigspace
+from .nnenum_configspace import NnenumConfigspace
 
 
 class Nnenum(CompleteVerifier):
     """_summary_."""
 
     name: str = "nnenum"
-    verifier_configspace: VerifierConfigurationSpace = DummyConfigspace
+    verifier_configspace: VerifierConfigurationSpace = NnenumConfigspace
 
     # TODO: Configspace
+    # kwarg for cfgspace?
+    # set an optional default cfgspace attr?
     def verify_property(
         self, property: Path, network: Path
     ) -> CompleteVerificationResult:
@@ -47,19 +48,31 @@ class Nnenum(CompleteVerifier):
                     check=True,
                     shell=True,
                 )
+            except subprocess.CalledProcessError as err:
+                print(f"nnenum Error:\n{err.stderr}")
+                return Err("Exception during call to nnenum")
             except Exception as err:
-                logging.exception(f"Exception during call to nnenum, {err=}")
+                print(f"Exception during call to nnenum, {err=}")
                 return Err("Exception during call to nnenum")
 
         stdout = result.stdout.decode()
+        verification_outcome = self._parse_result(stdout)
 
-        if find_substring("UNSAFE", stdout):
-            counter_example = self._parse_counter_example(stdout)
-            return Ok(CompleteVerificationOutcome("SAT", counter_example))
-        elif find_substring("SAFE", stdout):
-            return Ok(CompleteVerificationOutcome("UNSAT", None))
+        if isinstance(verification_outcome, CompleteVerificationOutcome):
+            return Ok(verification_outcome)
+        else:
+            return Err("Failed to parse output")
 
-        return Err("Failed to parse verification output.")
+    def _parse_result(
+        self, tool_result: str
+    ) -> CompleteVerificationOutcome | None:
+        if find_substring("UNSAFE", tool_result):
+            counter_example = self._parse_counter_example(tool_result)
+            return CompleteVerificationOutcome("SAT", counter_example)
+        elif find_substring("SAFE", tool_result):
+            return CompleteVerificationOutcome("UNSAT", None)
+
+        return None
 
     # TODO: A standard for counterexamples was defined in vnncomp2022
     # https://github.com/stanleybak/vnncomp2022/issues/1#issuecomment-1074022041

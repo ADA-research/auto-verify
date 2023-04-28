@@ -29,7 +29,7 @@ def copy_env_file_to(installer_py_file: Path, install_dir: Path):
     """
     file_path = get_file_path(installer_py_file)
 
-    shutil.copy(file_path / "conda_env.yml", install_dir / "conda_env.yml")
+    shutil.copy(file_path / "environment.yml", install_dir / "environment.yml")
 
 
 @contextmanager

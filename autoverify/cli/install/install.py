@@ -1,5 +1,4 @@
 """TODO summary."""
-# TODO: Logging instead of prints
 import logging
 import shutil
 from subprocess import CalledProcessError
@@ -27,7 +26,7 @@ def _create_base_dirs():
 
 def _remove_verifier_dir(verifier: str):
     """_summary_."""
-    print("Removing verifier directory")
+    print(f"Removing {verifier} directory")
     shutil.rmtree(VERIFIER_DIR / verifier)
 
 

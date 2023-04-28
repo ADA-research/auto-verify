@@ -1,6 +1,11 @@
 """Git and repo utilities."""
+import os
 import shlex
+import subprocess
 from dataclasses import dataclass
+from pathlib import Path
+
+from autoverify.util.loggers import install_logger
 
 
 @dataclass
@@ -33,3 +38,17 @@ class GitRepoInfo:
         checkout_cmd = f"git checkout {self.COMMIT_HASH}"
 
         return shlex.split(checkout_cmd)
+
+
+def clone_checkout_verifier(repo_info: GitRepoInfo, install_dir: Path):
+    """_summary_."""
+    os.chdir(install_dir)
+
+    install_logger.info(f"Cloning into repository: {repo_info.CLONE_URL}")
+    subprocess.run(repo_info.clone, check=True, capture_output=True)
+
+    os.rename(install_dir / repo_info.repo_name, install_dir / "tool")
+    os.chdir(install_dir / "tool")
+
+    install_logger.info(f"Checking out commit hash {repo_info.COMMIT_HASH}")
+    subprocess.run(repo_info.checkout, check=True, capture_output=True)

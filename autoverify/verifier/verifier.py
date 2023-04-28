@@ -48,7 +48,9 @@ class CompleteVerifier(Verifier):
 
     @abstractmethod
     def verify_property(
-        self, property: Path, network: Path
+        self,
+        property: Path,
+        network: Path,
     ) -> CompleteVerificationResult:
         """_summary_.
 
