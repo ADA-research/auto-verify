@@ -45,6 +45,10 @@ class AbCrown(CompleteVerifier):
                 check=True,
                 shell=True,
             )
+        except subprocess.CalledProcessError as err:
+            print(f"AbCrown Error:\n{err.stderr}")
+            print(f"AbCrown Output:\n{err.stdout}")
+            return Err("Exception during call to ab-crown")
         except Exception as err:
             print(f"Exception during call to ab-crown, {str(err)}")
             return Err("Exception during call to ab-crown")
