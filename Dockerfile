@@ -28,7 +28,7 @@ RUN chmod +x entrypoint.sh
 
 # Integration tests, should fail if installing went wrong. 
 # No GPU on gh-actions
-RUN if ! python -m pytest -v -m "not gpu_prop"; then exit 1; fi
+RUN if ! python -m pytest -v -m "not gpu_only"; then exit 1; fi
 
 ENTRYPOINT ["./entrypoint.sh"]
 # Clean up all images: docker rmi -f $(docker images -aq)
