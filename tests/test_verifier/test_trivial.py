@@ -11,11 +11,14 @@ from autoverify.verifier.verifier import CompleteVerifier
 
 from .conftest import VerificationInstance
 
+# TODO: Move the array with verifier fixtures to a place where other files can
+# acccess it as well
 pytestmark = pytest.mark.parametrize(
     "verifier",
     [
-        pytest.param(lazy_fixture("nnenum"), marks=pytest.mark.cpu_only),
-        pytest.param(lazy_fixture("abcrown"), marks=pytest.mark.gpu_only),
+        # pytest.param(lazy_fixture("nnenum"), marks=pytest.mark.cpu_only),
+        # pytest.param(lazy_fixture("abcrown"), marks=pytest.mark.gpu_only),
+        pytest.param(lazy_fixture("mnbab"), marks=pytest.mark.gpu_only),
     ],
 )
 
