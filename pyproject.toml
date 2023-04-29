@@ -34,7 +34,8 @@ dev = [
     "coverage",
     "mkdocs",
     "pydocstyle",
-    "types-PyYAML"
+    "types-PyYAML",
+    "pytest-lazy-fixture",
 ]
 
 [project.scripts]
