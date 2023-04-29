@@ -22,7 +22,7 @@ pytestmark = pytest.mark.parametrize(
 
 @pytest.fixture(autouse=True)
 def cleanup_compiled_vnnlib():
-    """Cleans up any .vnnlib.compiled files that get left behind by abcrown."""
+    """Cleans up any .vnnlib.compiled files that get left behind."""
     yield
 
     abs_path = get_file_path(Path(__file__))
