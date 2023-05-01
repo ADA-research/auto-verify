@@ -1,4 +1,4 @@
-"""nnenum installer."""
+"""mnbab installer."""
 import os
 import shlex
 import subprocess
