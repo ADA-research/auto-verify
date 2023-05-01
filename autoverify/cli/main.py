@@ -16,7 +16,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 
     subparsers = parser.add_subparsers(
         title="subcommands",
-        help="(un)install specified verifiers and exit",
+        help="""(un)install specified verifiers and exit, run install --help
+        for a list of available options""",
     )
 
     install_parser = subparsers.add_parser("install")

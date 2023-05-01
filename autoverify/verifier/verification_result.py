@@ -12,7 +12,7 @@ class CompleteVerificationOutcome:
     """_summary_."""
 
     result: Literal["SAT", "UNSAT"]
-    counter_example: str | tuple[str, str] | None
+    counter_example: str | tuple[str, str] | None = None
 
 
 # TODO: error type (not just `str`)

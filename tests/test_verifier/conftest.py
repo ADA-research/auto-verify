@@ -5,6 +5,7 @@ import pytest
 
 from autoverify.util.env import get_file_path
 from autoverify.verifier import AbCrown, Nnenum
+from autoverify.verifier.complete.mnbab.mnbab_verifier import MnBab
 from autoverify.verifier.verifier import CompleteVerifier
 
 trivial = get_file_path(Path(__file__)) / "trivial/"
@@ -51,10 +52,15 @@ def abcrown() -> AbCrown:
 
 
 @pytest.fixture
+def mnbab() -> MnBab:
+    return MnBab()
+
+
+@pytest.fixture
 def cpu_verifiers(nnenum: Nnenum) -> list[CompleteVerifier]:
     return [nnenum]
 
 
 @pytest.fixture
-def gpu_verifiers(abcrown: AbCrown) -> list[CompleteVerifier]:
-    return [abcrown]
+def gpu_verifiers(abcrown: AbCrown, mnbab: MnBab) -> list[CompleteVerifier]:
+    return [abcrown, mnbab]

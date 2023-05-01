@@ -19,6 +19,7 @@ dependencies = [
     "hydra-smac == 0.1.11",
     "result==0.9.0",
     "xdg-base-dirs==6.0.0",
+    "onnxruntime==1.14.1",
 ]
 
 [project.optional-dependencies]
@@ -34,7 +35,8 @@ dev = [
     "coverage",
     "mkdocs",
     "pydocstyle",
-    "types-PyYAML"
+    "types-PyYAML",
+    "pytest-lazy-fixture",
 ]
 
 [project.scripts]
@@ -55,6 +57,11 @@ add-ignore = [
 ]
 ignore-decorators = "property" # TODO: Dont ignore abstractmethod properties
 
+[tool.pytest.ini_options]
+markers = [
+    "cpu_only: mark a test that will only use the cpu",
+    "uses_gpu: mark a test that will use the gpu",
+]
 
 [tool.mypy]
 check_untyped_defs = true
