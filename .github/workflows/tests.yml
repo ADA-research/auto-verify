@@ -3,10 +3,8 @@ name: Tests
 
 on:
   push:
-    branches: [main, develop]
   pull_request:
     types: [opened, reopened]
-    branches: [main, develop]
 
 jobs:
   test:
