@@ -57,6 +57,11 @@ add-ignore = [
 ]
 ignore-decorators = "property" # TODO: Dont ignore abstractmethod properties
 
+[tool.pytest.ini_options]
+markers = [
+    "cpu_only: mark a test that will only use the cpu",
+    "uses_gpu: mark a test that will use the gpu",
+]
 
 [tool.mypy]
 check_untyped_defs = true
