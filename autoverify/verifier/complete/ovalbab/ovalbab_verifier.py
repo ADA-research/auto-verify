@@ -1,4 +1,5 @@
 """Temporary ovalbab verifier."""
+import os
 from pathlib import Path
 
 from result import Ok
@@ -27,7 +28,7 @@ class OvalBab(CompleteVerifier):
     ) -> CompleteVerificationResult:
         """_summary_."""
         # temp silence warnings
-        property, network = network, property
+        os.chdir(self.tool_path)
 
         outcome = CompleteVerificationOutcome("SAT", None)
         return Ok(outcome)
