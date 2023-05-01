@@ -94,6 +94,19 @@ def get_conda_path() -> Path:
     raise Exception(f"Could not fetch conda base environment info: {base_env}")
 
 
+def get_conda_pkg_path(name: str, version: str, build: str) -> Path | None:
+    """_summary_."""
+    conda_path = get_conda_path()
+    pkgs_dir = conda_path / "pkgs"
+
+    pkg_path = pkgs_dir / str(name + "-" + version + "-" + build)
+
+    if not pkg_path.exists():
+        return None
+
+    return pkg_path
+
+
 def get_conda_info() -> str:
     """Returns the output of `conda info`."""
     cmd = shlex.split("conda info")
