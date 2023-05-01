@@ -1,6 +1,5 @@
 """mnbab installer."""
 import os
-import shlex
 import subprocess
 from pathlib import Path
 
@@ -27,10 +26,10 @@ def install(install_dir: Path):
     create_env_from_file(install_dir / "environment.yml")
 
     os.chdir(install_dir / "tool")
-
     source_cmd = get_conda_source_cmd(get_conda_path())
+
     # HACK: This is bad, should upload ELINA as a conda package
-    # Also have to comment out line with cddlib_prefix else the CDDLIB_PREFIX
+    # Also have to comment out line with cdd_prefix else the CDD_PREFIX
     # doesnt work? Also need a way to get around that `sudo`
     elina_cmd = f"""
     {" ".join(source_cmd)}
@@ -42,6 +41,7 @@ def install(install_dir: Path):
     make
     sudo make install
     cd ..
+    export PYTHONPATH=$PYTHONPATH:$PWD
     """
 
     # TODO: Parse versions and build from the environment.yml file
