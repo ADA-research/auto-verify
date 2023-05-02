@@ -1,5 +1,5 @@
 """_summary_."""
-from ConfigSpace import ConfigurationSpace
+from ConfigSpace import Categorical, ConfigurationSpace, Float, Integer
 
 from autoverify.verifier.verifier_configuration_space import (
     ConfigurationLevel,
@@ -12,7 +12,11 @@ AbCrownConfigspace = VerifierConfigurationSpace(
             space={"uniform_integer_solver": (1, 10)}
         ),
         ConfigurationLevel.VERIFIER: ConfigurationSpace(
-            space={"uniform_integer_verifier": (1, 10)}
+            name="abcrown_verifier",
+            seed=42,
+            space={
+                "device": ["cuda"],  # cuda or cpu
+            },
         ),
     }
 )
