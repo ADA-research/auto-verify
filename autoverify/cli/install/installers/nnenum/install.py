@@ -6,9 +6,9 @@ from autoverify.util.conda import create_env_from_file
 from autoverify.util.env import copy_env_file_to
 
 NnenumRepoInfo = GitRepoInfo(
-    MAIN_BRANCH="master",
-    COMMIT_HASH="cf7c0e7",
-    CLONE_URL="https://github.com/stanleybak/nnenum.git",
+    main_branch="master",
+    commit_hash="cf7c0e7",
+    clone_url="https://github.com/stanleybak/nnenum.git",
 )
 
 

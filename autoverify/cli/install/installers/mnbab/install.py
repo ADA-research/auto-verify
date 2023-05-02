@@ -13,9 +13,9 @@ from autoverify.util.conda import (
 from autoverify.util.env import copy_env_file_to, environment
 
 MnBabRepoInfo = GitRepoInfo(
-    MAIN_BRANCH="main",
-    COMMIT_HASH="6aa5272",
-    CLONE_URL="https://github.com/eth-sri/mn-bab",
+    main_branch="main",
+    commit_hash="6aa5272",
+    clone_url="https://github.com/eth-sri/mn-bab",
 )
 
 

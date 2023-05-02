@@ -1,5 +1,5 @@
 """_summary_."""
-from autoverify.verifier import AbCrown, DummyVerifier, MnBab, Nnenum
+from autoverify.verifier import AbCrown, DummyVerifier, MnBab, Nnenum, OvalBab
 
 
 # TODO: Dont hardcode this
@@ -10,4 +10,5 @@ def get_all_complete_verifier_names() -> list[str]:
         Nnenum.name,
         AbCrown.name,
         MnBab.name,
+        OvalBab.name,
     ]
