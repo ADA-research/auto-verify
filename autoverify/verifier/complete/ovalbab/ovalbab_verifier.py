@@ -1,4 +1,4 @@
-"""Temporary ovalbab verifier."""
+"""OvalBab verifier."""
 import os
 import subprocess
 import sys
@@ -58,7 +58,7 @@ class OvalBab(CompleteVerifier):
             return Err("Exception during call to oval-bab")
 
         stdout = result.stdout.decode()
-        verification_outcome = self._parse_result(stdout)
+        verification_outcome = self._parse_result(result_file)
 
         if isinstance(verification_outcome, CompleteVerificationOutcome):
             return Ok(verification_outcome)
@@ -67,13 +67,15 @@ class OvalBab(CompleteVerifier):
 
     def _parse_result(
         self,
-        tool_result: str,
+        result_file: Path,
     ) -> CompleteVerificationOutcome | None:
         """_summary_."""
-        if find_substring("SAT", tool_result):
+        result_text = result_file.read_text()
+
+        if find_substring("violated", result_text):
             # TODO: Counterexample
             return CompleteVerificationOutcome("SAT", None)
-        elif find_substring("UNSAT", tool_result):
+        elif find_substring("holds", result_text):
             return CompleteVerificationOutcome("UNSAT")
 
         return None
