@@ -16,8 +16,8 @@ from .conftest import VerificationInstance
 pytestmark = pytest.mark.parametrize(
     "verifier",
     [
-        # pytest.param(lazy_fixture("nnenum"), marks=pytest.mark.cpu_only),
-        # pytest.param(lazy_fixture("abcrown"), marks=pytest.mark.uses_gpu),
+        pytest.param(lazy_fixture("nnenum"), marks=pytest.mark.cpu_only),
+        pytest.param(lazy_fixture("abcrown"), marks=pytest.mark.uses_gpu),
         # pytest.param(lazy_fixture("mnbab"), marks=pytest.mark.uses_gpu),
         pytest.param(lazy_fixture("ovalbab"), marks=pytest.mark.uses_gpu),
     ],

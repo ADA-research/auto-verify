@@ -58,6 +58,7 @@ class OvalBab(CompleteVerifier):
             return Err("Exception during call to oval-bab")
 
         stdout = result.stdout.decode()
+        print(stdout)
         verification_outcome = self._parse_result(result_file)
 
         if isinstance(verification_outcome, CompleteVerificationOutcome):
