@@ -23,7 +23,11 @@ class VerifierConfigurationSpace:
     config_spaces: dict[ConfigurationLevel, ConfigurationSpace]
 
     def sample_configuration(
-        self, config_levels: set[ConfigurationLevel], size: int
+        self,
+        *,
+        config_levels: set[ConfigurationLevel] = {ConfigurationLevel.VERIFIER},
+        size: int = 1,
     ):
         """_summary_."""
-        raise NotImplementedError
+        for config_level, config_space in self.config_spaces.items():
+            print(config_space.sample_configuration())
