@@ -1,21 +1,22 @@
 """Verifier configuration class to sample configurations from."""
 
 from dataclasses import dataclass
-from enum import Enum, auto
+from enum import Enum
 
-from ConfigSpace import ConfigurationSpace
+from ConfigSpace import Configuration, ConfigurationSpace
 
 
 class ConfigurationLevel(Enum):
     """Levels from which configurations can be sampled."""
 
-    SOLVER = auto()
-    """Embedded solver level, e.g. Gurobi parameters."""
-
-    VERIFIER = auto()
+    VERIFIER = 1
     """Verification tool level"""
 
+    SOLVER = 2
+    """Embedded solver level, e.g. Gurobi parameters."""
 
+
+# TODO: Support for sampling multiple levels at once
 @dataclass
 class VerifierConfigurationSpace:
     """_summary_."""
@@ -24,10 +25,11 @@ class VerifierConfigurationSpace:
 
     def sample_configuration(
         self,
-        *,
-        config_levels: set[ConfigurationLevel] = {ConfigurationLevel.VERIFIER},
+        level: ConfigurationLevel,
         size: int = 1,
-    ):
+    ) -> Configuration:
         """_summary_."""
-        for config_level, config_space in self.config_spaces.items():
-            print(config_space.sample_configuration())
+        if level not in self.config_spaces:
+            raise Exception  # TODO: Proper exception type
+
+        return self.config_spaces[level].sample_configuration(size=size)

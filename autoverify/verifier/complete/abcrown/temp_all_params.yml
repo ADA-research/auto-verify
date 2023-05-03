@@ -1,7 +1,7 @@
 general:
   device: cuda # Select device to run verifier, cpu or cuda (GPU).
-  seed: 100 # Random seed.
   conv_mode: patches # Convolution mode during bound propagation: "patches" mode (default) is very efficient, but may not support all architecture; "matrix" mode is slow but supports all architectures.
+  seed: 100 # Random seed.
   deterministic: false # Run code in CUDA deterministic mode, which has slower performance but better reproducibility.
   double_fp: false # Use double precision floating point. GPUs with good double precision support are preferable (NVIDIA P100, V100, A100, H100; AMD Radeon Instinc MI50, MI100).
   loss_reduction_func: sum # When batch size is not 1, this reduction function is applied to reduce the bounds into a scalar (options are "sum" and "min").
