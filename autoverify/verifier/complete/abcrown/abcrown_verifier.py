@@ -58,6 +58,7 @@ class AbCrown(CompleteVerifier):
             return Err("Exception during call to ab-crown")
 
         stdout = result.stdout.decode()
+        print(stdout)
         verification_outcome = self._parse_result(stdout, result_file)
 
         if isinstance(verification_outcome, CompleteVerificationOutcome):

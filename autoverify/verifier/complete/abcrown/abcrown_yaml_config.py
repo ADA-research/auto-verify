@@ -30,6 +30,7 @@ class AbcrownYamlConfig:
         nested_set(
             abcrown_dict, ["specification", "vnnlib_path"], str(self.property)
         )
+        nested_set(abcrown_dict, ["general", "save_adv_example"], True)
 
         self._yaml_file: IO[str] = tmp_yaml_file_from_dict(abcrown_dict)
 
