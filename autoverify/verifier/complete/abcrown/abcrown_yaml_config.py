@@ -11,11 +11,14 @@ from autoverify.util.yaml import tmp_yaml_file_from_dict
 
 @dataclass
 class AbcrownYamlConfig:
+    """Class for ab-crown YAML configs."""
+
     property: Path
     network: Path
     configuration: Configuration = ConfigurationSpace().sample_configuration()
 
     def __post_init__(self):
+        """Initialize the YAML file based on the configuration."""
         dict_config: dict[str, Any] = self.configuration.get_dictionary()
         abcrown_dict: dict[str, Any] = {}
 
@@ -31,6 +34,7 @@ class AbcrownYamlConfig:
         self._yaml_file: IO[str] = tmp_yaml_file_from_dict(abcrown_dict)
 
     def get_yaml_file(self) -> IO[str]:
+        """Get the ab-crown YAML config file."""
         if not self._yaml_file:
             raise FileNotFoundError("YAML file was not made yet.")
 

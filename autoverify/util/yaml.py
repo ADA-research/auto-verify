@@ -1,3 +1,4 @@
+"""YAML file utils."""
 import tempfile
 from typing import IO, Any
 
