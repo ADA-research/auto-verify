@@ -2,6 +2,8 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+from ConfigSpace import Configuration, ConfigurationSpace
+
 from autoverify.cli.install import TOOL_DIR_NAME, VERIFIER_DIR
 from autoverify.util.conda import get_verifier_conda_env_name
 from autoverify.verifier.verification_result import CompleteVerificationResult
@@ -51,6 +53,8 @@ class CompleteVerifier(Verifier):
         self,
         property: Path,
         network: Path,
+        *,
+        config: Configuration = ConfigurationSpace().sample_configuration(),
     ) -> CompleteVerificationResult:
         """_summary_.
 
@@ -67,7 +71,10 @@ class CompleteVerifier(Verifier):
 
     @abstractmethod  # TODO: return type
     def sample_configuration(
-        self, config_levels: set[ConfigurationLevel], size: int
+        self,
+        *,
+        level: ConfigurationLevel = ConfigurationLevel.verifier,
+        size: int = 1,
     ):
         """_summary_.
 

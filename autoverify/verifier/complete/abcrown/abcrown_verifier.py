@@ -4,6 +4,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from ConfigSpace import Configuration, ConfigurationSpace
 from result import Err, Ok
 
 from autoverify.util import find_substring
@@ -32,12 +33,18 @@ class AbCrown(CompleteVerifier):
     verifier_configspace: VerifierConfigurationSpace = AbCrownConfigspace
 
     def verify_property(
-        self, property: Path, network: Path
+        self,
+        property: Path,
+        network: Path,
+        *,
+        config: Configuration = ConfigurationSpace().sample_configuration(),
     ) -> CompleteVerificationResult:
         """_summary_."""
         os.chdir(self.tool_path / "complete_verifier")
 
-        yaml_config = AbcrownYamlConfig(property, network).get_yaml_file()
+        yaml_config = AbcrownYamlConfig(
+            property, network, config
+        ).get_yaml_file()
         result_file = Path(tempfile.NamedTemporaryFile("w").name)
 
         run_cmd = self._get_runner_cmd(Path(yaml_config.name), result_file)
@@ -51,7 +58,8 @@ class AbCrown(CompleteVerifier):
                 shell=True,
             )
         except subprocess.CalledProcessError as err:
-            print(f"AbCrown Error:\n{err.stderr}")
+            print(f"AbCrown Error:\n")
+            print(err.stderr.decode("utf-8"))
             return Err("Exception during call to ab-crown")
         except Exception as err:
             print(f"Exception during call to ab-crown, {str(err)}")
@@ -79,10 +87,15 @@ class AbCrown(CompleteVerifier):
         return None
 
     def sample_configuration(
-        self, config_levels: set[ConfigurationLevel], size: int
+        self,
+        *,
+        level: ConfigurationLevel = ConfigurationLevel.verifier,
+        size: int = 1,
     ):
         """_summary_."""
-        return
+        return self.verifier_configspace.sample_configuration(
+            level=level, size=size
+        )
 
     def _get_runner_cmd(self, abcrown_config: Path, result_file: Path) -> str:
         source_cmd = get_conda_source_cmd(get_conda_path())

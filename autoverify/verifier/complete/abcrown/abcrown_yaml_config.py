@@ -15,7 +15,7 @@ class AbcrownYamlConfig:
 
     property: Path
     network: Path
-    configuration: Configuration = ConfigurationSpace().sample_configuration()
+    configuration: Configuration
 
     def __post_init__(self):
         """Initialize the YAML file based on the configuration."""
