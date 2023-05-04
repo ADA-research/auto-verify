@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 def verify_extension(file: Path, extension: str) -> bool:
-    """Check if the file ends with the extension.
+    """Check if the file ends with the extension. Dirs are not supported.
 
     Args:
         file: The file to check.
@@ -12,4 +12,4 @@ def verify_extension(file: Path, extension: str) -> bool:
     Returns:
         bool: True if the file ends with the extension, False otherwise.
     """
-    return str(file).lower().endswith(extension)
+    return file.is_file() and file.suffix == extension
