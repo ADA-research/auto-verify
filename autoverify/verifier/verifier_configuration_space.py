@@ -1,7 +1,7 @@
 """Verifier configuration class to sample configurations from."""
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, auto
 
 from ConfigSpace import Configuration, ConfigurationSpace
 
@@ -9,10 +9,10 @@ from ConfigSpace import Configuration, ConfigurationSpace
 class ConfigurationLevel(Enum):
     """Levels from which configurations can be sampled."""
 
-    VERIFIER = 1
+    verifier = auto()
     """Verification tool level"""
 
-    SOLVER = 2
+    solver = auto()
     """Embedded solver level, e.g. Gurobi parameters."""
 
 
@@ -25,7 +25,8 @@ class VerifierConfigurationSpace:
 
     def sample_configuration(
         self,
-        level: ConfigurationLevel,
+        *,
+        level: ConfigurationLevel = ConfigurationLevel.verifier,
         size: int = 1,
     ) -> Configuration:
         """_summary_."""

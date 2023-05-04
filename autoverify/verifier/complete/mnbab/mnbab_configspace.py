@@ -8,10 +8,10 @@ from autoverify.verifier.verifier_configuration_space import (
 
 MnBabConfigspace = VerifierConfigurationSpace(
     {
-        ConfigurationLevel.SOLVER: ConfigurationSpace(
+        ConfigurationLevel.solver: ConfigurationSpace(
             space={"uniform_integer_solver": (1, 10)}
         ),
-        ConfigurationLevel.VERIFIER: ConfigurationSpace(
+        ConfigurationLevel.verifier: ConfigurationSpace(
             space={"uniform_integer_verifier": (1, 10)}
         ),
     }

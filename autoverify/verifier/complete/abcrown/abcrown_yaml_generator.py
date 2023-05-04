@@ -4,6 +4,9 @@ from pathlib import Path
 from typing import IO, Any
 
 import yaml
+from ConfigSpace import Configuration
+
+from autoverify.util.dict import nested_set
 
 
 def tmp_yaml_file() -> IO[str]:
@@ -29,3 +32,22 @@ def simple_abcrown_config(property: Path, network: Path) -> IO[str]:
     }
 
     return tmp_yaml_file_from_dict(simple_config)
+
+
+def abcrown_config_from_configuration(config: Configuration) -> IO[str]:
+    """Generate an ab-crown yaml config from a configuration.
+
+    Args:
+        config: The configuration to generate the yaml config from.
+
+    Returns:
+        IO[str]: Temporary ab-crown config yaml file.
+    """
+    dict_config: dict[str, Any] = config.get_dictionary()
+    abcrown_dict = {}
+
+    for key, value in dict_config.items():
+        nested_keys = key.split("__")
+        nested_set(abcrown_dict, nested_keys, value)
+
+    return tmp_yaml_file_from_dict(dict_config)

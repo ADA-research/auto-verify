@@ -14,11 +14,11 @@ from autoverify.verifier.verifier_configuration_space import (
 
 AbCrownConfigspace = VerifierConfigurationSpace(
     {
-        ConfigurationLevel.SOLVER: ConfigurationSpace(
+        ConfigurationLevel.solver: ConfigurationSpace(
             space={"uniform_integer_solver": (1, 10)}
         ),
         # TODO: Remove parameters irrelevant to performance
-        ConfigurationLevel.VERIFIER: ConfigurationSpace(
+        ConfigurationLevel.verifier: ConfigurationSpace(
             name="abcrown_verifier",
             space={
                 # general
