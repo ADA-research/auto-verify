@@ -11,6 +11,9 @@ from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 from autoverify.verifier.complete.abcrown.abcrown_configspace import (
     AbCrownConfigspace,
 )
+from autoverify.verifier.complete.abcrown.abcrown_yaml_config import (
+    AbcrownYamlConfig,
+)
 from autoverify.verifier.verification_result import (
     CompleteVerificationOutcome,
     CompleteVerificationResult,
@@ -20,8 +23,6 @@ from autoverify.verifier.verifier_configuration_space import (
     ConfigurationLevel,
     VerifierConfigurationSpace,
 )
-
-from .abcrown_yaml_generator import simple_abcrown_config
 
 
 class AbCrown(CompleteVerifier):
@@ -36,7 +37,7 @@ class AbCrown(CompleteVerifier):
         """_summary_."""
         os.chdir(self.tool_path / "complete_verifier")
 
-        yaml_config = simple_abcrown_config(property, network)
+        yaml_config = AbcrownYamlConfig(property, network).get_yaml_file()
         result_file = Path(tempfile.NamedTemporaryFile("w").name)
 
         run_cmd = self._get_runner_cmd(Path(yaml_config.name), result_file)

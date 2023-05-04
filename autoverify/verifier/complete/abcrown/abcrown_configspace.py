@@ -22,71 +22,71 @@ AbCrownConfigspace = VerifierConfigurationSpace(
             name="abcrown_verifier",
             space={
                 # general
-                "general__device": Categorical(
-                    "general__device",
-                    ["cuda", "cpu"],
-                    default="cuda",
-                ),
-                "general__seed": Integer(
-                    "general__seed",
-                    (0, 100),
-                    default=100,
-                ),
-                "general__conv_mode": Categorical(
-                    "general__conv_mode",
-                    ["patches", "matrix"],
-                    default="patches",
-                ),
-                "general__double_fp": Categorical(
-                    "general__double_fp",
-                    [True, False],
-                    default=False,
-                ),
-                "general__loss_reduction_func": Categorical(
-                    "general__loss_reduction_func",
-                    ["sum", "min"],
-                    default="sum",
-                ),
-                "general__sparse_alpha": Categorical(
-                    "general__sparse_alpha",
-                    [True, False],
-                    default=True,
-                ),
-                "general__save_adv_example": Categorical(
-                    "general__save_adv_example",
-                    [True, False],
-                    default=False,
-                ),
-                "general__precompile_jit": Categorical(
-                    "general__precompile_jit",
-                    [True, False],
-                    default=False,
-                ),
-                # TODO: default
-                "general__complete_verifier": Categorical(
-                    "general__complete_verifier",
-                    ["bab", "mip", "bab_refine"],
-                ),
-                "general__enable_incomplete_verification": Categorical(
-                    "general__enable_incomplete_verification",
-                    [True, False],
-                    default=True,
-                ),
-                "general__csv_name": Categorical(
-                    "general__csv_name",
-                    [True, False],
-                    default=False,
-                ),
-                "general__result_file": Categorical(
-                    "general__result_file",
-                    [True, False],
-                    default=False,
-                ),
-                "general__root_path": Categorical(
-                    "general__root_path",
-                    [True, False],
-                    default=False,
-                ),
+                # "general__device": Categorical(
+                #     "general__device",
+                #     ["cuda", "cpu"],
+                #     default="cuda",
+                # ),
+                # "general__seed": Integer(
+                #     "general__seed",
+                #     (0, 100),
+                #     default=100,
+                # ),
+                # "general__conv_mode": Categorical(
+                #     "general__conv_mode",
+                #     ["patches", "matrix"],
+                #     default="patches",
+                # ),
+                # "general__double_fp": Categorical(
+                #     "general__double_fp",
+                #     [True, False],
+                #     default=False,
+                # ),
+                # "general__loss_reduction_func": Categorical(
+                #     "general__loss_reduction_func",
+                #     ["sum", "min"],
+                #     default="sum",
+                # ),
+                # "general__sparse_alpha": Categorical(
+                #     "general__sparse_alpha",
+                #     [True, False],
+                #     default=True,
+                # ),
+                # "general__save_adv_example": Categorical(
+                #     "general__save_adv_example",
+                #     [True, False],
+                #     default=False,
+                # ),
+                # "general__precompile_jit": Categorical(
+                #     "general__precompile_jit",
+                #     [True, False],
+                #     default=False,
+                # ),
+                # # TODO: default
+                # "general__complete_verifier": Categorical(
+                #     "general__complete_verifier",
+                #     ["bab", "mip", "bab_refine"],
+                # ),
+                # "general__enable_incomplete_verification": Categorical(
+                #     "general__enable_incomplete_verification",
+                #     [True, False],
+                #     default=True,
+                # ),
+                # "general__csv_name": Categorical(
+                #     "general__csv_name",
+                #     [True, False],
+                #     default=False,
+                # ),
+                # "general__result_file": Categorical(
+                #     "general__result_file",
+                #     [True, False],
+                #     default=False,
+                # ),
+                # "general__root_path": Categorical(
+                #     "general__root_path",
+                #     [True, False],
+                #     default=False,
+                # ),
                 # model - nothing
                 # data - nothing
                 # specification
@@ -303,8 +303,8 @@ AbCrownConfigspace = VerifierConfigurationSpace(
                     [True, False],
                     default=False,
                 ),
-                "bab__bached_domain_list": Categorical(
-                    "bab__bached_domain_list",
+                "bab__batched_domain_list": Categorical(
+                    "bab__batched_domain_list",
                     [True, False],
                     default=True,
                 ),
