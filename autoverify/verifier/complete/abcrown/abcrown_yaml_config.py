@@ -40,9 +40,9 @@ class AbcrownYamlConfig:
     @classmethod
     def from_config(
         cls,
+        configuration: Configuration,
         network: Path,
         property: Path,
-        configuration: Configuration,
     ):
         """Initialize the YAML file based on the configuration."""
         dict_config: dict[str, Any] = configuration.get_dictionary()

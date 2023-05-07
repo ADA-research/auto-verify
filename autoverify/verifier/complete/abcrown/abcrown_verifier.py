@@ -40,7 +40,7 @@ class AbCrown(CompleteVerifier):
             config = self.default_config
 
         yaml_config = AbcrownYamlConfig.from_config(
-            network, property, config
+            config, network, property
         ).get_yaml_file()
         result_file = Path(tempfile.NamedTemporaryFile("w").name)
 
