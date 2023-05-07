@@ -5,7 +5,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from ConfigSpace import ConfigurationSpace
+from ConfigSpace import Configuration, ConfigurationSpace
 from result import Err, Ok
 
 from autoverify.util import find_substring
@@ -27,7 +27,11 @@ class OvalBab(CompleteVerifier):
     config_space: ConfigurationSpace = OvalBabConfigspace
 
     def verify_property(
-        self, network: Path, property: Path
+        self,
+        network: Path,
+        property: Path,
+        *,
+        config: Configuration | None = None,
     ) -> CompleteVerificationResult:
         """_summary_."""
         os.chdir(self.tool_path)

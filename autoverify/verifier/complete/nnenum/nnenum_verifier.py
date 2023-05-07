@@ -4,7 +4,7 @@ import os
 import subprocess
 from pathlib import Path
 
-from ConfigSpace import ConfigurationSpace
+from ConfigSpace import Configuration, ConfigurationSpace
 from result import Err, Ok
 
 from autoverify.util import find_substring
@@ -26,7 +26,11 @@ class Nnenum(CompleteVerifier):
     config_space: ConfigurationSpace = NnenumConfigspace
 
     def verify_property(
-        self, network: Path, property: Path
+        self,
+        network: Path,
+        property: Path,
+        *,
+        config: Configuration | None = None,
     ) -> CompleteVerificationResult:
         """_summary_."""
         os.chdir(self.tool_path / "src")

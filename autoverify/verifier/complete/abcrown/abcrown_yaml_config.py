@@ -13,6 +13,7 @@ class AbcrownYamlConfig:
     """Class for ab-crown YAML configs."""
 
     def __init__(self, yaml_file: IO[str]):
+        """_summary_."""
         self._yaml_file = yaml_file
 
     @classmethod
@@ -22,6 +23,7 @@ class AbcrownYamlConfig:
         network: Path,
         property: Path,
     ):
+        """_summary_."""
         abcrown_dict = yaml.safe_load(str(yaml_file))
 
         nested_set(abcrown_dict, ["model", "onnx_path"], str(network))

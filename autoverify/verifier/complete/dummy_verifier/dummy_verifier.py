@@ -1,5 +1,7 @@
 """Temporary dummy verifier."""
-from ConfigSpace import ConfigurationSpace
+from pathlib import Path
+
+from ConfigSpace import Configuration, ConfigurationSpace
 from result import Ok
 
 from autoverify.verifier.verification_result import (
@@ -17,10 +19,15 @@ class DummyVerifier(CompleteVerifier):
     name: str = "DummyVerifier"
     config_space: ConfigurationSpace = DummyConfigspace
 
-    def verify_property(self, network, property) -> CompleteVerificationResult:
+    def verify_property(
+        self,
+        network: Path,
+        property: Path,
+        *,
+        config: Configuration | None = None,
+    ) -> CompleteVerificationResult:
         """_summary_."""
         # temp silence warnings
-        property, network = 0, 0
         property, network = network, property
 
         outcome = CompleteVerificationOutcome("SAT", None)

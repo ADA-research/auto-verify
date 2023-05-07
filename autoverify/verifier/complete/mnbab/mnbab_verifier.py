@@ -5,7 +5,7 @@ import os
 # import subprocess
 from pathlib import Path
 
-from ConfigSpace import ConfigurationSpace
+from ConfigSpace import Configuration, ConfigurationSpace
 from result import Ok  # , Err
 
 # from autoverify.util import find_substring
@@ -28,7 +28,11 @@ class MnBab(CompleteVerifier):
     config_space: ConfigurationSpace = MnBabConfigspace
 
     def verify_property(
-        self, network: Path, property: Path
+        self,
+        network: Path,
+        property: Path,
+        *,
+        config: Configuration | None = None,
     ) -> CompleteVerificationResult:
         """_summary_."""
         # TODO: Mnbab runner
