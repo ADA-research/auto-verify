@@ -46,3 +46,19 @@ def environment(**env: str):
                 del os.environ[key]
             else:
                 os.environ[key] = value
+
+
+@contextmanager
+def cwd(path: Path):
+    """Change the cwd and restore it afterwards.
+
+    Args:
+        path: The path that will be set as the cwd.
+    """
+    old_wd = os.getcwd()
+    os.chdir(path)
+
+    try:
+        yield
+    finally:
+        os.chdir(old_wd)

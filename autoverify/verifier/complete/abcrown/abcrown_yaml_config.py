@@ -1,38 +1,62 @@
 """File for generating abcrown configs."""
-from dataclasses import dataclass
 from pathlib import Path
 from typing import IO, Any
 
-from ConfigSpace import Configuration, ConfigurationSpace
+import yaml
+from ConfigSpace import Configuration
 
 from autoverify.util.dict import nested_set
-from autoverify.util.yaml import tmp_yaml_file_from_dict
+from autoverify.util.yaml import tmp_yaml_file, tmp_yaml_file_from_dict
 
 
-@dataclass
 class AbcrownYamlConfig:
     """Class for ab-crown YAML configs."""
 
-    property: Path
-    network: Path
-    configuration: Configuration
+    def __init__(self, yaml_file: IO[str]):
+        self._yaml_file = yaml_file
 
-    def __post_init__(self):
+    @classmethod
+    def from_yaml(
+        cls,
+        yaml_file: Path,
+        network: Path,
+        property: Path,
+    ):
+        abcrown_dict = yaml.safe_load(str(yaml_file))
+
+        nested_set(abcrown_dict, ["model", "onnx_path"], str(network))
+        nested_set(
+            abcrown_dict, ["specification", "vnnlib_path"], str(property)
+        )
+        nested_set(abcrown_dict, ["general", "save_adv_example"], True)
+
+        new_yaml_file = tmp_yaml_file()
+        yaml.dump(abcrown_dict, new_yaml_file)
+
+        return cls(new_yaml_file)
+
+    @classmethod
+    def from_config(
+        cls,
+        network: Path,
+        property: Path,
+        configuration: Configuration,
+    ):
         """Initialize the YAML file based on the configuration."""
-        dict_config: dict[str, Any] = self.configuration.get_dictionary()
+        dict_config: dict[str, Any] = configuration.get_dictionary()
         abcrown_dict: dict[str, Any] = {}
 
         for key, value in dict_config.items():
             nested_keys = key.split("__")
             nested_set(abcrown_dict, nested_keys, value)
 
-        nested_set(abcrown_dict, ["model", "onnx_path"], str(self.network))
+        nested_set(abcrown_dict, ["model", "onnx_path"], str(network))
         nested_set(
-            abcrown_dict, ["specification", "vnnlib_path"], str(self.property)
+            abcrown_dict, ["specification", "vnnlib_path"], str(property)
         )
         nested_set(abcrown_dict, ["general", "save_adv_example"], True)
 
-        self._yaml_file: IO[str] = tmp_yaml_file_from_dict(abcrown_dict)
+        return cls(tmp_yaml_file_from_dict(abcrown_dict))
 
     def get_yaml_file(self) -> IO[str]:
         """Get the ab-crown YAML config file."""

@@ -11,7 +11,7 @@ from autoverify.verifier.verifier import CompleteVerifier
 
 from .conftest import VerificationInstance
 
-# TODO: Move the array with verifier fixtures to a place where other files can
+# TODO: Move the ajray with verifier fixtures to a place where other files can
 # acccess it as well
 pytestmark = pytest.mark.parametrize(
     "verifier",
@@ -41,7 +41,7 @@ def test_sat(
     verifier: CompleteVerifier,
     trivial_sat: VerificationInstance,
 ):
-    result = verifier.verify_property(trivial_sat.property, trivial_sat.network)
+    result = verifier.verify_property(trivial_sat.network, trivial_sat.property)
 
     assert isinstance(result, Ok)
     assert result.value.result == "SAT"
@@ -52,7 +52,7 @@ def test_unsat(
     trivial_unsat: VerificationInstance,
 ):
     result = verifier.verify_property(
-        trivial_unsat.property, trivial_unsat.network
+        trivial_unsat.network, trivial_unsat.property
     )
 
     assert isinstance(result, Ok)

@@ -7,10 +7,6 @@ from ConfigSpace import Configuration, ConfigurationSpace
 from autoverify.cli.install import TOOL_DIR_NAME, VERIFIER_DIR
 from autoverify.util.conda import get_verifier_conda_env_name
 from autoverify.verifier.verification_result import CompleteVerificationResult
-from autoverify.verifier.verifier_configuration_space import (
-    ConfigurationLevel,
-    VerifierConfigurationSpace,
-)
 
 
 class Verifier(ABC):
@@ -24,8 +20,8 @@ class Verifier(ABC):
 
     @property
     @abstractmethod
-    def verifier_configspace(self) -> VerifierConfigurationSpace:
-        """Verifier configuration space to sample from."""
+    def config_space(self) -> ConfigurationSpace:
+        """Configuration space to sample from."""
         raise NotImplementedError
 
     @property
@@ -42,7 +38,26 @@ class Verifier(ABC):
 
     @property
     def conda_env_name(self) -> str:
+        """The conda environment name associated with the verifier."""
         return get_verifier_conda_env_name(self.name)
+
+    @property
+    def default_config(self) -> Configuration:
+        """Return the default configuration of the config level."""
+        return self.config_space.get_default_configuration()
+
+    def sample_configuration(
+        self, *, size: int = 1
+    ) -> Configuration | list[Configuration]:
+        """Sample one or more configurations.
+
+        Args:
+            size: The number of configurations to sample.
+
+        Returns:
+            Configuration | list[Configuration]: The sampled configurations.
+        """
+        return self.config_space.sample_configuration(size=size)
 
 
 class CompleteVerifier(Verifier):
@@ -51,10 +66,10 @@ class CompleteVerifier(Verifier):
     @abstractmethod
     def verify_property(
         self,
-        property: Path,
         network: Path,
+        property: Path,
         *,
-        config: Configuration = ConfigurationSpace().sample_configuration(),
+        config: Configuration = None,
     ) -> CompleteVerificationResult:
         """_summary_.
 
@@ -66,25 +81,5 @@ class CompleteVerifier(Verifier):
 
         Returns:
             CompleteVerificationResult: _description_
-        """
-        raise NotImplementedError
-
-    @abstractmethod  # TODO: return type
-    def sample_configuration(
-        self,
-        *,
-        level: ConfigurationLevel = ConfigurationLevel.verifier,
-        size: int = 1,
-    ):
-        """_summary_.
-
-        _detailed_
-
-        Args:
-            property (_type_): _description_
-            network (_type_): _description_
-
-        Returns:
-            list[VerifierConfiguration]: _description_
         """
         raise NotImplementedError

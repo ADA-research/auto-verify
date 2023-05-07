@@ -5,6 +5,7 @@ import sys
 import tempfile
 from pathlib import Path
 
+from ConfigSpace import ConfigurationSpace
 from result import Err, Ok
 
 from autoverify.util import find_substring
@@ -15,10 +16,6 @@ from autoverify.verifier.verification_result import (
     CompleteVerificationResult,
 )
 from autoverify.verifier.verifier import CompleteVerifier
-from autoverify.verifier.verifier_configuration_space import (
-    ConfigurationLevel,
-    VerifierConfigurationSpace,
-)
 
 from .ovalbab_configspace import OvalBabConfigspace
 
@@ -27,10 +24,10 @@ class OvalBab(CompleteVerifier):
     """_summary_."""
 
     name: str = "ovalbab"
-    verifier_configspace: VerifierConfigurationSpace = OvalBabConfigspace
+    config_space: ConfigurationSpace = OvalBabConfigspace
 
     def verify_property(
-        self, property: Path, network: Path
+        self, network: Path, property: Path
     ) -> CompleteVerificationResult:
         """_summary_."""
         os.chdir(self.tool_path)
@@ -98,9 +95,3 @@ class OvalBab(CompleteVerifier):
         --result_file {str(result_file)} --json {config_file} \
         --instance_timeout {sys.maxsize}
         """
-
-    def sample_configuration(
-        self, config_levels: set[ConfigurationLevel], size: int
-    ):
-        """_summary_."""
-        return super().sample_configuration(config_levels, size)

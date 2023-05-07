@@ -1,4 +1,4 @@
-"""_summary_."""
+"""ab-crown configuration space."""
 from ConfigSpace import (
     Categorical,
     ConfigurationSpace,
@@ -7,189 +7,26 @@ from ConfigSpace import (
     Integer,
 )
 
-from autoverify.verifier.verifier_configuration_space import (
-    ConfigurationLevel,
-    VerifierConfigurationSpace,
-)
+AbCrownConfigspace = ConfigurationSpace()
 
-AbCrownConfigspace = VerifierConfigurationSpace(
-    {
-        ConfigurationLevel.solver: ConfigurationSpace(
-            space={"uniform_integer_solver": (1, 10)}
-        ),
-        ConfigurationLevel.verifier: ConfigurationSpace(),
-    }
-)
-
-AbCrownConfigspace.config_spaces[
-    ConfigurationLevel.verifier
-].add_hyperparameters(
+AbCrownConfigspace.add_hyperparameters(
     [
-        # general
-        Categorical(
-            "general__device",
-            ["cuda", "cpu"],
-            default="cuda",
-        ),
-        Categorical(
-            "general__conv_mode",
-            ["patches", "matrix"],
-            default="patches",
-        ),
-        Categorical(
-            "general__double_fp",
-            [True, False],
-            default=False,
-        ),
-        Categorical(
-            "general__loss_reduction_func",
-            ["sum", "min"],
-            default="sum",
-        ),
-        Categorical(
-            "general__sparse_alpha",
-            [True, False],
-            default=True,
-        ),
         Categorical(
             "general__complete_verifier",
             ["bab", "mip", "bab_refine"],
             default="bab",
         ),
-        Categorical(
-            "general__enable_incomplete_verification",
-            [True, False],
-            default=True,
-        ),
-        # model - nothing
-        # data - nothing
-        # specification
-        # ============================================================
-        Categorical(
-            "specification__type",
-            ["lp", "bounds"],
-            default="lp",
-        ),
-        Categorical(
-            "specification__robustness_type",
-            ["verified-acc", "runnerup"],  # "specify-target"],
-            default="verified-acc",
-        ),
-        Categorical(
-            "specification__norm",
-            [1, 2, float("inf")],
-            default=float("inf"),
-        ),
-        Categorical(
-            "specification__epsilon",
-            ["null"],
-            default="null",
-        ),
-        # ============================================================
-        # solver
         Integer(
             "solver__batch_size",
             (1, 1000),
             default=64,
         ),  # up to 500000..
         Float(
-            "solver__min_batch_size_ratio",
-            (0.0, 1.0),
-            default=0.1,
-        ),
-        Categorical(
-            "solver__use_float64_in_last_iteration",
-            [True, False],
-            default=False,
-        ),
-        Integer(
-            "solver__early_stop_patience",
-            (1, 20),
-            default=10,
-        ),
-        Float(
-            "solver__start_save_best",
-            (0.0, 1.0),
-            default=0.5,
-        ),
-        Categorical(
-            "solver__bound_prop_method",
-            [
-                "alpha-crown",
-                "crown",
-                "forward",
-                "forward+crown",
-                "alpha-forward",
-                "crown-ibp",
-                "init-crown",
-            ],
-            default="alpha-crown",
-        ),
-        Categorical(
-            "solver__prune_after_crown",
-            [False],
-            default=False,
-        ),
-        Integer(
-            "solver__crown__batch_size",
-            (100_000_000, 10_000_000_000),
-            default=1_000_000_000,
-        ),
-        Integer(
-            "solver__crown__max_crown_size",
-            (100_000_000, 10_000_000_000),
-            default=1_000_000_000,
-        ),
-        Categorical(
-            "solver__alpha-crown__alpha",
-            [True, False],
-            default=True,
-        ),
-        Float(
-            "solver__alpha-crown__lr_alpha",
-            (0.01, 0.2),
-            default=0.1,
-        ),
-        Integer(
-            "solver__alpha-crown__iteration",
-            (1, 200),
-            default=100,
-        ),
-        Categorical(
-            "solver__alpha-crown__share_slopes",
-            [True, False],
-            default=False,
-        ),
-        Categorical(
-            "solver__alpha-crown__no_joint_opt",
-            [True, False],
-            default=False,
-        ),
-        Float(
-            "solver__alpha-crown__lr_decay",
-            (0.9, 1.0),
-            default=0.98,
-        ),
-        Categorical(
-            "solver__alpha-crown__full_conv_alpha",
-            [True, False],
-            default=True,
-        ),
-        Float(
-            "solver__beta-crown__lr_alpha",
-            (0.01, 0.1),
-            default=0.01,
-        ),
-        Float(
-            "solver__beta-crown__lr_beta",
-            (0.01, 0.2),
-            default=0.05,
-        ),
-        Float(
             "solver__beta-crown__lr_decay",
             (0.9, 1.0),
             default=0.98,
         ),
+        # TODO: Havent found if there are options besides adam
         Categorical(
             "solver__beta-crown__optimizer",
             ["adam"],
@@ -209,64 +46,6 @@ AbCrownConfigspace.config_spaces[
             "solver__beta-crown__all_node_split_LP",
             [True, False],
             default=False,
-        ),
-        Categorical(
-            "solver__forward__refine",
-            [True, False],
-            default=False,
-        ),
-        Categorical(
-            "solver__forward__dynamic",
-            [True, False],
-            default=False,
-        ),
-        Integer(
-            "solver__forward__max_dim",
-            (1_000, 100_000),
-            default=10_000,
-        ),
-        Constant(
-            "solver__multi_class__multi_class_method",
-            "allclass_domain",  # the rest are deprecated
-        ),
-        Integer(
-            "solver__multi_class__label_batch_size",
-            (1, 128),
-            default=32,
-        ),
-        Categorical(
-            "solver__multi_class__skip_with_refined_bound",
-            [True, False],
-            default=True,
-        ),
-        Categorical(
-            "solver__mip__parallel_solvers",
-            ["null"],
-            default="null",
-        ),
-        Integer(
-            "solver__mip__refine_neuron_timeout",
-            (1, 30),
-            default=15,
-        ),
-        Float(
-            "solver__mip__refine_neuron_time_percentage",
-            (0.0, 1.0),
-            default=0.8,
-        ),
-        Categorical(
-            "solver__mip__early_stop",
-            [True, False],
-            default=True,
-        ),
-        Categorical(
-            "solver__mip__adv_warmup",
-            [True, False],
-            default=True,
-        ),
-        Constant(
-            "solver__mip__mip_solver",
-            "gurobi",
         ),
         # bab
         Categorical(
@@ -439,112 +218,16 @@ AbCrownConfigspace.config_spaces[
             (-1, 10),
             default=-1,
         ),
-        # bab-branching-attack
-        # attack
-        Categorical(
-            "attack__pgd_order",
-            ["before", "after"],
-            default="before",
-        ),
-        Integer(
-            "attack__pgd_steps",
-            (1, 200),
-            default=100,
-        ),
-        Integer(
-            "attack__pgd_restarts",
-            (1, 60),
-            default=30,
-        ),
-        Categorical(
-            "attack__pgd_early_stop",
-            [True, False],
-            default=True,
-        ),
-        Float(
-            "attack__pgd_lr_decay",
-            (0.9, 1.0),
-            default=0.99,
-        ),
-        Categorical(
-            "attack__pgd_alpha",
-            ["auto"],
-            default="auto",
-        ),
-        Categorical(
-            "attack__pgd_loss_mode",
-            ["null"],
-            default="null",
-        ),
-        Categorical(
-            "attack__enable_mip_attack",
-            [True, False],
-            default=False,
-        ),
-        Categorical(
-            "attack__attack_mode",
-            ["PGD", "GAMA"],
-            default="PGD",
-        ),
-        Float(
-            "attack__gama_lambda",
-            (1.0, 20.0),
-            default=1.0,
-        ),
-        Float(
-            "attack__gama_decay",
-            (0.8, 1.0),
-            default=0.9,
-        ),
-        Categorical(
-            "attack__check_clean",
-            [True, False],
-            default=False,
-        ),
-        Integer(
-            "attack__input_split__pgd_steps",
-            (1, 200),
-            default=100,
-        ),
-        Integer(
-            "attack__input_split__pgd_restarts",
-            (1, 60),
-            default=30,
-        ),
-        Categorical(
-            "attack__input_split__pgd_alpha",
-            ["auto"],
-            default="auto",
-        ),
-        Integer(
-            "attack__input_split_enhanced__pgd_steps",
-            (1, 400),
-            default=100,
-        ),
-        Integer(
-            "attack__input_split_enhanced__pgd_restarts",
-            (100000, 10000000),
-            default=5000000,
-        ),
-        Categorical(
-            "attack__input_split_enhanced__pgd_alpha",
-            ["auto"],
-            default="auto",
-        ),
-        Integer(
-            "attack__input_split_check_adv__pgd_steps",
-            (1, 400),
-            default=100,
-        ),
-        Integer(
-            "attack__input_split_check_adv__pgd_restarts",
-            (100000, 10000000),
-            default=5000000,
-        ),
-        Categorical(
-            "attack__input_split_check_adv__pgd_alpha",
-            ["auto"],
-            default="auto",
-        ),
     ]
 )
+
+
+# AbCrownConfigspace.config_spaces[ConfigurationLevel.verifier].add_conditions(
+#     [
+#         EqualsCondition(
+#             AbCrownConfigspace.get_parameter("solver__forward__dynamic"),
+#             AbCrownConfigspace.get_parameter("specification__norm"),
+#             float("inf"),
+#         )
+#     ]
+# )
