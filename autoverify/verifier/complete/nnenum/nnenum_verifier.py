@@ -25,13 +25,13 @@ class Nnenum(CompleteVerifier):
     name: str = "nnenum"
     config_space: ConfigurationSpace = NnenumConfigspace
 
-    def verify_property(
+    def _verify_property(
         self,
         network: Path,
         property: Path,
         *,
-        config: Configuration | None = None,
-    ) -> CompleteVerificationResult:
+        config: Configuration | Path | None = None,
+    ) -> CompleteVerificationOutcome | Err:
         """_summary_."""
         os.chdir(self.tool_path / "src")
 
@@ -54,23 +54,18 @@ class Nnenum(CompleteVerifier):
                 return Err("Exception during call to nnenum")
 
         stdout = result.stdout.decode()
-        verification_outcome = self._parse_result(stdout)
-
-        if isinstance(verification_outcome, CompleteVerificationOutcome):
-            return Ok(verification_outcome)
-        else:
-            return Err("Failed to parse output")
+        return self._parse_result(stdout)
 
     def _parse_result(
         self, tool_result: str
-    ) -> CompleteVerificationOutcome | None:
+    ) -> CompleteVerificationOutcome | Err:
         if find_substring("UNSAFE", tool_result):
             counter_example = self._parse_counter_example(tool_result)
             return CompleteVerificationOutcome("SAT", counter_example)
         elif find_substring("SAFE", tool_result):
             return CompleteVerificationOutcome("UNSAT")
 
-        return None
+        return Err("Failed to determine outcome from result")
 
     # TODO: A standard for counterexamples was defined in vnncomp2022
     # https://github.com/stanleybak/vnncomp2022/issues/1#issuecomment-1074022041

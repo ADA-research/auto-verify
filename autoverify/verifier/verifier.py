@@ -3,10 +3,14 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 
 from ConfigSpace import Configuration, ConfigurationSpace
+from result import Err, Ok
 
 from autoverify.cli.install import TOOL_DIR_NAME, VERIFIER_DIR
 from autoverify.util.conda import get_verifier_conda_env_name
-from autoverify.verifier.verification_result import CompleteVerificationResult
+from autoverify.verifier.verification_result import (
+    CompleteVerificationOutcome,
+    CompleteVerificationResult,
+)
 
 
 class Verifier(ABC):
@@ -63,7 +67,6 @@ class Verifier(ABC):
 class CompleteVerifier(Verifier):
     """_summary_."""
 
-    @abstractmethod
     def verify_property(
         self,
         network: Path,
@@ -82,4 +85,22 @@ class CompleteVerifier(Verifier):
         Returns:
             CompleteVerificationResult: _description_
         """
+        if config is None:
+            config = self.default_config
+
+        outcome = self._verify_property(network, property, config=config)
+
+        if isinstance(outcome, CompleteVerificationOutcome):
+            return Ok(outcome)
+        else:
+            return outcome  # Err
+
+    @abstractmethod
+    def _verify_property(
+        self,
+        network: Path,
+        property: Path,
+        *,
+        config: Configuration = None,
+    ) -> CompleteVerificationOutcome | Err:
         raise NotImplementedError

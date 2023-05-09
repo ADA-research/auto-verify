@@ -2,12 +2,9 @@
 from pathlib import Path
 
 from ConfigSpace import Configuration, ConfigurationSpace
-from result import Ok
+from result import Err
 
-from autoverify.verifier.verification_result import (
-    CompleteVerificationOutcome,
-    CompleteVerificationResult,
-)
+from autoverify.verifier.verification_result import CompleteVerificationOutcome
 from autoverify.verifier.verifier import CompleteVerifier
 
 from .dummy_configspace import DummyConfigspace
@@ -19,16 +16,15 @@ class DummyVerifier(CompleteVerifier):
     name: str = "DummyVerifier"
     config_space: ConfigurationSpace = DummyConfigspace
 
-    def verify_property(
+    def _verify_property(
         self,
         network: Path,
         property: Path,
         *,
-        config: Configuration | None = None,
-    ) -> CompleteVerificationResult:
+        config: Configuration | Path | None = None,
+    ) -> CompleteVerificationOutcome | Err:
         """_summary_."""
         # temp silence warnings
         property, network = network, property
 
-        outcome = CompleteVerificationOutcome("SAT", None)
-        return Ok(outcome)
+        return CompleteVerificationOutcome("SAT", None)

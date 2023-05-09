@@ -28,17 +28,14 @@ class AbCrown(CompleteVerifier):
     name: str = "abcrown"
     config_space: ConfigurationSpace = AbCrownConfigspace
 
-    def verify_property(
+    def _verify_property(
         self,
         network: Path,
         property: Path,
         *,
         config: Configuration | Path | None = None,
-    ) -> CompleteVerificationResult:
+    ) -> CompleteVerificationOutcome | Err:
         """_summary_."""
-        if config is None:
-            config = self.default_config
-
         if isinstance(config, Configuration):
             yaml_config = AbcrownYamlConfig.from_config(
                 config, network, property
@@ -72,18 +69,13 @@ class AbCrown(CompleteVerifier):
             return Err("Exception during call to ab-crown")
 
         stdout = result.stdout.decode()
-        verification_outcome = self._parse_result(stdout, result_file)
-
-        if isinstance(verification_outcome, CompleteVerificationOutcome):
-            return Ok(verification_outcome)
-        else:
-            return Err("Failed to parse output")
+        return self._parse_result(stdout, result_file)
 
     def _parse_result(
         self,
         tool_result: str,
         result_file: Path,
-    ) -> CompleteVerificationOutcome | None:
+    ) -> CompleteVerificationOutcome | Err:
         """_summary_."""
         if find_substring("Result: sat", tool_result):
             return CompleteVerificationOutcome("SAT", result_file.read_text())
@@ -92,7 +84,7 @@ class AbCrown(CompleteVerifier):
         elif find_substring("Result: timeout", tool_result):
             return CompleteVerificationOutcome("TIMEOUT")
 
-        return None
+        return Err("Failed to determine outcome from result")
 
     def _get_runner_cmd(self, abcrown_config: Path, result_file: Path) -> str:
         source_cmd = get_conda_source_cmd(get_conda_path())

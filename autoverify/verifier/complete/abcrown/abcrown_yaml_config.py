@@ -58,9 +58,6 @@ class AbcrownYamlConfig:
         )
         nested_set(abcrown_dict, ["general", "save_adv_example"], True)
 
-        # TODO: Remove
-        nested_set(abcrown_dict, ["model", "input_shape"], [-1, 1, 28, 28])
-
         return cls(tmp_yaml_file_from_dict(abcrown_dict))
 
     def get_yaml_file(self) -> IO[str]:

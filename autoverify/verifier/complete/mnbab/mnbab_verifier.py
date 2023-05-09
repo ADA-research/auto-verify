@@ -6,16 +6,13 @@ import os
 from pathlib import Path
 
 from ConfigSpace import Configuration, ConfigurationSpace
-from result import Ok  # , Err
+from result import Err, Ok
 
 # from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 
 # from autoverify.util.env import environment
-from autoverify.verifier.verification_result import (
-    CompleteVerificationOutcome,
-    CompleteVerificationResult,
-)
+from autoverify.verifier.verification_result import CompleteVerificationOutcome
 from autoverify.verifier.verifier import CompleteVerifier
 
 from .mnbab_configspace import MnBabConfigspace
@@ -27,19 +24,19 @@ class MnBab(CompleteVerifier):
     name: str = "mnbab"
     config_space: ConfigurationSpace = MnBabConfigspace
 
-    def verify_property(
+    def _verify_property(
         self,
         network: Path,
         property: Path,
         *,
-        config: Configuration | None = None,
-    ) -> CompleteVerificationResult:
+        config: Configuration | Path | None = None,
+    ) -> CompleteVerificationOutcome | Err:
         """_summary_."""
         # TODO: Mnbab runner
         os.chdir(self.tool_path)
         # run_cmd = self._get_runner_cmd(), result_file)
 
-        return Ok(CompleteVerificationOutcome("UNSAT"))
+        return CompleteVerificationOutcome("UNSAT")
 
     def _get_runner_cmd(self, mnbab_config: Path) -> str:
         source_cmd = get_conda_source_cmd(get_conda_path())
