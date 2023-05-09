@@ -4,7 +4,6 @@ from ConfigSpace import (
     Categorical,
     ConfigurationSpace,
     Constant,
-    EqualsCondition,
     Float,
     Integer,
 )

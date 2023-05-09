@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 from ConfigSpace import Configuration, ConfigurationSpace
-from result import Err, Ok
+from result import Err
 
 # from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd

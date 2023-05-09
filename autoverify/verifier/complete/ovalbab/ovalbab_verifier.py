@@ -1,20 +1,16 @@
 """OvalBab verifier."""
-import os
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
 from ConfigSpace import Configuration, ConfigurationSpace
-from result import Err, Ok
+from result import Err
 
 from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 from autoverify.util.env import cwd, get_file_path
-from autoverify.verifier.verification_result import (
-    CompleteVerificationOutcome,
-    CompleteVerificationResult,
-)
+from autoverify.verifier.verification_result import CompleteVerificationOutcome
 from autoverify.verifier.verifier import CompleteVerifier
 
 from .ovalbab_configspace import OvalBabConfigspace
