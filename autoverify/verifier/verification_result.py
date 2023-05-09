@@ -11,7 +11,7 @@ from result import Result
 class CompleteVerificationOutcome:
     """_summary_."""
 
-    result: Literal["SAT", "UNSAT"]
+    result: Literal["SAT", "UNSAT", "TIMEOUT"]
     counter_example: str | tuple[str, str] | None = None
 
 

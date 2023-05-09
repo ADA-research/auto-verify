@@ -33,15 +33,23 @@ class AbCrown(CompleteVerifier):
         network: Path,
         property: Path,
         *,
-        config: Configuration | None = None,
+        config: Configuration | Path | None = None,
     ) -> CompleteVerificationResult:
         """_summary_."""
         if config is None:
             config = self.default_config
 
-        yaml_config = AbcrownYamlConfig.from_config(
-            config, network, property
-        ).get_yaml_file()
+        if isinstance(config, Configuration):
+            yaml_config = AbcrownYamlConfig.from_config(
+                config, network, property
+            ).get_yaml_file()
+        elif isinstance(config, Path):
+            yaml_config = AbcrownYamlConfig.from_yaml(
+                config, network, property
+            ).get_yaml_file()
+        else:
+            raise ValueError("Config should be of type Configuration or Path")
+
         result_file = Path(tempfile.NamedTemporaryFile("w").name)
 
         run_cmd = self._get_runner_cmd(Path(yaml_config.name), result_file)
@@ -81,6 +89,8 @@ class AbCrown(CompleteVerifier):
             return CompleteVerificationOutcome("SAT", result_file.read_text())
         elif find_substring("Result: unsat", tool_result):
             return CompleteVerificationOutcome("UNSAT")
+        elif find_substring("Result: timeout", tool_result):
+            return CompleteVerificationOutcome("TIMEOUT")
 
         return None
 

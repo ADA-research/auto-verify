@@ -24,7 +24,7 @@ class AbcrownYamlConfig:
         property: Path,
     ):
         """_summary_."""
-        abcrown_dict = yaml.safe_load(str(yaml_file))
+        abcrown_dict = yaml.safe_load(yaml_file.read_text())
 
         nested_set(abcrown_dict, ["model", "onnx_path"], str(network))
         nested_set(
@@ -57,6 +57,9 @@ class AbcrownYamlConfig:
             abcrown_dict, ["specification", "vnnlib_path"], str(property)
         )
         nested_set(abcrown_dict, ["general", "save_adv_example"], True)
+
+        # TODO: Remove
+        nested_set(abcrown_dict, ["model", "input_shape"], [-1, 1, 28, 28])
 
         return cls(tmp_yaml_file_from_dict(abcrown_dict))
 
