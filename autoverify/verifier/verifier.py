@@ -7,6 +7,7 @@ from result import Err, Ok
 
 from autoverify.cli.install import TOOL_DIR_NAME, VERIFIER_DIR
 from autoverify.util.conda import get_verifier_conda_env_name
+from autoverify.util.path import check_file_extension
 from autoverify.verifier.verification_result import (
     CompleteVerificationOutcome,
     CompleteVerificationResult,
@@ -85,6 +86,12 @@ class CompleteVerifier(Verifier):
         Returns:
             CompleteVerificationResult: _description_
         """
+        if not check_file_extension(network, ".onnx"):
+            raise ValueError("Network should be in onnx format")
+
+        if not check_file_extension(property, ".vnnlib"):
+            raise ValueError("Property should be in vnnlib format")
+
         if config is None:
             config = self.default_config
 
