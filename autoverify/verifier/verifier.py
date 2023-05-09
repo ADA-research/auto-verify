@@ -103,4 +103,5 @@ class CompleteVerifier(Verifier):
         *,
         config: Configuration = None,
     ) -> CompleteVerificationOutcome | Err:
+        """_summary_."""
         raise NotImplementedError
