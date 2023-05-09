@@ -5,7 +5,7 @@
 #     Constant,
 #     EqualsCondition,
 #     Float,
-#     Integer,
+#     IAbCrown configspacenteger,
 # )
 # a
 # from autoverify.verifier.verifier_configuration_space import (
