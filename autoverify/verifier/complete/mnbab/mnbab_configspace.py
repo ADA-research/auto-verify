@@ -1,18 +1,13 @@
 """_summary_."""
-from ConfigSpace import ConfigurationSpace
+from ConfigSpace import ConfigurationSpace, Integer
 
-from autoverify.verifier.verifier_configuration_space import (
-    ConfigurationLevel,
-    VerifierConfigurationSpace,
-)
-
-MnBabConfigspace = VerifierConfigurationSpace(
-    {
-        ConfigurationLevel.SOLVER: ConfigurationSpace(
-            space={"uniform_integer_solver": (1, 10)}
+MnBabConfigspace = ConfigurationSpace()
+MnBabConfigspace.add_hyperparameters(
+    [
+        Integer(
+            "temp_int",
+            (1, 1000),
+            default=64,
         ),
-        ConfigurationLevel.VERIFIER: ConfigurationSpace(
-            space={"uniform_integer_verifier": (1, 10)}
-        ),
-    }
+    ]
 )
