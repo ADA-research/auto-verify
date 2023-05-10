@@ -22,7 +22,7 @@ def read_vnncomp_instances(benchmark: str) -> list[str]:
                 [
                     str(benchmark_dir / network),
                     str(benchmark_dir / property),
-                    timeout,  # TODO: Is the 3rd field even the timeout
+                    int(timeout),  # TODO: Is the 3rd field even the timeout
                 ]
             )
 
