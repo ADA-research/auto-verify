@@ -22,7 +22,7 @@ class DummyVerifier(CompleteVerifier):
         property: Path,
         *,
         config: Configuration | Path | None = None,
-    ) -> CompleteVerificationOutcome | Err:
+    ) -> CompleteVerificationOutcome | Err[str]:
         """_summary_."""
         # temp silence warnings
         property, network = network, property

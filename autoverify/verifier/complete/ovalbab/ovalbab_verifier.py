@@ -28,7 +28,7 @@ class OvalBab(CompleteVerifier):
         property: Path,
         *,
         config: Configuration | Path | None = None,
-    ) -> CompleteVerificationOutcome | Err:
+    ) -> CompleteVerificationOutcome | Err[str]:
         """_summary_."""
         result_file = Path(tempfile.NamedTemporaryFile("w").name)
         config_file = get_file_path(Path(__file__)) / "temp_ovalbab_config.json"
@@ -60,7 +60,7 @@ class OvalBab(CompleteVerifier):
     def _parse_result(
         self,
         result_file: Path,
-    ) -> CompleteVerificationOutcome | Err:
+    ) -> CompleteVerificationOutcome | Err[str]:
         """_summary_."""
         result_text = result_file.read_text()
 

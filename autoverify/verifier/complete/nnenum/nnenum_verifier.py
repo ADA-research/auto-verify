@@ -28,7 +28,7 @@ class Nnenum(CompleteVerifier):
         property: Path,
         *,
         config: Configuration | Path | None = None,
-    ) -> CompleteVerificationOutcome | Err:
+    ) -> CompleteVerificationOutcome | Err[str]:
         """_summary_."""
         os.chdir(self.tool_path / "src")
 
@@ -55,7 +55,7 @@ class Nnenum(CompleteVerifier):
 
     def _parse_result(
         self, tool_result: str
-    ) -> CompleteVerificationOutcome | Err:
+    ) -> CompleteVerificationOutcome | Err[str]:
         if find_substring("UNSAFE", tool_result):
             counter_example = self._parse_counter_example(tool_result)
             return CompleteVerificationOutcome("SAT", counter_example)

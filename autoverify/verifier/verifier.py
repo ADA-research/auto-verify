@@ -109,6 +109,6 @@ class CompleteVerifier(Verifier):
         property: Path,
         *,
         config: Configuration = None,
-    ) -> CompleteVerificationOutcome | Err:
+    ) -> CompleteVerificationOutcome | Err[str]:
         """_summary_."""
         raise NotImplementedError

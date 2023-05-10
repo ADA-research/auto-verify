@@ -30,7 +30,7 @@ class MnBab(CompleteVerifier):
         property: Path,
         *,
         config: Configuration | Path | None = None,
-    ) -> CompleteVerificationOutcome | Err:
+    ) -> CompleteVerificationOutcome | Err[str]:
         """_summary_."""
         # TODO: Mnbab runner
         os.chdir(self.tool_path)
