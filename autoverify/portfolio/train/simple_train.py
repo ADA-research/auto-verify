@@ -7,7 +7,7 @@ from smac import HyperparameterOptimizationFacade, Scenario
 from autoverify.portfolio.target_function import SmacTargetFunction
 
 
-def smac_train(
+def simple_smac_train(
     scenario: Scenario,
     target_function: SmacTargetFunction,
     **smac_facade_kwargs: Any,
