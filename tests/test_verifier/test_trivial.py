@@ -8,8 +8,7 @@ from result import Err, Ok
 
 from autoverify.util.env import get_file_path
 from autoverify.verifier.verifier import CompleteVerifier
-
-from .conftest import VerificationInstance
+from tests.conftest import VerificationInstance
 
 # TODO: Move the ajray with verifier fixtures to a place where other files can
 # acccess it as well
