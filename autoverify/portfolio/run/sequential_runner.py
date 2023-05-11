@@ -2,6 +2,7 @@
 from pathlib import Path
 from typing import Type
 
+import pandas as pd
 from ConfigSpace import Configuration
 from result import Err, Ok
 
@@ -9,10 +10,17 @@ from autoverify.portfolio.target_function import run_verification_instance
 from autoverify.util.instances import (
     VerificationDataResult,
     VerificationInstance,
-    write_verification_data_results_to_csv,
+    write_verification_results_to_csv,
 )
 from autoverify.util.loggers import verification_logger
 from autoverify.verifier.verifier import CompleteVerifier
+
+
+def append_df(
+    df: pd.DataFrame, verification_data: VerificationDataResult
+) -> pd.DataFrame:
+    """Append the dataclass to the dataframe."""
+    return pd.concat([df, pd.DataFrame([verification_data])])
 
 
 def run_sequential_portfolio(
@@ -20,7 +28,7 @@ def run_sequential_portfolio(
     instances: list[VerificationInstance],
     *,
     output_csv_path: Path | None = None,
-) -> list[VerificationDataResult]:
+) -> pd.DataFrame:
     """Run a portfolio sequentially on a set of instances.
 
     This is a very naive function meant for quick experimenting, it will
@@ -36,7 +44,7 @@ def run_sequential_portfolio(
     Returns:
         list[VerificationDataResult]: TODO.
     """
-    results: list[VerificationDataResult] = []
+    results_df: pd.DataFrame = pd.DataFrame()
 
     for verifier, config in portfolio:
         for instance in instances:
@@ -53,33 +61,38 @@ def run_sequential_portfolio(
                 verification_logger.info("Verification finished succesfully.")
                 verification_logger.info(f"Result: {result.value.result}")
 
-                results.append(
+                results_df = append_df(
+                    results_df,
                     VerificationDataResult(
                         instance.network.name,
                         instance.property.name,
                         "OK",
                         result.value.result,
+                        took_t,
                         result.value.counter_example,
                         None,
-                    )
+                    ),
                 )
             elif isinstance(result, Err):
                 verification_logger.info("Exception during verification.")
                 verification_logger.info(result.unwrap_err())
-                results.append(
+
+                results_df = append_df(
+                    results_df,
                     VerificationDataResult(
                         instance.network.name,
                         instance.property.name,
-                        "OK",
+                        "ERR",
                         None,
+                        took_t,
                         None,
                         result.unwrap_err(),
-                    )
+                    ),
                 )
 
             verification_logger.info(f"Verification took {took_t} seconds.")
 
     if output_csv_path is not None:
-        write_verification_data_results_to_csv(results, output_csv_path)
+        write_verification_results_to_csv(results_df, Path("./test_result.csv"))
 
-    return results
+    return results_df
