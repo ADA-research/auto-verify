@@ -53,6 +53,7 @@ class VerificationDataResult:
 def read_verification_result_from_csv(
     csv_path: Path,
 ) -> list[VerificationDataResult]:
+    """Reads a verification results csv to a list of its dataclass."""
     results_df = pd.read_csv(csv_path)
     verification_results: list[VerificationDataResult] = []
 
@@ -64,6 +65,7 @@ def read_verification_result_from_csv(
 
 
 def write_verification_results_to_csv(results: pd.DataFrame, csv_path: Path):
+    """Writes a verification results df to a csv."""
     results.to_csv(csv_path, index=False)
 
 
