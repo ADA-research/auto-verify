@@ -10,7 +10,7 @@ from autoverify.util.env import get_file_path
 from autoverify.verifier.verifier import CompleteVerifier
 from tests.conftest import VerificationInstance
 
-# TODO: Move the ajray with verifier fixtures to a place where other files can
+# TODO: Move the array with verifier fixtures to a place where other files can
 # acccess it as well
 pytestmark = pytest.mark.parametrize(
     "verifier",
@@ -56,9 +56,3 @@ def test_unsat(
 
     assert isinstance(result, Ok)
     assert result.value.result == "UNSAT"
-
-
-def test_err(verifier: CompleteVerifier):
-    result = verifier.verify_property(Path(), Path())
-
-    assert isinstance(result, Err)

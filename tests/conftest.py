@@ -1,10 +1,10 @@
-from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
 from ConfigSpace import ConfigurationSpace, Integer
 
 from autoverify.util.env import get_file_path
+from autoverify.util.instances import VerificationInstance
 from autoverify.verifier import AbCrown, MnBab, Nnenum, OvalBab
 from autoverify.verifier.verifier import CompleteVerifier
 
@@ -19,12 +19,6 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "gpu_prop: mark test as gpu nn prop tests"
     )
-
-
-@dataclass
-class VerificationInstance:
-    property: Path
-    network: Path
 
 
 @pytest.fixture
