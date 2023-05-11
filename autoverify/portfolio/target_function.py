@@ -12,9 +12,19 @@ from autoverify.verifier.verifier import CompleteVerifier
 SmacTargetFunction = Callable[[Configuration, str, int], float]
 
 
-def run_smac_instance(
+def run_verification_instance(
     verifier: Type[CompleteVerifier], config: Configuration, instance: str
 ) -> tuple[CompleteVerificationResult, float]:
+    """Run an instance and report the result and time taken.
+
+    Args:
+        verifier: TODO.
+        config: TODO.
+        instance: TODO.
+
+    Returns:
+        tuple[CompleteVerificationResult, float]: TODO.
+    """
     verifier_instance = verifier()
     network, property = instance.split(",")
 
@@ -53,7 +63,7 @@ def make_verifier_target_function(
         report the `process_time` so SMAC can optimize for it.
         """
         seed += 1  # silence warning, cant rename the param to _ or smac errors
-        result, took_t = run_smac_instance(verifier, config, instance)
+        result, took_t = run_verification_instance(verifier, config, instance)
 
         # If the result is an err, we raise an exception. SMAC automatically
         # sets the cost to infinite if an exception is raised in the target_func
