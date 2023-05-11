@@ -93,6 +93,6 @@ def run_sequential_portfolio(
             verification_logger.info(f"Verification took {took_t} seconds.")
 
     if output_csv_path is not None:
-        write_verification_results_to_csv(results_df, Path("./test_result.csv"))
+        write_verification_results_to_csv(results_df, output_csv_path)
 
     return results_df
