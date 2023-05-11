@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 from pytest_lazyfixture import lazy_fixture
-from result import Err, Ok
+from result import Ok
 
 from autoverify.util.env import get_file_path
 from autoverify.verifier.verifier import CompleteVerifier
