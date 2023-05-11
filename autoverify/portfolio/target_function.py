@@ -5,10 +5,26 @@ from typing import Callable, Type
 
 from ConfigSpace import Configuration
 
+from autoverify.verifier.verification_result import CompleteVerificationResult
 from autoverify.verifier.verifier import CompleteVerifier
 
 # target_function(config, instance, seed) -> cost
 SmacTargetFunction = Callable[[Configuration, str, int], float]
+
+
+def run_smac_instance(
+    verifier: Type[CompleteVerifier], config: Configuration, instance: str
+) -> tuple[CompleteVerificationResult, float]:
+    verifier_instance = verifier()
+    network, property = instance.split(",")
+
+    before_t = time.perf_counter()
+
+    result = verifier_instance.verify_property(
+        Path(network), Path(property), config=config
+    )
+
+    return result, time.perf_counter() - before_t
 
 
 def make_verifier_target_function(
@@ -31,17 +47,13 @@ def make_verifier_target_function(
     def target_function(
         config: Configuration, instance: str, seed: int = 1
     ) -> float:
-        """_summary_."""
+        """Target function to be used inside the SMAC procedure.
+
+        We do not actually care about the verification result here, we just
+        report the `process_time` so SMAC can optimize for it.
+        """
         seed += 1  # silence warning, cant rename the param to _ or smac errors
-
-        verifier_instance = verifier()
-        network, property = instance.split(",")
-
-        before_t = time.process_time()
-        result = verifier_instance.verify_property(
-            Path(network), Path(property), config=config
-        )
-        took_t = time.process_time() - before_t
+        result, took_t = run_smac_instance(verifier, config, instance)
 
         # If the result is an err, we raise an exception. SMAC automatically
         # sets the cost to infinite if an exception is raised in the target_func
