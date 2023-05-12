@@ -5,8 +5,9 @@ from dataclasses import dataclass, field
 
 import numpy as np
 from ConfigSpace import Configuration
-from hydrasmac.hydra.types import CostDict
 from smac.runhistory.runhistory import RunHistory
+
+from autoverify.portfolio.hydrasmac.hydra.types import CostDict
 
 
 @dataclass

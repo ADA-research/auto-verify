@@ -18,7 +18,12 @@ class VerificationInstance:
     timeout: int | None = None
 
     def as_smac_instance(self) -> str:
-        """Return the instance in a `f"{network},{property}"` format."""
+        """Return the instance in a `f"{network},{property}"` format.
+
+        A SMAC instance has to be passed as a single string to the
+        target_function, in which we split the instance string on the comma
+        again to obtain the network and property.
+        """
         return f"{str(self.network)},{str(self.property)}"
 
 
@@ -28,6 +33,8 @@ class VerificationDataResult:
 
     network: str
     property: str
+    verifier: str
+    config: str
     success: Literal["OK", "ERR"]  # TODO: Why not just a boolean?
     result: Literal["SAT", "UNSAT", "TIMEOUT"] | None
     took: float
@@ -42,6 +49,8 @@ class VerificationDataResult:
         return [
             self.network,
             self.property,
+            self.verifier,
+            self.config,
             self.success,
             self.result or "",
             str(self.took),

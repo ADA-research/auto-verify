@@ -24,7 +24,7 @@ def append_df(
 
 
 def run_sequential_portfolio(
-    portfolio: list[tuple[Type[CompleteVerifier], Configuration]],
+    portfolio: list[tuple[Type[CompleteVerifier], Configuration | Path]],
     instances: list[VerificationInstance],
     *,
     output_csv_path: Path | None = None,
@@ -50,7 +50,8 @@ def run_sequential_portfolio(
         for instance in instances:
             verification_logger.info(
                 f"Verifying property {instance.property.name} on "
-                f"{instance.network.name} with verifier {verifier.name}"
+                f"{instance.network.name} with verifier {verifier.name} and "
+                f"configuration {config}"
             )
 
             result, took_t = run_verification_instance(
@@ -66,6 +67,8 @@ def run_sequential_portfolio(
                 verification_data = VerificationDataResult(
                     instance.network.name,
                     instance.property.name,
+                    verifier().name,
+                    str(config),
                     "OK",
                     result.value.result,
                     took_t,
@@ -80,6 +83,8 @@ def run_sequential_portfolio(
                 verification_data = VerificationDataResult(
                     instance.network.name,
                     instance.property.name,
+                    verifier().name,
+                    str(config),
                     "ERR",
                     None,
                     took_t,

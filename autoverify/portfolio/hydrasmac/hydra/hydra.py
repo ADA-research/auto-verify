@@ -1,7 +1,6 @@
 """_summary."""
 from __future__ import annotations
 
-import logging
 import math
 from collections import defaultdict
 from datetime import datetime
@@ -10,14 +9,19 @@ from typing import DefaultDict, cast
 
 import numpy as np
 from ConfigSpace import Configuration
-from hydrasmac.hydra.incumbents import Incumbent, Incumbents
-from hydrasmac.hydra.types import CostDict, TargetFunction
-from hydrasmac.util.scenario_util import set_scenario_output_dir
 from smac import AlgorithmConfigurationFacade
 from smac.runhistory.runhistory import RunHistory
 from smac.scenario import Scenario
 
-logger = logging.getLogger(__name__)
+from autoverify.portfolio.hydrasmac.hydra.incumbents import (
+    Incumbent,
+    Incumbents,
+)
+from autoverify.portfolio.hydrasmac.hydra.types import CostDict, TargetFunction
+from autoverify.portfolio.hydrasmac.util.scenario_util import (
+    set_scenario_output_dir,
+)
+from autoverify.util.loggers import verification_logger
 
 
 class Hydra:
@@ -111,30 +115,32 @@ class Hydra:
         self._hydra_iter: int = 0
 
         for self._hydra_iter in range(self._hydra_iterations):
-            logger.info(f"Starting Hydra iteration {self._hydra_iter}")
+            verification_logger.info(
+                f"Starting Hydra iteration {self._hydra_iter}"
+            )
 
             incumbents = self._do_smac_runs()
             self._update_portfolio(incumbents)
 
             if self._hydra_iter > 0 and self._should_stop_early():
-                logger.info(
+                verification_logger.info(
                     f"Performance stagnated after iteration {self._hydra_iter},"
                     " terminating..."
                 )
                 break
 
-            logger.info(
+            verification_logger.info(
                 f"Cost after iteration {self._hydra_iter} "
                 f"is {self._cost_each_iter[self._hydra_iter]}"
             )
 
-        logger.debug(f"{'Iteration':<10} {'Cost':<25}")
-        logger.debug("=" * 35)
+        print(f"{'Iteration':<10} {'Cost':<25}")
+        print("=" * 35)
 
         for i, cost in enumerate(self._cost_each_iter):
-            logger.debug(f"{i:<10} {cost:<20}")
+            print(f"{i:<10} {cost:<20}")
 
-        logger.debug("=" * 35)
+        print("=" * 35)
 
         return self.portfolio
 
@@ -198,7 +204,7 @@ class Hydra:
         config_cost = self._target_function(config, instance, seed)
         portfolio_cost = self._cost_per_instance[instance]
 
-        logger.debug(
+        print(
             f"Instance {instance:<40}"
             f"Config cost {config_cost:<40}"
             f"Portfolio cost: {portfolio_cost:<40}"
@@ -242,7 +248,7 @@ class Hydra:
                 float(np.mean(costs)) if costs else np.nan
             )
 
-            logger.debug(
+            print(
                 f"Instance: {instance:<30}"
                 f"Cost {mean_instance_costs[instance]:<30}"
             )
@@ -263,7 +269,7 @@ class Hydra:
             target_function = self._hydra_target_function
 
         for smac_iter in range(self._smac_runs_per_iter):
-            logger.info(f"Starting SMAC run {smac_iter}")
+            verification_logger.info(f"Starting SMAC run {smac_iter}")
 
             run_name = self._smac_run_name.format(self._hydra_iter, smac_iter)
             scenario = set_scenario_output_dir(
@@ -288,7 +294,7 @@ class Hydra:
             )
 
             if not was_added:
-                logger.info(
+                verification_logger.info(
                     f"Incumbent in SMAC iter {smac_iter} not added because"
                     " it was already present in the incumbents"
                 )
@@ -359,7 +365,7 @@ class Hydra:
 
         # TODO: Not all incs have to be duplicates
         if self._has_duplicates_this_iter:
-            logger.info(
+            verification_logger.info(
                 "SMAC runs returned configurations already present in the "
                 f"portfolio in iteration {self._hydra_iter}"
             )

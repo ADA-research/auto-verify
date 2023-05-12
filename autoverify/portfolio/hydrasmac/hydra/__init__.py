@@ -1,4 +1,4 @@
-from hydrasmac.hydra.hydra import Hydra
+from .hydra import Hydra
 
 __all__ = [
     "Hydra",

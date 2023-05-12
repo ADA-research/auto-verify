@@ -13,7 +13,9 @@ SmacTargetFunction = Callable[[Configuration, str, int], float]
 
 
 def run_verification_instance(
-    verifier: Type[CompleteVerifier], config: Configuration, instance: str
+    verifier: Type[CompleteVerifier],
+    config: Configuration | Path,
+    instance: str,
 ) -> tuple[CompleteVerificationResult, float]:
     """Run an instance and report the result and time taken.
 
@@ -28,13 +30,13 @@ def run_verification_instance(
     verifier_instance = verifier()
     network, property = instance.split(",")
 
-    before_t = time.perf_counter()
+    before_t = time.time()
 
     result = verifier_instance.verify_property(
         Path(network), Path(property), config=config
     )
 
-    return result, time.perf_counter() - before_t
+    return result, time.time() - before_t
 
 
 def make_verifier_target_function(
