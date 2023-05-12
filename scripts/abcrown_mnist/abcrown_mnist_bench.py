@@ -47,5 +47,5 @@ if __name__ == "__main__":
     run_sequential_portfolio(
         portfolio,  # type: ignore
         mnist_instances,
-        output_csv_path=Path("./test_out.csv"),
+        output_csv_path=Path("./abcrown_mnist_out.csv"),
     )

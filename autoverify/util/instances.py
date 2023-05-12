@@ -1,5 +1,6 @@
 """_summary_."""
 import csv
+import inspect
 from dataclasses import dataclass, fields, is_dataclass
 from pathlib import Path
 from typing import Any, Literal
@@ -31,6 +32,9 @@ class VerificationInstance:
 # NOTE: There is no type annotation for dataclasses
 def get_dataclass_field_names(data_cls: Any) -> list[str]:
     """Returns the fields of a dataclass as a list of strings."""
+    if not inspect.isclass(data_cls):
+        raise ValueError(f"Argument data_cls should be a class, got {data_cls}")
+
     if not is_dataclass(data_cls):
         raise ValueError(f"'{data_cls.__class__.__name__}' is not a dataclass")
 
@@ -70,7 +74,7 @@ class VerificationDataResult:
 
 
 def init_verification_result_csv(csv_path: Path):
-    """_summary."""
+    """_summary_."""
     with open(str(csv_path), "w") as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(get_dataclass_field_names(VerificationDataResult))
