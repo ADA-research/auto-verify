@@ -50,6 +50,15 @@ class VerificationDataResult:
         ]
 
 
+def append_verification_result_to_csv(
+    verification_result: VerificationDataResult, csv_path: Path
+):
+    """_summary_."""
+    with open(str(csv_path), "a") as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(verification_result.as_csv_row())
+
+
 def read_verification_result_from_csv(
     csv_path: Path,
 ) -> list[VerificationDataResult]:
