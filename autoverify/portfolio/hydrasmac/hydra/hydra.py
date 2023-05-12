@@ -1,3 +1,4 @@
+"""_summary."""
 from __future__ import annotations
 
 import logging
@@ -9,47 +10,18 @@ from typing import DefaultDict, cast
 
 import numpy as np
 from ConfigSpace import Configuration
-from smac import AlgorithmConfigurationFacade
-from smac.runhistory.runhistory import RunHistory
-from smac.scenario import Scenario
-
 from hydrasmac.hydra.incumbents import Incumbent, Incumbents
 from hydrasmac.hydra.types import CostDict, TargetFunction
 from hydrasmac.util.scenario_util import set_scenario_output_dir
+from smac import AlgorithmConfigurationFacade
+from smac.runhistory.runhistory import RunHistory
+from smac.scenario import Scenario
 
 logger = logging.getLogger(__name__)
 
 
 class Hydra:
-    """Class to use `Hydra`_ for constructing a portfolio of configurations.
-
-    Parameters
-    ----------
-    scenario : Scenario
-        The scenario object, holding all environmental information.
-    target_function : Callable
-        Cost function to be minimized
-    hydra_iterations : int
-        The number of Hydra iterations
-    smac_runs_per_iter : int
-        The number of SMAC runs that are performed at each Hydra iteration.
-    incumbents_added_per_iter : int
-        The number of incumbents that are added to the portfolio after each
-        Hydra iteration. This value cannot be higher than the number of SMAC
-        runs that are started each iteration.
-    stop_early : bool
-        Determines if the Hydra procedure is stopped before the maximum number
-        of iterations is reached, by checking if portfolio performance has not
-        improved compared to the previous iteration or if a configuration
-        that is already present in the portfolio is returned by a SMAC run.
-    output_dir_path : Path
-        The path where the `hydra_output` directory will be created
-    output_dir_name : str
-        The name given to the output folder of the run
-
-    .. _Hydra:
-        https://www.cs.ubc.ca/labs/algorithms/Projects/Hydra/
-    """
+    """_summary_."""
 
     def __init__(
         self,
@@ -63,6 +35,33 @@ class Hydra:
         output_dir_path: Path = Path("./"),
         output_dir_name: str | None = None,
     ):
+        """Class to use `Hydra` for constructing a portfolio of configurations.
+
+        Args:
+            scenario: Scenario
+                The scenario object, holding all environmental information.
+            target_function: Callable
+                Cost function to be minimized
+            hydra_iterations: int
+                The number of Hydra iterations
+            smac_runs_per_iter: int
+                The number of SMAC runs that are performed at each Hydra
+                iteration.
+            incumbents_added_per_iter: int
+                The number of incumbents that are added to the portfolio after
+                each Hydra iteration. This value cannot be higher than the
+                number of SMAC runs that are started each iteration.
+            stop_early: bool
+                Determines if the Hydra procedure is stopped before the maximum
+                number of iterations is reached, by checking if portfolio
+                performance has not improved compared to the previous iteration
+                or if a configuration that is already present in the portfolio
+                is returned by a SMAC run.
+            output_dir_path: Path
+                The path where the `hydra_output` directory will be created
+            output_dir_name: str
+                The name given to the output folder of the run
+        """
         self._scenario = scenario
         self._target_function = target_function
         self._hydra_iterations = hydra_iterations
@@ -99,13 +98,10 @@ class Hydra:
         self._validation_run_name = "valid_{}_{}"
 
     def optimize(self) -> list[Configuration]:
-        """
-        Constructs a new portfolio of configurations
+        """Constructs a new portfolio of configurations.
 
         Returns
-        -------
-        portfolio : list[Configuration]
-            The portfolio of configurations
+            list[Configuration]: The portfolio of configurations.
         """
         self.portfolio: list[Configuration] = []
         self._cost_per_instance: DefaultDict[str, float] = defaultdict(
@@ -148,22 +144,18 @@ class Hydra:
         instances: list[str],
         instance_features: dict[str, list[float]],
     ) -> CostDict:
-        """
-        Validate the performance of a portfolio on the validation instances
+        """Validate the performance of a portfolio on the validation instances.
 
-        Parameters
-        ----------
-        portfolio : list[Configuration]
-            The list of configurations to be validated on the test instances
-        instances : list[str]
-            The names of the instances to validate, e.g. name of a dataset
-        instance_features : dict[str, list[float]]
-            The (meta) features of each instance, e.g. average
+        Args:
+            portfolio: list[Configuration]
+                The list of configurations to be validated on the test instances
+            instances: list[str]
+                The names of the instances to validate, e.g. name of a dataset
+            instance_features: dict[str, list[float]]
+                The (meta) features of each instance, e.g. average
 
-        Returns
-        -------
-        costs : dict[str, float]
-            The smallest validated cost per instance
+        Returns:
+            dict[str, float]: The smallest validated cost per instance.
         """
         # HACK: Currently there is no way to validate per instance in SMAC3 v2,
         # see https://github.com/automl/SMAC3/issues/909
@@ -194,12 +186,15 @@ class Hydra:
 
         return cost_per_instance
 
+    # TODO: Fix docstring
     def _hydra_target_function(
         self, config: Configuration, instance: str, seed: int = 0
     ) -> float:
-        """Defines a new metric to evaluate target function runs, by returning
+        """Defines a new metric to evaluate target function runs, by returning.
+
         the performance of the portfolio in cases where the portfolio
-        outperforms the current configuration."""
+        outperforms the current configuration.
+        """
         config_cost = self._target_function(config, instance, seed)
         portfolio_cost = self._cost_per_instance[instance]
 
@@ -212,7 +207,7 @@ class Hydra:
         return float(min(config_cost, portfolio_cost))
 
     def _should_stop_early(self) -> bool:
-        """Check if the portfolio performance has stagnated"""
+        """Check if the portfolio performance has stagnated."""
         if not self._stop_early:
             return False
         elif self._has_duplicates_this_iter:
@@ -254,8 +249,10 @@ class Hydra:
 
         return mean_instance_costs
 
+    # TODO: Fix docstring
     def _do_smac_runs(self) -> Incumbents:
-        """Starts the SMAC runs and returns the incumbent configurations,
+        """Starts the SMAC runs and returns the incumbent configurations.
+
         corresponding runhistories and incumbent cost found by the runs.
         """
         incumbents = Incumbents()
@@ -299,15 +296,18 @@ class Hydra:
         return incumbents
 
     def _update_portfolio_cost(self):
-        """Updates the mean cost of the portfolio"""
+        """Updates the mean cost of the portfolio."""
         self._portfolio_cost = float(
             np.mean(list(self._cost_per_instance.values()))
         )
         self._cost_each_iter.append(self._portfolio_cost)
 
+    # TODO: Fix docstring
     def _update_cost_per_instance(self, incumbents: Incumbents):
-        """Update the cost per instance based on the new incumbents and
-        evaluated instances. Unevaluated instances get the mean instead."""
+        """Update the cost per instance based on the new incumbents and.
+
+        evaluated instances. Unevaluated instances get the mean instead.
+        """
         min_costs = []
 
         for inc in incumbents:
@@ -326,9 +326,12 @@ class Hydra:
                 if cost == math.inf:
                     self._cost_per_instance[instance] = float(mean_cost)
 
+    # TODO: Fix docstring
     def _add_new_incumbents_to_portfolio(self, incumbents: Incumbents):
-        """Extends the portfolio with new configs.The new cost of the portfolio
-        is also computed"""
+        """Extends the portfolio with new configs.The new cost of the portfolio.
+
+        is also computed.
+        """
         for inc in incumbents:
             self.portfolio.append(inc.config)
 
@@ -342,12 +345,14 @@ class Hydra:
 
         return False
 
+    # TODO: Fix docstring
     def _update_portfolio(
         self,
         incumbents: Incumbents,
     ):
-        """Update the portfolio with the incumbents and compute the new
-        cost of the portfolio
+        """Update the portfolio with the incumbents and compute the new.
+
+        cost of the portfolio.
         """
         incumbents = incumbents.get_best_n(self._incumbents_added_per_iter)
         self._has_duplicates_this_iter = self._has_duplicates(incumbents)

@@ -1,3 +1,4 @@
+"""_summary_."""
 import copy
 from pathlib import Path
 from typing import Any
@@ -6,7 +7,7 @@ from smac.scenario import Scenario
 
 
 def get_scenario_dict(scenario: Scenario) -> dict[str, Any]:
-    """TODO Docstring"""
+    """TODO Docstring."""
     config_space = copy.deepcopy(scenario.configspace)
 
     # Need to edit the output directory, but scenario dataclass is frozen
@@ -24,7 +25,7 @@ def get_scenario_dict(scenario: Scenario) -> dict[str, Any]:
 def set_scenario_output_dir(
     scenario: Scenario, output_dir: Path, name: str
 ) -> Scenario:
-    """TODO Docstring"""
+    """TODO Docstring."""
     scenario_dict = get_scenario_dict(scenario)
 
     scenario_dict["output_directory"] = output_dir
@@ -38,7 +39,7 @@ def set_scenario_instances(
     instances: list[str],
     instance_features: dict[str, list[float]],
 ) -> Scenario:
-    """TODO Docstring"""
+    """TODO Docstring."""
     scenario_dict = get_scenario_dict(scenario)
 
     scenario_dict["instances"] = instances

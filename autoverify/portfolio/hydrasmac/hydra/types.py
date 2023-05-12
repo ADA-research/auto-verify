@@ -1,3 +1,4 @@
+"""Hydra types."""
 from typing import Callable
 
 from ConfigSpace import Configuration
