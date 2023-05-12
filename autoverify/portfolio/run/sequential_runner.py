@@ -102,9 +102,5 @@ def run_sequential_portfolio(
                 append_verification_result_to_csv(
                     verification_data, output_csv_path
                 )
-            else:
-                verification_logger.warning(
-                    "Verification result not of instance VerificationDataResult"
-                )
 
     return results
