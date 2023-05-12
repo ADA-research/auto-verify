@@ -41,6 +41,8 @@ if __name__ == "__main__":
     target_function = make_verifier_target_function(AbCrown)
     # instances = filter_to_small(mnist_instances)
 
+    # TODO: Hydra training
+    # TODO: Narrow the ab-crown searchspace some more and fix asserts/errors
     scenario = Scenario(
         AbCrownConfigspace,
         instances=mnist_instances,
