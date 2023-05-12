@@ -11,6 +11,7 @@ from autoverify.util.instances import (
     VerificationDataResult,
     VerificationInstance,
     append_verification_result_to_csv,
+    init_verification_result_csv,
 )
 from autoverify.util.loggers import verification_logger
 from autoverify.verifier.verifier import CompleteVerifier
@@ -44,6 +45,9 @@ def run_sequential_portfolio(
     Returns:
         list[VerificationDataResult]: TODO.
     """
+    if output_csv_path is not None:
+        init_verification_result_csv(output_csv_path)
+
     results: list[VerificationDataResult] = []
 
     for verifier, config in portfolio:

@@ -1,8 +1,8 @@
 """_summary_."""
 import csv
-from dataclasses import dataclass
+from dataclasses import dataclass, fields, is_dataclass
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 import pandas as pd
 
@@ -25,6 +25,16 @@ class VerificationInstance:
         again to obtain the network and property.
         """
         return f"{str(self.network)},{str(self.property)}"
+
+
+# TODO: Move this function to another file, it doesn't really belong here
+# NOTE: There is no type annotation for dataclasses
+def get_dataclass_field_names(data_cls: Any) -> list[str]:
+    """Returns the fields of a dataclass as a list of strings."""
+    if not is_dataclass(data_cls):
+        raise ValueError(f"'{data_cls.__class__.__name__}' is not a dataclass")
+
+    return [field.name for field in fields(data_cls)]
 
 
 @dataclass
@@ -57,6 +67,13 @@ class VerificationDataResult:
             self.counter_example or "",
             self.error_string or "",
         ]
+
+
+def init_verification_result_csv(csv_path: Path):
+    """_summary."""
+    with open(str(csv_path), "w") as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(get_dataclass_field_names(VerificationDataResult))
 
 
 def append_verification_result_to_csv(
