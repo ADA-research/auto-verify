@@ -59,7 +59,7 @@ class AbCrown(CompleteVerifier):
                 )
         except subprocess.CalledProcessError as err:
             print("AbCrown Error:\n")
-            print(err.stderr.decode("utf-8"))
+            # print(err.stderr.decode("utf-8"))
             return Err("Exception during call to ab-crown")
         except Exception as err:
             print(f"Exception during call to ab-crown, {str(err)}")

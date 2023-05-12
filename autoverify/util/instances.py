@@ -18,7 +18,7 @@ class VerificationInstance:
     timeout: int | None = None
 
     def as_smac_instance(self) -> str:
-        """Return the instance in a `network,property` format."""
+        """Return the instance in a `f"{network},{property}"` format."""
         return f"{str(self.network)},{str(self.property)}"
 
 
