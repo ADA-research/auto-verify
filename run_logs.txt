@@ -1,0 +1,669 @@
+> python scripts/abcrown_mnist/cfg_abcrown_mnist.py
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 7,
+  'bab__branching__reduceop': 'mean',
+  'general__complete_verifier': 'bab',
+  'solver__batch_size': 172,
+  'solver__beta-crown__iteration': 92,
+  'solver__beta-crown__lr_beta': 0.045618615449286276,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.40391152433888033,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: UNSAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 8,
+  'bab__branching__reduceop': 'auto',
+  'general__complete_verifier': 'bab',
+  'solver__batch_size': 4,
+  'solver__beta-crown__iteration': 96,
+  'solver__beta-crown__lr_beta': 0.07600494578130387,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.19917009674860586,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: SAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 3,
+  'bab__branching__reduceop': 'max',
+  'general__complete_verifier': 'bab',
+  'solver__batch_size': 587,
+  'solver__beta-crown__iteration': 74,
+  'solver__beta-crown__lr_beta': 0.12106929157496046,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.371467736485949,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: TIMEOUT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 7,
+  'bab__branching__reduceop': 'auto',
+  'general__complete_verifier': 'mip',
+  'solver__batch_size': 404,
+  'solver__beta-crown__iteration': 58,
+  'solver__beta-crown__lr_beta': 0.05282464378665765,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.893620824218187,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: UNSAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 4,
+  'bab__branching__reduceop': 'min',
+  'general__complete_verifier': 'mip',
+  'solver__batch_size': 62,
+  'solver__beta-crown__iteration': 15,
+  'solver__beta-crown__lr_beta': 0.029697688053348804,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.4515032434889168,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: UNSAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 5,
+  'bab__branching__reduceop': 'max',
+  'general__complete_verifier': 'bab_refine',
+  'solver__batch_size': 60,
+  'solver__beta-crown__iteration': 26,
+  'solver__beta-crown__lr_beta': 0.020046566791944713,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.61280455332623,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: UNSAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 9,
+  'bab__branching__reduceop': 'auto',
+  'general__complete_verifier': 'bab',
+  'solver__batch_size': 366,
+  'solver__beta-crown__iteration': 33,
+  'solver__beta-crown__lr_beta': 0.10751538396275383,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.17612921302223172,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+AbCrown Error:
+
+/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/onnx2pytorch/convert/layer.py:30: UserWarning: The given NumPy array is not writable, and PyT
+  layer.weight.data = torch.from_numpy(numpy_helper.to_array(weight))
+/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/onnx2pytorch/convert/model.py:154: UserWarning: Using experimental implementation that allows
+  "Using experimental implementation that allows 'batch_size > 1'."
+Traceback (most recent call last):
+  File "abcrown.py", line 647, in <module>
+    main()
+  File "abcrown.py", line 570, in main
+    refined_betas=refined_betas, attack_images=all_adv_candidates, attack_margins=attack_margins)
+  File "abcrown.py", line 392, in complete_verifier
+    attack_images=this_spec_attack_images)
+  File "abcrown.py", line 206, in bab
+    timeout=timeout, refined_betas=refined_betas, rhs=rhs)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/batch_branch_and_bound.py", line 561, in relu_bab_parallel
+    stop_func=stop_criterion, multi_spec_keep_func=multi_spec_keep_func)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/batch_branch_and_bound.py", line 155, in batch_verification
+    method=branching_method)
+  File "/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/torch/autograd/grad_mode.py", line 27, in decorate_context
+    return func(*args, **kwargs)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/branching_heuristics.py", line 628, in choose_node_parallel_kFSB
+    lAs, batch, mask, reduce_op, number_bounds, prioritize_slopes)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/branching_heuristics.py", line 592, in branching_scores_kfsb
+    bias_candidate = reduce_op(bias_candidate_1, bias_candidate_2)  # max for babsr by default
+TypeError: 'NoneType' object is not callable
+
+Exception during verification.
+Exception during call to ab-crown
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 6,
+  'bab__branching__reduceop': 'mean',
+  'general__complete_verifier': 'bab',
+  'solver__batch_size': 936,
+  'solver__beta-crown__iteration': 4,
+  'solver__beta-crown__lr_beta': 0.013189349490607094,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.340112108216463,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: UNSAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 3,
+  'bab__branching__reduceop': 'auto',
+  'general__complete_verifier': 'mip',
+  'solver__batch_size': 796,
+  'solver__beta-crown__iteration': 25,
+  'solver__beta-crown__lr_beta': 0.19742232181479358,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.515310655564715,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+AbCrown Error:
+
+/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/onnx2pytorch/convert/layer.py:30: UserWarning: The given NumPy array is not writable, and PyT
+  layer.weight.data = torch.from_numpy(numpy_helper.to_array(weight))
+/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/onnx2pytorch/convert/model.py:154: UserWarning: Using experimental implementation that allows
+  "Using experimental implementation that allows 'batch_size > 1'."
+Traceback (most recent call last):
+  File "abcrown.py", line 647, in <module>
+    main()
+  File "abcrown.py", line 550, in main
+    verified_status, init_global_lb, lower_bounds, upper_bounds, refined_betas = mip(saved_bounds=saved_bounds)
+  File "abcrown.py", line 108, in mip
+    mip_global_lb, mip_global_ub, mip_status, mip_adv = lirpa_model.build_the_model_mip(labels_to_verify=labels_to_verify, save_adv=True)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/lp_mip_solver.py", line 771, in build_the_model_mip
+    mip_threads=mip_threads, model_type="mip", x=x, intermediate_bounds=intermediate_bounds)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/lp_mip_solver.py", line 547, in build_solver_model
+    x=x, C=m.c, intermediate_layer_bounds=intermediate_bounds, final_node_name=m.net.final_name, model_type=model_type, solver_pkg=m.net.solver_pkg)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/auto_LiRPA/solver_module.py", line 53, in build_solver_module
+    inp_gurobi_vars = self._build_solver_input(root[i])
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/auto_LiRPA/solver_module.py", line 109, in _build_solver_input
+    assert x_L.ndim == 3, f"x_L ndim  {x_L.ndim}"
+AssertionError: x_L ndim  2
+
+Exception during verification.
+Exception during call to ab-crown
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 6,
+  'bab__branching__reduceop': 'auto',
+  'general__complete_verifier': 'bab_refine',
+  'solver__batch_size': 746,
+  'solver__beta-crown__iteration': 10,
+  'solver__beta-crown__lr_beta': 0.04783223770791932,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.7301546259769313,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: UNSAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 4,
+  'bab__branching__reduceop': 'max',
+  'general__complete_verifier': 'bab_refine',
+  'solver__batch_size': 838,
+  'solver__beta-crown__iteration': 62,
+  'solver__beta-crown__lr_beta': 0.19443596237468078,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.7566072824708537,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: UNSAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 3,
+  'bab__branching__reduceop': 'mean',
+  'general__complete_verifier': 'mip',
+  'solver__batch_size': 541,
+  'solver__beta-crown__iteration': 2,
+  'solver__beta-crown__lr_beta': 0.021886664263048722,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.7965141645022228,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: UNSAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 8,
+  'bab__branching__reduceop': 'min',
+  'general__complete_verifier': 'mip',
+  'solver__batch_size': 553,
+  'solver__beta-crown__iteration': 59,
+  'solver__beta-crown__lr_beta': 0.14292849228620808,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.04259494919337137,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: SAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 9,
+  'bab__branching__reduceop': 'max',
+  'general__complete_verifier': 'mip',
+  'solver__batch_size': 610,
+  'solver__beta-crown__iteration': 96,
+  'solver__beta-crown__lr_beta': 0.12747105473859477,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.6461251961510767,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: UNSAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 1,
+  'bab__branching__reduceop': 'min',
+  'general__complete_verifier': 'bab',
+  'solver__batch_size': 698,
+  'solver__beta-crown__iteration': 73,
+  'solver__beta-crown__lr_beta': 0.09179514463923867,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.6973620065879651,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: UNSAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 2,
+  'bab__branching__reduceop': 'max',
+  'general__complete_verifier': 'mip',
+  'solver__batch_size': 791,
+  'solver__beta-crown__iteration': 62,
+  'solver__beta-crown__lr_beta': 0.18508802788139642,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.9789075113603735,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+AbCrown Error:
+
+/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/onnx2pytorch/convert/layer.py:30: UserWarning: The given NumPy array is not writable, and PyT
+  layer.weight.data = torch.from_numpy(numpy_helper.to_array(weight))
+/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/onnx2pytorch/convert/model.py:154: UserWarning: Using experimental implementation that allows
+  "Using experimental implementation that allows 'batch_size > 1'."
+Traceback (most recent call last):
+  File "abcrown.py", line 647, in <module>
+    main()
+  File "abcrown.py", line 550, in main
+    verified_status, init_global_lb, lower_bounds, upper_bounds, refined_betas = mip(saved_bounds=saved_bounds)
+  File "abcrown.py", line 108, in mip
+    mip_global_lb, mip_global_ub, mip_status, mip_adv = lirpa_model.build_the_model_mip(labels_to_verify=labels_to_verify, save_adv=True)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/lp_mip_solver.py", line 771, in build_the_model_mip
+    mip_threads=mip_threads, model_type="mip", x=x, intermediate_bounds=intermediate_bounds)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/lp_mip_solver.py", line 547, in build_solver_model
+    x=x, C=m.c, intermediate_layer_bounds=intermediate_bounds, final_node_name=m.net.final_name, model_type=model_type, solver_pkg=m.net.solver_pkg)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/auto_LiRPA/solver_module.py", line 53, in build_solver_module
+    inp_gurobi_vars = self._build_solver_input(root[i])
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/auto_LiRPA/solver_module.py", line 109, in _build_solver_input
+    assert x_L.ndim == 3, f"x_L ndim  {x_L.ndim}"
+AssertionError: x_L ndim  2
+
+Exception during verification.
+Exception during call to ab-crown
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 6,
+  'bab__branching__reduceop': 'mean',
+  'general__complete_verifier': 'mip',
+  'solver__batch_size': 560,
+  'solver__beta-crown__iteration': 60,
+  'solver__beta-crown__lr_beta': 0.10089165479803079,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.6962046894868429,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: SAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 7,
+  'bab__branching__reduceop': 'max',
+  'general__complete_verifier': 'mip',
+  'solver__batch_size': 409,
+  'solver__beta-crown__iteration': 55,
+  'solver__beta-crown__lr_beta': 0.16013430512518195,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.007917879620378598,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: SAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 1,
+  'bab__branching__reduceop': 'mean',
+  'general__complete_verifier': 'bab_refine',
+  'solver__batch_size': 733,
+  'solver__beta-crown__iteration': 97,
+  'solver__beta-crown__lr_beta': 0.15165740926264173,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.15792696708976095,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: UNSAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 3,
+  'bab__branching__reduceop': 'auto',
+  'general__complete_verifier': 'mip',
+  'solver__batch_size': 941,
+  'solver__beta-crown__iteration': 77,
+  'solver__beta-crown__lr_beta': 0.14688421187146794,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.4945674212003176,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: SAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 4,
+  'bab__branching__reduceop': 'max',
+  'general__complete_verifier': 'mip',
+  'solver__batch_size': 838,
+  'solver__beta-crown__iteration': 65,
+  'solver__beta-crown__lr_beta': 0.03554270965699925,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.11486746453870977,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: SAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 9,
+  'bab__branching__reduceop': 'auto',
+  'general__complete_verifier': 'bab_refine',
+  'solver__batch_size': 285,
+  'solver__beta-crown__iteration': 39,
+  'solver__beta-crown__lr_beta': 0.0691785165780485,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.7866284999902473,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: SAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 3,
+  'bab__branching__reduceop': 'min',
+  'general__complete_verifier': 'bab',
+  'solver__batch_size': 732,
+  'solver__beta-crown__iteration': 15,
+  'solver__beta-crown__lr_beta': 0.049072101954046356,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.6822490727382378,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: UNSAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 8,
+  'bab__branching__reduceop': 'auto',
+  'general__complete_verifier': 'bab_refine',
+  'solver__batch_size': 95,
+  'solver__beta-crown__iteration': 45,
+  'solver__beta-crown__lr_beta': 0.023594177315730342,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.30880899691735686,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: SAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 8,
+  'bab__branching__reduceop': 'mean',
+  'general__complete_verifier': 'bab_refine',
+  'solver__batch_size': 989,
+  'solver__beta-crown__iteration': 36,
+  'solver__beta-crown__lr_beta': 0.08571814251693745,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.7006756878059358,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+AbCrown Error:
+
+/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/onnx2pytorch/convert/layer.py:30: UserWarning: The given NumPy array is not writable, and PyT
+  layer.weight.data = torch.from_numpy(numpy_helper.to_array(weight))
+/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/onnx2pytorch/convert/model.py:154: UserWarning: Using experimental implementation that allows
+  "Using experimental implementation that allows 'batch_size > 1'."
+Traceback (most recent call last):
+  File "abcrown.py", line 647, in <module>
+    main()
+  File "abcrown.py", line 570, in main
+    refined_betas=refined_betas, attack_images=all_adv_candidates, attack_margins=attack_margins)
+  File "abcrown.py", line 392, in complete_verifier
+    attack_images=this_spec_attack_images)
+  File "abcrown.py", line 206, in bab
+    timeout=timeout, refined_betas=refined_betas, rhs=rhs)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/batch_branch_and_bound.py", line 561, in relu_bab_parallel
+    stop_func=stop_criterion, multi_spec_keep_func=multi_spec_keep_func)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/batch_branch_and_bound.py", line 155, in batch_verification
+    method=branching_method)
+  File "/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/torch/autograd/grad_mode.py", line 27, in decorate_context
+    return func(*args, **kwargs)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/branching_heuristics.py", line 628, in choose_node_parallel_kFSB
+    lAs, batch, mask, reduce_op, number_bounds, prioritize_slopes)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/branching_heuristics.py", line 592, in branching_scores_kfsb
+    bias_candidate = reduce_op(bias_candidate_1, bias_candidate_2)  # max for babsr by default
+TypeError: mean() received an invalid combination of arguments - got (Tensor, Tensor), but expected one of:
+ * (Tensor input, *, torch.dtype dtype)
+ * (Tensor input, tuple of ints dim, bool keepdim, *, torch.dtype dtype, Tensor out)
+ * (Tensor input, tuple of names dim, bool keepdim, *, torch.dtype dtype, Tensor out)
+
+
+Exception during verification.
+Exception during call to ab-crown
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 3,
+  'bab__branching__reduceop': 'mean',
+  'general__complete_verifier': 'bab',
+  'solver__batch_size': 179,
+  'solver__beta-crown__iteration': 46,
+  'solver__beta-crown__lr_beta': 0.07742588185176937,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.25165228653968563,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+AbCrown Error:
+
+/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/onnx2pytorch/convert/layer.py:30: UserWarning: The given NumPy array is not writable, and PyT
+  layer.weight.data = torch.from_numpy(numpy_helper.to_array(weight))
+/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/onnx2pytorch/convert/model.py:154: UserWarning: Using experimental implementation that allows
+  "Using experimental implementation that allows 'batch_size > 1'."
+Traceback (most recent call last):
+  File "abcrown.py", line 647, in <module>
+    main()
+  File "abcrown.py", line 570, in main
+    refined_betas=refined_betas, attack_images=all_adv_candidates, attack_margins=attack_margins)
+  File "abcrown.py", line 392, in complete_verifier
+    attack_images=this_spec_attack_images)
+  File "abcrown.py", line 206, in bab
+    timeout=timeout, refined_betas=refined_betas, rhs=rhs)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/batch_branch_and_bound.py", line 561, in relu_bab_parallel
+    stop_func=stop_criterion, multi_spec_keep_func=multi_spec_keep_func)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/batch_branch_and_bound.py", line 155, in batch_verification
+    method=branching_method)
+  File "/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/torch/autograd/grad_mode.py", line 27, in decorate_context
+    return func(*args, **kwargs)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/branching_heuristics.py", line 628, in choose_node_parallel_kFSB
+    lAs, batch, mask, reduce_op, number_bounds, prioritize_slopes)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/branching_heuristics.py", line 592, in branching_scores_kfsb
+    bias_candidate = reduce_op(bias_candidate_1, bias_candidate_2)  # max for babsr by default
+TypeError: mean() received an invalid combination of arguments - got (Tensor, Tensor), but expected one of:
+ * (Tensor input, *, torch.dtype dtype)
+ * (Tensor input, tuple of ints dim, bool keepdim, *, torch.dtype dtype, Tensor out)
+ * (Tensor input, tuple of names dim, bool keepdim, *, torch.dtype dtype, Tensor out)
+
+
+Exception during verification.
+Exception during call to ab-crown
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 6,
+  'bab__branching__reduceop': 'mean',
+  'general__complete_verifier': 'mip',
+  'solver__batch_size': 897,
+  'solver__beta-crown__iteration': 91,
+  'solver__beta-crown__lr_beta': 0.15771492501431283,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.9716471724694615,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+AbCrown Error:
+
+/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/onnx2pytorch/convert/layer.py:30: UserWarning: The given NumPy array is not writable, and PyT
+  layer.weight.data = torch.from_numpy(numpy_helper.to_array(weight))
+/home/c/miniconda3/envs/__av__abcrown/lib/python3.7/site-packages/onnx2pytorch/convert/model.py:154: UserWarning: Using experimental implementation that allows
+  "Using experimental implementation that allows 'batch_size > 1'."
+Traceback (most recent call last):
+  File "abcrown.py", line 647, in <module>
+    main()
+  File "abcrown.py", line 550, in main
+    verified_status, init_global_lb, lower_bounds, upper_bounds, refined_betas = mip(saved_bounds=saved_bounds)
+  File "abcrown.py", line 108, in mip
+    mip_global_lb, mip_global_ub, mip_status, mip_adv = lirpa_model.build_the_model_mip(labels_to_verify=labels_to_verify, save_adv=True)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/lp_mip_solver.py", line 771, in build_the_model_mip
+    mip_threads=mip_threads, model_type="mip", x=x, intermediate_bounds=intermediate_bounds)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/lp_mip_solver.py", line 547, in build_solver_model
+    x=x, C=m.c, intermediate_layer_bounds=intermediate_bounds, final_node_name=m.net.final_name, model_type=model_type, solver_pkg=m.net.solver_pkg)
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/auto_LiRPA/solver_module.py", line 53, in build_solver_module
+    inp_gurobi_vars = self._build_solver_input(root[i])
+  File "/home/c/.local/share/autoverify/verifiers/abcrown/tool/complete_verifier/auto_LiRPA/solver_module.py", line 109, in _build_solver_input
+    assert x_L.ndim == 3, f"x_L ndim  {x_L.ndim}"
+AssertionError: x_L ndim  2
+
+Exception during verification.
+Exception during call to ab-crown
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 6,
+  'bab__branching__reduceop': 'auto',
+  'general__complete_verifier': 'mip',
+  'solver__batch_size': 598,
+  'solver__beta-crown__iteration': 38,
+  'solver__beta-crown__lr_beta': 0.18966589319588528,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.18587891195768902,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: SAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 8,
+  'bab__branching__reduceop': 'min',
+  'general__complete_verifier': 'mip',
+  'solver__batch_size': 447,
+  'solver__beta-crown__iteration': 58,
+  'solver__beta-crown__lr_beta': 0.16753348144750096,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.1394580507167379,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: UNSAT
+================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Configuration(values={
+  'bab__branching__candidates': 10,
+  'bab__branching__reduceop': 'max',
+  'general__complete_verifier': 'bab',
+  'solver__batch_size': 355,
+  'solver__beta-crown__iteration': 47,
+  'solver__beta-crown__lr_beta': 0.17376391314497372,
+  'solver__mip__parallel_solvers': 8,
+  'solver__mip__refine_neuron_time_percentage': 0.8992952523450423,
+  'solver__mip__solver_threads': 4,
+})
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Verification finished succesfully.
+Result: UNSAT
+================================================================================
