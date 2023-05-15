@@ -35,8 +35,6 @@ def _process_target_function_result(
     if verification_result.result == "TIMEOUT":
         took_t *= timeout_penalty
 
-    print("TOOK: ", took_t)
-
     return took_t
 
 
@@ -123,7 +121,6 @@ def make_select_verifier_target_function(
         report the `process_time` so SMAC can optimize for it.
         """
         verifier = verifier_from_name(config["verifier"])
-        print(verifier)
 
         seed += 1  # silence warning, cant rename the param to _ or smac errors
 
