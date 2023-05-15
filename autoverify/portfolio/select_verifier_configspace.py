@@ -1,3 +1,4 @@
+"""_summary_."""
 from typing import Type
 
 from ConfigSpace import Categorical, ConfigurationSpace

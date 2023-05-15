@@ -126,8 +126,10 @@ def make_select_verifier_target_function(
         print(verifier)
 
         seed += 1  # silence warning, cant rename the param to _ or smac errors
+
+        # FIXME: Verifier type mismatch between CompleteVerifier and Verifier
         result, took_t = run_verification_instance(
-            verifier,  # type: ignore FIXME: !!!
+            verifier,  # type: ignore
             None,
             instance,
         )

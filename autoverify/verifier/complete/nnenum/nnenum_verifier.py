@@ -1,6 +1,5 @@
 """Nnenum verifier."""
 # TODO: More links and details in above docstring
-import os
 import subprocess
 from pathlib import Path
 

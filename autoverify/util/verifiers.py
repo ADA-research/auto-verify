@@ -19,6 +19,7 @@ def get_all_complete_verifier_names() -> list[str]:
 
 # TODO: Dont hardcode this
 def verifier_from_name(name: str) -> Type[Verifier] | None:
+    """Return the class type from the verifier name."""
     if name == "abcrown":
         return AbCrown
     elif name == "nnenum":
