@@ -1,8 +1,6 @@
-import random
-import time
 from pathlib import Path
 
-from smac import HyperparameterOptimizationFacade, MultiFidelityFacade, Scenario
+from smac import HyperparameterOptimizationFacade, Scenario
 
 from autoverify.portfolio.select_verifier_configspace import (
     make_select_verifier_configspace,
