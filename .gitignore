@@ -1,3 +1,5 @@
+hydra_output/
+smac3_output/
 *.vnnlib.compiled
 
 # Byte-compiled / optimized / DLL files

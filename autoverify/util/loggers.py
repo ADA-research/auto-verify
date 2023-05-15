@@ -7,3 +7,6 @@ logging.basicConfig(level=logging.NOTSET)
 
 install_logger = logging.getLogger(root_logname.format("install"))
 install_logger.setLevel(logging.INFO)
+
+verification_logger = logging.getLogger(root_logname.format("verify"))
+verification_logger.setLevel(logging.DEBUG)

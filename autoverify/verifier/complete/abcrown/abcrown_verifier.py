@@ -31,7 +31,7 @@ class AbCrown(CompleteVerifier):
         property: Path,
         *,
         config: Configuration | Path | None = None,
-    ) -> CompleteVerificationOutcome | Err:
+    ) -> CompleteVerificationOutcome | Err[str]:
         """_summary_."""
         if isinstance(config, Configuration):
             yaml_config = AbcrownYamlConfig.from_config(
@@ -72,7 +72,7 @@ class AbCrown(CompleteVerifier):
         self,
         tool_result: str,
         result_file: Path,
-    ) -> CompleteVerificationOutcome | Err:
+    ) -> CompleteVerificationOutcome | Err[str]:
         """_summary_."""
         if find_substring("Result: sat", tool_result):
             return CompleteVerificationOutcome("SAT", result_file.read_text())
