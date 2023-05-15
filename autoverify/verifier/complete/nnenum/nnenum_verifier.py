@@ -9,7 +9,7 @@ from result import Err
 
 from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
-from autoverify.util.env import environment
+from autoverify.util.env import cwd, environment
 from autoverify.verifier.verification_result import CompleteVerificationOutcome
 from autoverify.verifier.verifier import CompleteVerifier
 
@@ -30,12 +30,12 @@ class Nnenum(CompleteVerifier):
         config: Configuration | Path | None = None,
     ) -> CompleteVerificationOutcome | Err[str]:
         """_summary_."""
-        os.chdir(self.tool_path / "src")
+        run_cmd = self._get_runner_cmd(property, network)
 
-        with environment(OPENBLAS_NUM_THREADS="1", OMP_NUM_THREADS="1"):
-            run_cmd = self._get_runner_cmd(property, network)
-
-            try:
+        try:
+            with cwd(self.tool_path / "src"), environment(
+                OPENBLAS_NUM_THREADS="1", OMP_NUM_THREADS="1"
+            ):
                 result = subprocess.run(
                     run_cmd,
                     executable="/bin/bash",
@@ -43,12 +43,12 @@ class Nnenum(CompleteVerifier):
                     check=True,
                     shell=True,
                 )
-            except subprocess.CalledProcessError as err:
-                print(f"nnenum Error:\n{err.stderr}")
-                return Err("Exception during call to nnenum")
-            except Exception as err:
-                print(f"Exception during call to nnenum, {err=}")
-                return Err("Exception during call to nnenum")
+        except subprocess.CalledProcessError as err:
+            print(f"nnenum Error:\n{err.stderr}")
+            return Err("Exception during call to nnenum")
+        except Exception as err:
+            print(f"Exception during call to nnenum, {err=}")
+            return Err("Exception during call to nnenum")
 
         stdout = result.stdout.decode()
         return self._parse_result(stdout)

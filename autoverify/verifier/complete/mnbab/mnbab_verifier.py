@@ -33,6 +33,7 @@ class MnBab(CompleteVerifier):
     ) -> CompleteVerificationOutcome | Err[str]:
         """_summary_."""
         # TODO: Mnbab runner
+        # TODO: chdir contextmanager
         os.chdir(self.tool_path)
         # run_cmd = self._get_runner_cmd(), result_file)
 

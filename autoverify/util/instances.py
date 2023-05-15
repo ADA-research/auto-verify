@@ -108,8 +108,26 @@ def write_verification_results_to_csv(results: pd.DataFrame, csv_path: Path):
     results.to_csv(csv_path, index=False)
 
 
-def read_vnncomp_instances(benchmark: str) -> list[VerificationInstance]:
+def verification_instances_to_smac_instances(
+    instances: list[VerificationInstance],
+) -> list[str]:
     """_summary_."""
+    return [inst.as_smac_instance() for inst in instances]
+
+
+def read_vnncomp_instances(benchmark: str) -> list[VerificationInstance]:
+    """Read the instances of a VNNCOMP benchmark.
+
+    Reads the CSV file of a VNNCOMP benchmark, parsing the network, property and
+    timeout values.
+
+    Args:
+        benchmark: The name of the benchmark directory.
+
+    Returns:
+        list[VerificationInstance]: A list of `VerificationInstance` objects
+            that hold the network, property and timeout.
+    """
     vnncomp2022 = ROOT_DIR.parent / "benchmarks" / "vnncomp2022"
     benchmark_dir = vnncomp2022 / benchmark
     instances = benchmark_dir / "instances.csv"
@@ -128,7 +146,7 @@ def read_vnncomp_instances(benchmark: str) -> list[VerificationInstance]:
                 VerificationInstance(
                     Path(abs_network),
                     Path(abs_property),
-                    int(timeout),
+                    int(timeout),  # TODO: Is that always an integer?
                 )
             )
 
