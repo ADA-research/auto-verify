@@ -42,7 +42,9 @@ class AbCrown(CompleteVerifier):
                 config, network, property
             ).get_yaml_file()
         else:
-            raise ValueError("Config should be of type Configuration or Path")
+            raise ValueError(
+                "Config should be of type Configuration, Path or None"
+            )
 
         result_file = Path(tempfile.NamedTemporaryFile("w").name)
 
