@@ -6,7 +6,7 @@ import yaml
 from ConfigSpace import Configuration
 
 from autoverify.util.dict import nested_set
-from autoverify.util.yaml import tmp_yaml_file, tmp_yaml_file_from_dict
+from autoverify.util.tempfiles import tmp_yaml_file, tmp_yaml_file_from_dict
 
 
 class AbcrownYamlConfig:
@@ -17,12 +17,7 @@ class AbcrownYamlConfig:
         self._yaml_file = yaml_file
 
     @classmethod
-    def from_yaml(
-        cls,
-        yaml_file: Path,
-        network: Path,
-        property: Path,
-    ):
+    def from_yaml(cls, yaml_file: Path, network: Path, property: Path):
         """_summary_."""
         abcrown_dict = yaml.safe_load(yaml_file.read_text())
 
@@ -38,14 +33,9 @@ class AbcrownYamlConfig:
         return cls(new_yaml_file)
 
     @classmethod
-    def from_config(
-        cls,
-        configuration: Configuration,
-        network: Path,
-        property: Path,
-    ):
+    def from_config(cls, config: Configuration, network: Path, property: Path):
         """Initialize the YAML file based on the configuration."""
-        dict_config: dict[str, Any] = configuration.get_dictionary()
+        dict_config: dict[str, Any] = config.get_dictionary()
         abcrown_dict: dict[str, Any] = {}
 
         for key, value in dict_config.items():
@@ -57,6 +47,10 @@ class AbcrownYamlConfig:
             abcrown_dict, ["specification", "vnnlib_path"], str(property)
         )
         nested_set(abcrown_dict, ["general", "save_adv_example"], True)
+
+        # TODO: Remove
+        # TODO: How is that shape determined
+        nested_set(abcrown_dict, ["model", "input_shape"], [-1, 1, 28, 28])
 
         return cls(tmp_yaml_file_from_dict(abcrown_dict))
 

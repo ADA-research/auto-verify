@@ -73,18 +73,24 @@ class CompleteVerifier(Verifier):
         network: Path,
         property: Path,
         *,
-        config: Configuration = None,
+        config: Configuration | None = None,
     ) -> CompleteVerificationResult:
-        """_summary_.
+        """Verify the property on the network.
 
-        _detailed_
+        Runs the verifier and feeds the network/property instance as input.
+        Complete verification will result in one of the following three
+        possibilities: `SAT`, `UNSAT`, `TIMEOUT`.
 
         Args:
-            property (_type_): _description_
-            network (_type_): _description_
+            network: The `Path` to the network in `.onnx` format.
+            property: The `Path` to the property in `.vnnlib` format.
+            config: The configuration of the verification tool to be used. If
+                `None` is passed, the default configuration of the verification
+                tool will be used.
 
         Returns:
-            CompleteVerificationResult: _description_
+            CompleteVerificationResult: A `Result` object containing information
+                about the verification attempt. TODO: Link docs or something
         """
         if not check_file_extension(network, ".onnx"):
             raise ValueError("Network should be in onnx format")
