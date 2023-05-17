@@ -10,6 +10,7 @@ from result import Err
 from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 from autoverify.util.env import cwd, environment
+from autoverify.verifier.complete.mnbab.mnbab_json import MnbabJsonConfig
 from autoverify.verifier.verification_result import CompleteVerificationOutcome
 from autoverify.verifier.verifier import CompleteVerifier
 
@@ -30,7 +31,15 @@ class MnBab(CompleteVerifier):
         config: Configuration | Path | None = None,
     ) -> CompleteVerificationOutcome | Err[str]:
         """_summary_."""
-        run_cmd = self._get_runner_cmd(self, config)
+        if isinstance(config, Configuration):
+            json_config = MnbabJsonConfig.from_config(config, network, property)
+        elif isinstance(config, Path):
+            json_config = MnbabJsonConfig.from_json(config, network, property)
+        else:
+            raise ValueError("Config should be a Configuration, Path or None")
+
+        json_config = json_config.get_json_file()
+        run_cmd = self._get_runner_cmd(Path(json_config.name))
 
         try:
             with cwd(self.tool_path):

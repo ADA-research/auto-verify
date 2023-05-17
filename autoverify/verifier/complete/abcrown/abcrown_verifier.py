@@ -36,18 +36,14 @@ class AbCrown(CompleteVerifier):
         if isinstance(config, Configuration):
             yaml_config = AbcrownYamlConfig.from_config(
                 config, network, property
-            ).get_yaml_file()
-        elif isinstance(config, Path):
-            yaml_config = AbcrownYamlConfig.from_yaml(
-                config, network, property
-            ).get_yaml_file()
-        else:
-            raise ValueError(
-                "Config should be of type Configuration, Path or None"
             )
+        elif isinstance(config, Path):
+            yaml_config = AbcrownYamlConfig.from_yaml(config, network, property)
+        else:
+            raise ValueError("Config should be a Configuration, Path or None")
 
+        yaml_config = yaml_config.get_yaml_file()
         result_file = Path(tempfile.NamedTemporaryFile("w").name)
-
         run_cmd = self._get_runner_cmd(Path(yaml_config.name), result_file)
 
         try:

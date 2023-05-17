@@ -18,7 +18,7 @@ OvalBabConfigspace.add_hyperparameters(
             [True, False],
             default=True,
         ),
-        Categorical(
+        Integer(
             "bounding__batch_size",
             (1, 2000),
             default=1000,
