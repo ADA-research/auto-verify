@@ -72,8 +72,8 @@ OvalBabConfigspace.add_hyperparameters(
         ),
         Integer(  # TODO: Values
             "upper_bounding__adv_params__check_adv",
-            (1, 2),
-            default=1,
+            (1, 3),
+            default=2,
         ),
         Categorical(
             "upper_bounding__adv_params__mu_tensor",
