@@ -8,7 +8,7 @@ import yaml
 
 def tmp_file(extension: str) -> IO[str]:
     """Return a new tempfile with the given extension"""
-    return tempfile.NamedTemporaryFile("w", suffix=extension)
+    return tempfile.NamedTemporaryFile("w", suffix=extension, delete=False)
 
 
 # TODO: Just make a functin that returns a tempfile with extension as param

@@ -12,19 +12,19 @@ MnBabConfigspace = ConfigurationSpace()
 ADD AFTER SAMPLE:
     - network_path
     - input_dim
-    - domain_splitting__initial_split_dims
     - benchmark_instances_path
-    - test_data_path
-    - eps (?)
     - use_gpu
-    - dtype (?)
     - bab_batch_sizes
     - random_seed
     - timeout
     - experiment_name
 """
+# TODO: parameter_sharing params
 MnBabConfigspace.add_hyperparameters(
     [
+        Constant("eps", 0),
+        Constant("test_data_path", ""),
+        Constant("dtype", "float64"),
         Categorical(
             "outer_verifier__forward_dp_pass",
             [True, False],
@@ -112,7 +112,7 @@ MnBabConfigspace.add_hyperparameters(
         ),
         Constant(  # TODO:
             "domain_splitting__initial_split_dims",
-            [0],
+            0,  # [0],
         ),
         Integer(
             "max_num_queries",
@@ -230,7 +230,7 @@ MnBabConfigspace.add_hyperparameters(
             default=False,
         ),
         Categorical(
-            "branching__use_optimized_slopers",
+            "branching__use_optimized_slopes",
             [True, False],
             default=False,
         ),
@@ -296,7 +296,6 @@ MnBabConfigspace.add_hyperparameters(
             [True, False],
             default=True,
         ),
-        Constant("use_online_logging", False),
         Constant("comet_api_key", "-"),
         Constant("comet_project_name", "-"),
         Constant("comet_workspace", "-"),

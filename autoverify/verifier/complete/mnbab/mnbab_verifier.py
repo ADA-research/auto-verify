@@ -9,7 +9,7 @@ from result import Err
 
 from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
-from autoverify.util.env import cwd, environment
+from autoverify.util.env import cwd, environment, sys_path
 from autoverify.verifier.complete.mnbab.mnbab_json import MnbabJsonConfig
 from autoverify.verifier.verification_result import CompleteVerificationOutcome
 from autoverify.verifier.verifier import CompleteVerifier
@@ -46,7 +46,7 @@ class MnBab(CompleteVerifier):
                 result = subprocess.run(
                     run_cmd,
                     executable="/bin/bash",
-                    capture_output=True,
+                    capture_output=False,
                     check=True,
                     shell=True,
                 )
@@ -59,9 +59,10 @@ class MnBab(CompleteVerifier):
             return Err("Exception during call to mn-bab")
 
         stdout = result.stdout.decode()
-        return self._parse_result(
-            stdout,
-        )  # TODO:
+        # print("=" * 80)
+        # print(stdout)
+        # print("=" * 80)
+        return 0  # self._parse_result(stdout)  # TODO:
 
     def _get_runner_cmd(self, mnbab_config: Path) -> str:
         source_cmd = get_conda_source_cmd(get_conda_path())
@@ -69,5 +70,6 @@ class MnBab(CompleteVerifier):
         return f"""
         {" ".join(source_cmd)}
         conda activate {self.conda_env_name}
+        export PYTHONPATH=$PYTHONPATH:$PWD
         python src/verify.py -c {str(mnbab_config)}
         """
