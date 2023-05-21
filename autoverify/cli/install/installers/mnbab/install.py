@@ -1,5 +1,6 @@
 """mnbab installer."""
 import os
+import shlex
 import subprocess
 from pathlib import Path
 
@@ -10,36 +11,38 @@ from autoverify.util.conda import (
     get_conda_pkg_path,
     get_conda_source_cmd,
 )
-from autoverify.util.env import copy_env_file_to, environment
+from autoverify.util.env import copy_env_file_to, cwd, environment
 
 MnBabRepoInfo = GitRepoInfo(
-    main_branch="main",
-    commit_hash="6aa5272",
-    clone_url="https://github.com/eth-sri/mn-bab",
+    main_branch="public",
+    commit_hash="3b6fd05",
+    clone_url="https://github.com/mnmueller/mn_bab_vnn_2022.git",
 )
 
 
 def install(install_dir: Path):
     """_summary_."""
-    clone_checkout_verifier(MnBabRepoInfo, install_dir)
+    clone_checkout_verifier(MnBabRepoInfo, install_dir, init_submodules=True)
     copy_env_file_to(Path(__file__), install_dir)
     create_env_from_file(install_dir / "environment.yml")
 
-    os.chdir(install_dir / "tool")
+    with cwd(install_dir):
+        subprocess.run(shlex.split("mkdir deps"), check=True)
+
     source_cmd = get_conda_source_cmd(get_conda_path())
 
     # HACK: This is bad, should upload ELINA as a conda package
     # Also have to comment out line with cdd_prefix else the CDD_PREFIX
-    # doesnt work? Also need a way to get around that `sudo`
+    # doesnt work?
     elina_cmd = f"""
     {" ".join(source_cmd)}
     conda activate __av__mnbab
     git clone https://github.com/eth-sri/ELINA.git
     cd ELINA
     sed -i '58 s/^/#/' configure
-    ./configure -use-deeppoly -use-fconv
+    ./configure -use-deeppoly -use-fconv --prefix {str(install_dir / "deps")}
     make
-    sudo make install
+    make install
     cd ..
     export PYTHONPATH=$PYTHONPATH:$PWD
     """
@@ -48,7 +51,9 @@ def install(install_dir: Path):
     mpfr_path = str(get_conda_pkg_path("mpfr", "4.0.2", "hb69a4c5_1"))
     cddlib_path = str(get_conda_pkg_path("cddlib", "1!0.94j", "he80fd80_1001"))
 
-    with environment(MPFR_PREFIX=mpfr_path, CDD_PREFIX=cddlib_path):
+    with cwd(install_dir / "tool"), environment(
+        MPFR_PREFIX=mpfr_path, CDD_PREFIX=cddlib_path
+    ):
         subprocess.run(
             elina_cmd,
             executable="/bin/bash",

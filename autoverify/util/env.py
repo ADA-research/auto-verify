@@ -1,6 +1,7 @@
 """Utilities for managing environments."""
 import os
 import shutil
+import sys
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -50,7 +51,7 @@ def environment(**env: str):
 
 @contextmanager
 def cwd(path: Path):
-    """Change the cwd and restore it afterwards.
+    """Change the current working directory (cwd) and restore it afterwards.
 
     Args:
         path: The path that will be set as the cwd.
@@ -62,3 +63,15 @@ def cwd(path: Path):
         yield
     finally:
         os.chdir(old_wd)
+
+
+@contextmanager
+def sys_path(path: Path):
+    """Temporarily modify the system PATH."""
+    fs_path = str(path)
+
+    try:
+        sys.path.insert(0, fs_path)
+        yield
+    finally:
+        sys.path.remove(fs_path)

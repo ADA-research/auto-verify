@@ -41,7 +41,12 @@ class GitRepoInfo:
         return shlex.split(checkout_cmd)
 
 
-def clone_checkout_verifier(repo_info: GitRepoInfo, install_dir: Path):
+def clone_checkout_verifier(
+    repo_info: GitRepoInfo,
+    install_dir: Path,
+    *,
+    init_submodules=False,
+):
     """_summary_."""
     with cwd(install_dir):
         install_logger.info(f"Cloning into repository: {repo_info.clone_url}")
@@ -52,3 +57,18 @@ def clone_checkout_verifier(repo_info: GitRepoInfo, install_dir: Path):
     with cwd(install_dir / "tool"):
         install_logger.info(f"Checking out commit hash {repo_info.commit_hash}")
         subprocess.run(repo_info.checkout, check=True, capture_output=True)
+
+        if init_submodules:
+            install_logger.info("Initializing submodules")
+
+            subprocess.run(
+                shlex.split("git submodule init"),
+                check=True,
+                capture_output=True,
+            )
+
+            subprocess.run(
+                shlex.split("git submodule update"),
+                check=True,
+                capture_output=True,
+            )
