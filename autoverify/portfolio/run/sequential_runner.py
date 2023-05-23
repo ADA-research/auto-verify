@@ -6,6 +6,7 @@ import pandas as pd
 from ConfigSpace import Configuration
 from result import Err, Ok
 
+from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.portfolio.target_function import run_verification_instance
 from autoverify.util.instances import (
     VerificationDataResult,
@@ -55,10 +56,11 @@ def run_sequential_portfolio(
             verification_logger.info(
                 f"Verifying property {instance.property.name} on "
                 f"{instance.network.name} with verifier {verifier.name} and "
-                f"configuration {config}"
+                f"configuration {config or 'default'}, "
+                f"(timeout = {instance.timeout})"
             )
 
-            result, took_t = run_verification_instance(
+            result = run_verification_instance(
                 verifier, config, instance.as_smac_instance()
             )
 
@@ -71,33 +73,41 @@ def run_sequential_portfolio(
                 verification_data = VerificationDataResult(
                     instance.network.name,
                     instance.property.name,
+                    instance.timeout,
                     verifier().name,
                     str(config),
                     "OK",
                     result.value.result,
-                    took_t,
+                    result.value.took,
                     result.value.counter_example,
                     None,
                 )
                 results.append(verification_data)
             elif isinstance(result, Err):
-                verification_logger.info("Exception during verification.")
-                verification_logger.info(result.unwrap_err())
+                err_string = result.unwrap_err().err
+
+                verification_logger.info("HUH Exception during verification.")
+                verification_logger.info(err_string)
 
                 verification_data = VerificationDataResult(
                     instance.network.name,
                     instance.property.name,
+                    instance.timeout,
                     verifier().name,
                     str(config),
                     "ERR",
+                    "ERR",
+                    float(instance.timeout)
+                    if instance.timeout
+                    else DEFAULT_VERIFICATION_TIMEOUT_SEC,  # TODO: This is bad
                     None,
-                    took_t,
-                    None,
-                    result.unwrap_err(),
+                    err_string,
                 )
                 results.append(verification_data)
 
-            verification_logger.info(f"Verification took {took_t} seconds.")
+            verification_logger.info(
+                f"Verification took {result.value.took} seconds."
+            )
 
             if output_csv_path is None:
                 continue

@@ -45,7 +45,7 @@ def create_env_from_file(file: Path):
     install_logger.info(f"Creating conda environment from file {file}")
     cmd = shlex.split(f"conda env create -f {str(file)}")
 
-    subprocess.run(cmd, check=True, capture_output=False)
+    subprocess.run(cmd, check=True, capture_output=True)
 
 
 def get_av_conda_envs() -> list[str]:

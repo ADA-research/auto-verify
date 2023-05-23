@@ -5,6 +5,8 @@ import sys
 from contextlib import contextmanager
 from pathlib import Path
 
+from autoverify.util.proc import pkill_match
+
 
 def get_file_path(file: Path) -> Path:
     """Returns the absolute path to the file.
@@ -75,3 +77,13 @@ def sys_path(path: Path):
         yield
     finally:
         sys.path.remove(fs_path)
+
+
+@contextmanager
+def pkill_match_list(matches: list[str]):
+    """Kill a list of process name patterns when exiting context."""
+    try:
+        yield
+    finally:
+        for match in matches:
+            pkill_match(match)

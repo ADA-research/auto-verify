@@ -1,21 +1,21 @@
 """ab-crown verifier."""
-import subprocess
-import tempfile
 from pathlib import Path
+from subprocess import CompletedProcess
+from typing import ContextManager
 
 from ConfigSpace import Configuration, ConfigurationSpace
-from result import Err
 
 from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
-from autoverify.util.env import cwd
+from autoverify.util.env import cwd, pkill_match_list
+from autoverify.util.tempfiles import tmp_file
 from autoverify.verifier.complete.abcrown.abcrown_configspace import (
     AbCrownConfigspace,
 )
 from autoverify.verifier.complete.abcrown.abcrown_yaml_config import (
     AbcrownYamlConfig,
 )
-from autoverify.verifier.verification_result import CompleteVerificationOutcome
+from autoverify.verifier.verification_result import VerificationResultString
 from autoverify.verifier.verifier import CompleteVerifier
 
 
@@ -25,14 +25,62 @@ class AbCrown(CompleteVerifier):
     name: str = "abcrown"
     config_space: ConfigurationSpace = AbCrownConfigspace
 
-    def _verify_property(
+    @property
+    def contexts(self) -> list[ContextManager[None]]:
+        # TODO: Narrow the pkill_match_list patterns further. People may be
+        # running scripts called 'abcrown.py'
+        return [
+            cwd(self.tool_path / "complete_verifier"),
+            pkill_match_list(["python abcrown.py"]),
+        ]
+
+    def _parse_result(
+        self,
+        sp_result: CompletedProcess[bytes] | None,
+        result_file: Path | None,
+    ) -> tuple[VerificationResultString, str | None]:
+        tool_result = ""
+
+        if sp_result is not None:
+            tool_result = sp_result.stdout.decode()
+
+        if find_substring("Result: sat", tool_result):
+            with open(str(result_file), "r") as f:
+                counter_example = f.read()
+
+            return "SAT", counter_example
+        elif find_substring("Result: unsat", tool_result):
+            return "UNSAT", None
+        elif find_substring("Result: timeout", tool_result):
+            return "TIMEOUT", None
+
+        return "ERR", None
+
+    def _get_run_cmd(
         self,
         network: Path,
         property: Path,
         *,
-        config: Configuration | Path | None = None,
-    ) -> CompleteVerificationOutcome | Err[str]:
-        """_summary_."""
+        config: Path,
+    ) -> tuple[str, Path | None]:
+        result_file = Path(tmp_file(".txt").name)
+        source_cmd = get_conda_source_cmd(get_conda_path())
+
+        run_cmd = f"""
+        {" ".join(source_cmd)}
+        conda activate {self.conda_env_name}
+        python abcrown.py --config {str(config)} \
+        --results_file {str(result_file)}
+        """
+
+        return run_cmd, result_file
+
+    def _init_config(
+        self,
+        network: Path,
+        property: Path,
+        config: Configuration | Path,
+    ) -> Path:
         if isinstance(config, Configuration):
             yaml_config = AbcrownYamlConfig.from_config(
                 config, network, property
@@ -40,53 +88,6 @@ class AbCrown(CompleteVerifier):
         elif isinstance(config, Path):
             yaml_config = AbcrownYamlConfig.from_yaml(config, network, property)
         else:
-            raise ValueError("Config should be a Configuration, Path or None")
+            raise ValueError("Config should be a Configuration or Path")
 
-        yaml_config = yaml_config.get_yaml_file()
-        result_file = Path(tempfile.NamedTemporaryFile("w").name)
-        run_cmd = self._get_runner_cmd(Path(yaml_config.name), result_file)
-
-        try:
-            with cwd(self.tool_path / "complete_verifier"):
-                result = subprocess.run(
-                    run_cmd,
-                    executable="/bin/bash",
-                    capture_output=True,
-                    check=True,
-                    shell=True,
-                )
-        except subprocess.CalledProcessError as err:
-            print("AbCrown Error:\n")
-            print(err.stderr.decode("utf-8"))
-            return Err("Exception during call to ab-crown")
-        except Exception as err:
-            print(f"Exception during call to ab-crown, {str(err)}")
-            return Err("Exception during call to ab-crown")
-
-        stdout = result.stdout.decode()
-        return self._parse_result(stdout, result_file)
-
-    def _parse_result(
-        self,
-        tool_result: str,
-        result_file: Path,
-    ) -> CompleteVerificationOutcome | Err[str]:
-        """_summary_."""
-        if find_substring("Result: sat", tool_result):
-            return CompleteVerificationOutcome("SAT", result_file.read_text())
-        elif find_substring("Result: unsat", tool_result):
-            return CompleteVerificationOutcome("UNSAT")
-        elif find_substring("Result: timeout", tool_result):
-            return CompleteVerificationOutcome("TIMEOUT")
-
-        return Err("Failed to determine outcome from result")
-
-    def _get_runner_cmd(self, abcrown_config: Path, result_file: Path) -> str:
-        source_cmd = get_conda_source_cmd(get_conda_path())
-
-        return f"""
-        {" ".join(source_cmd)}
-        conda activate {self.conda_env_name}
-        python abcrown.py --config {str(abcrown_config)} \
-        --results_file {str(result_file)}
-        """
+        return Path(yaml_config.get_yaml_file_path())

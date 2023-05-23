@@ -1,7 +1,6 @@
-from .complete import AbCrown, DummyVerifier, MnBab, Nnenum, OvalBab
+from .complete import AbCrown, MnBab, Nnenum, OvalBab
 
 __all__ = [
-    "DummyVerifier",
     "Nnenum",
     "AbCrown",
     "MnBab",

@@ -12,7 +12,7 @@ from autoverify.util.conda import (
 from autoverify.util.env import copy_env_file_to
 
 OvalBabRepoInfo = GitRepoInfo(
-    main_branch="main",
+    branch="main",
     commit_hash="5de3113",
     clone_url="https://github.com/oval-group/oval-bab",
 )

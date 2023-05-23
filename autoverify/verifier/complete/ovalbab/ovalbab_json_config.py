@@ -1,3 +1,4 @@
+"""_summary_."""
 from pathlib import Path
 from typing import IO
 
@@ -21,6 +22,6 @@ class OvalbabJsonConfig:
         """_summary_."""
         pass  # TODO:
 
-    def get_json_file(self) -> IO[str]:
+    def get_json_file(self):  # -> IO[str]:
         """_summary_."""
         pass  # TODO:

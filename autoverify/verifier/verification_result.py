@@ -5,15 +5,19 @@ from typing import Literal
 
 from result import Result
 
+VerificationResultString = Literal["SAT", "UNSAT", "TIMEOUT", "ERR"]
 
-# TODO: Use the counterexample specification from vnncomp2022
+
 @dataclass
-class CompleteVerificationOutcome:
+class CompleteVerificationData:
     """_summary_."""
 
-    result: Literal["SAT", "UNSAT", "TIMEOUT"]
-    counter_example: str | tuple[str, str] | None = None
+    result: VerificationResultString
+    took: float
+    counter_example: str | None = None
+    err: str = ""
 
 
-# TODO: error type (not just `str`)
-CompleteVerificationResult = Result[CompleteVerificationOutcome, str]
+CompleteVerificationResult = Result[
+    CompleteVerificationData, CompleteVerificationData
+]

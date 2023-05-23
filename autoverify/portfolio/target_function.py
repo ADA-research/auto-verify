@@ -1,5 +1,4 @@
 """_summary_."""
-import time
 from pathlib import Path
 from typing import Callable, Type
 
@@ -15,14 +14,12 @@ SmacTargetFunction = Callable[[Configuration, str, int], float]
 
 def _process_target_function_result(
     result: CompleteVerificationResult,
-    took_t: float,
     timeout_penalty: int,
 ) -> float:
     """Process the verification result, TODO.
 
     Args:
         result: TODO.
-        took_t: TODO.
         timeout_penalty: TODO.
 
     Returns:
@@ -33,16 +30,16 @@ def _process_target_function_result(
     verification_result = result.unwrap_or_raise(Exception)
 
     if verification_result.result == "TIMEOUT":
-        took_t *= timeout_penalty
+        verification_result.took *= timeout_penalty
 
-    return took_t
+    return verification_result.took
 
 
 def run_verification_instance(
     verifier: Type[CompleteVerifier],
     config: Configuration | Path | None,
     instance: str,
-) -> tuple[CompleteVerificationResult, float]:
+) -> CompleteVerificationResult:
     """Run an instance and report the result and time taken.
 
     Args:
@@ -54,15 +51,13 @@ def run_verification_instance(
         tuple[CompleteVerificationResult, float]: TODO.
     """
     verifier_instance = verifier()
-    network, property = instance.split(",")
-
-    before_t = time.time()
+    network, property, timeout = instance.split(",")
 
     result = verifier_instance.verify_property(
-        Path(network), Path(property), config=config
+        Path(network), Path(property), config=config, timeout=int(timeout)
     )
 
-    return result, time.time() - before_t
+    return result
 
 
 def make_verifier_target_function(
@@ -91,9 +86,9 @@ def make_verifier_target_function(
         report the `process_time` so SMAC can optimize for it.
         """
         seed += 1  # silence warning, cant rename the param to _ or smac errors
-        result, took_t = run_verification_instance(verifier, config, instance)
+        result = run_verification_instance(verifier, config, instance)
 
-        return _process_target_function_result(result, took_t, timeout_penalty)
+        return _process_target_function_result(result, timeout_penalty)
 
     return target_function
 
@@ -125,12 +120,12 @@ def make_select_verifier_target_function(
         seed += 1  # silence warning, cant rename the param to _ or smac errors
 
         # FIXME: Verifier type mismatch between CompleteVerifier and Verifier
-        result, took_t = run_verification_instance(
+        result = run_verification_instance(
             verifier,  # type: ignore
             None,
             instance,
         )
 
-        return _process_target_function_result(result, took_t, timeout_penalty)
+        return _process_target_function_result(result, timeout_penalty)
 
     return target_function

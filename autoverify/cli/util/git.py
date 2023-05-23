@@ -13,7 +13,7 @@ from autoverify.util.loggers import install_logger
 class GitRepoInfo:
     """Template for a tool's git repo info."""
 
-    main_branch: str
+    branch: str
     commit_hash: str
     clone_url: str
 
@@ -28,8 +28,7 @@ class GitRepoInfo:
     @property
     def clone(self) -> list[str]:
         clone_cmd = (
-            f"git clone {self.clone_url} --depth=1 "
-            f"--branch {self.main_branch}"
+            f"git clone {self.clone_url} --depth=1 --branch {self.branch}"
         )
 
         return shlex.split(clone_cmd)

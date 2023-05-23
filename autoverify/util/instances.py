@@ -1,13 +1,17 @@
 """_summary_."""
+from __future__ import annotations
+
+import copy
 import csv
 import inspect
 from dataclasses import dataclass, fields, is_dataclass
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Callable, Literal
 
 import pandas as pd
 
-from autoverify import ROOT_DIR
+from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC, ROOT_DIR
+from autoverify.verifier.verification_result import VerificationResultString
 
 
 @dataclass
@@ -19,13 +23,21 @@ class VerificationInstance:
     timeout: int | None = None
 
     def as_smac_instance(self) -> str:
-        """Return the instance in a `f"{network},{property}"` format.
+        """Return the instance in a `f"{network},{property},{timeout}` format.
 
         A SMAC instance has to be passed as a single string to the
         target_function, in which we split the instance string on the comma
-        again to obtain the network and property.
+        again to obtain the network, property and timeout.
+
+        If no timeout is specified, the `DEFAULT_VERIFICATION_TIMEOUT_SEC`
+        global is used.
+
+        Returns:
+            str: The smac instance string
         """
-        return f"{str(self.network)},{str(self.property)}"
+        timeout: int = self.timeout or DEFAULT_VERIFICATION_TIMEOUT_SEC
+
+        return f"{str(self.network)},{str(self.property)},{str(timeout)}"
 
 
 # TODO: Move this function to another file, it doesn't really belong here
@@ -33,7 +45,9 @@ class VerificationInstance:
 def get_dataclass_field_names(data_cls: Any) -> list[str]:
     """Returns the fields of a dataclass as a list of strings."""
     if not inspect.isclass(data_cls):
-        raise ValueError(f"Argument data_cls should be a class, got {data_cls}")
+        raise ValueError(
+            f"Argument data_cls should be a class, got {type(data_cls)}"
+        )
 
     if not is_dataclass(data_cls):
         raise ValueError(f"'{data_cls.__class__.__name__}' is not a dataclass")
@@ -47,10 +61,11 @@ class VerificationDataResult:
 
     network: str
     property: str
+    timeout: int | None
     verifier: str
     config: str
     success: Literal["OK", "ERR"]  # TODO: Why not just a boolean?
-    result: Literal["SAT", "UNSAT", "TIMEOUT"] | None
+    result: VerificationResultString
     took: float
     counter_example: str | tuple[str, str] | None
     error_string: str | None
@@ -63,10 +78,11 @@ class VerificationDataResult:
         return [
             self.network,
             self.property,
+            str(self.timeout),
             self.verifier,
             self.config,
             self.success,
-            self.result or "",
+            self.result,
             str(self.took),
             self.counter_example or "",
             self.error_string or "",
@@ -139,15 +155,21 @@ def read_vnncomp_instances(benchmark: str) -> list[VerificationInstance]:
 
         for row in reader:
             network, property, timeout = row
-            abs_network = str(benchmark_dir / network)
-            abs_property = str(benchmark_dir / property)
 
             verification_instances.append(
                 VerificationInstance(
-                    Path(abs_network),
-                    Path(abs_property),
+                    Path(str(benchmark_dir / network)),
+                    Path(str(benchmark_dir / property)),
                     int(timeout),  # TODO: Is that always an integer?
                 )
             )
 
     return verification_instances
+
+
+def filter_verification_instances(
+    instances: list[VerificationInstance],
+    predicate: Callable[[VerificationInstance], bool],
+) -> list[VerificationInstance]:
+    """_summary_."""
+    return [copy.deepcopy(inst) for inst in instances if predicate(inst)]

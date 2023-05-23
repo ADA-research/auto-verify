@@ -60,3 +60,7 @@ class AbcrownYamlConfig:
             raise FileNotFoundError("YAML file was not made yet.")
 
         return self._yaml_file
+
+    def get_yaml_file_path(self) -> Path:
+        """Get the path to the ab-crown YAML config file."""
+        return Path(self.get_yaml_file().name)

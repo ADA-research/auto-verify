@@ -1,12 +1,6 @@
 """OvalBab configspace."""
 
-from ConfigSpace import (
-    Categorical,
-    ConfigurationSpace,
-    Constant,
-    Float,
-    Integer,
-)
+from ConfigSpace import Categorical, ConfigurationSpace, Integer
 
 # TODO: bounding nets is a list?
 OvalBabConfigspace = ConfigurationSpace()

@@ -1,5 +1,4 @@
 """mnbab installer."""
-import os
 import shlex
 import subprocess
 from pathlib import Path
@@ -14,7 +13,7 @@ from autoverify.util.conda import (
 from autoverify.util.env import copy_env_file_to, cwd, environment
 
 MnBabRepoInfo = GitRepoInfo(
-    main_branch="public",
+    branch="public",
     commit_hash="3b6fd05",
     clone_url="https://github.com/mnmueller/mn_bab_vnn_2022.git",
 )

@@ -7,14 +7,14 @@ import yaml
 
 
 def tmp_file(extension: str) -> IO[str]:
-    """Return a new tempfile with the given extension"""
+    """Return a new tempfile with the given extension."""
     return tempfile.NamedTemporaryFile("w", suffix=extension, delete=False)
 
 
-# TODO: Just make a functin that returns a tempfile with extension as param
+# TODO: Just make a function that returns a tempfile with extension as param
 def tmp_json_file() -> IO[str]:
     """Returns a new temporary named empty yaml file."""
-    return tempfile.NamedTemporaryFile("w", suffix=".json")
+    return tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
 
 
 def tmp_json_file_from_dict(a_dict: dict[Any, Any]) -> IO[str]:
@@ -29,7 +29,7 @@ def tmp_json_file_from_dict(a_dict: dict[Any, Any]) -> IO[str]:
 
 def tmp_yaml_file() -> IO[str]:
     """Returns a new temporary named empty yaml file."""
-    return tempfile.NamedTemporaryFile("w", suffix=".yaml")
+    return tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False)
 
 
 def tmp_yaml_file_from_dict(a_dict: dict[Any, Any]) -> IO[str]:

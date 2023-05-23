@@ -1,16 +1,23 @@
 """TODO docstring."""
+import subprocess
+import time
 from abc import ABC, abstractmethod
+from contextlib import ExitStack
 from pathlib import Path
+from subprocess import CompletedProcess
+from typing import Any, ContextManager
 
 from ConfigSpace import Configuration, ConfigurationSpace
 from result import Err, Ok
 
+from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.cli.install import TOOL_DIR_NAME, VERIFIER_DIR
 from autoverify.util.conda import get_verifier_conda_env_name
 from autoverify.util.path import check_file_extension
 from autoverify.verifier.verification_result import (
-    CompleteVerificationOutcome,
+    CompleteVerificationData,
     CompleteVerificationResult,
+    VerificationResultString,
 )
 
 
@@ -27,6 +34,12 @@ class Verifier(ABC):
     @abstractmethod
     def config_space(self) -> ConfigurationSpace:
         """Configuration space to sample from."""
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def contexts(self) -> list[ContextManager[None]] | None:
+        """Contexts to run the verification in."""
         raise NotImplementedError
 
     @property
@@ -51,6 +64,36 @@ class Verifier(ABC):
         """Return the default configuration of the config level."""
         return self.config_space.get_default_configuration()
 
+    @abstractmethod
+    def _get_run_cmd(
+        self,
+        network: Path,
+        property: Path,
+        *,
+        config: Any,
+    ) -> tuple[str, Path | None]:
+        """_summary_."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def _parse_result(
+        self,
+        sp_result: CompletedProcess[bytes] | None,
+        result_file: Path | None,
+    ) -> tuple[VerificationResultString, str | None]:
+        """_summary."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def _init_config(
+        self,
+        network: Path,
+        property: Path,
+        config: Any,
+    ) -> Any:
+        """_summary."""
+        raise NotImplementedError
+
     def sample_configuration(
         self, *, size: int = 1
     ) -> Configuration | list[Configuration]:
@@ -73,7 +116,8 @@ class CompleteVerifier(Verifier):
         network: Path,
         property: Path,
         *,
-        config: Configuration | None = None,
+        config: Configuration | Path | None = None,
+        timeout: int = 600,
     ) -> CompleteVerificationResult:
         """Verify the property on the network.
 
@@ -87,6 +131,8 @@ class CompleteVerifier(Verifier):
             config: The configuration of the verification tool to be used. If
                 `None` is passed, the default configuration of the verification
                 tool will be used.
+            timeout: The maximum number of seconds that can be spent on the
+                verification query.
 
         Returns:
             CompleteVerificationResult: A `Result` object containing information
@@ -101,20 +147,70 @@ class CompleteVerifier(Verifier):
         if config is None:
             config = self.default_config
 
-        outcome = self._verify_property(network, property, config=config)
+        # Tools use different configuration formats and methods, thus we let
+        # them do some initialization here
+        config = self._init_config(network, property, config)
 
-        if isinstance(outcome, CompleteVerificationOutcome):
+        run_cmd, output_file = self._get_run_cmd(
+            network, property, config=config
+        )
+
+        outcome = self._run_verification(
+            run_cmd,
+            result_file=output_file,
+            timeout=timeout,
+        )
+
+        if outcome.err == "":  # TODO: Makes more sense if we set err to None
             return Ok(outcome)
         else:
-            return outcome  # Err
+            return Err(outcome)
 
-    @abstractmethod
-    def _verify_property(
+    def _run_verification(
         self,
-        network: Path,
-        property: Path,
+        run_cmd: str,
         *,
-        config: Configuration = None,
-    ) -> CompleteVerificationOutcome | Err[str]:
+        result_file: Path | None = None,
+        timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
+    ) -> CompleteVerificationData:
         """_summary_."""
-        raise NotImplementedError
+        before_t = time.time()
+        result: VerificationResultString | None = None
+        counter_example: str | None = None
+        sp_result: CompletedProcess[bytes] | None = None
+        run_err: str = ""
+
+        try:
+            contexts = self.contexts or []
+
+            with ExitStack() as stack:
+                for context in contexts:
+                    stack.enter_context(context)
+
+                sp_result = subprocess.run(
+                    run_cmd,
+                    executable="/bin/bash",
+                    capture_output=True,
+                    check=True,
+                    shell=True,
+                    timeout=timeout,
+                )
+        except subprocess.TimeoutExpired:
+            took_t = time.time() - before_t
+            result = "TIMEOUT"
+        except Exception as err:
+            took_t = time.time() - before_t
+            result = "ERR"
+            run_err = f"Exception during verification:\n {err}"
+        else:
+            took_t = time.time() - before_t
+
+        if result is None:
+            result, counter_example = self._parse_result(sp_result, result_file)
+
+        return CompleteVerificationData(
+            result,
+            took_t,
+            counter_example,
+            run_err,
+        )

@@ -9,7 +9,6 @@ from typing import IO, Any
 from ConfigSpace import Configuration
 
 from autoverify.util.dict import nested_set
-from autoverify.util.onnx import get_input_shape
 from autoverify.util.tempfiles import tmp_file, tmp_json_file_from_dict
 
 
@@ -75,6 +74,10 @@ class MnbabJsonConfig:
     def get_json_file(self) -> IO[str]:
         """_summary_."""
         return self._json_file
+
+    def get_json_file_path(self) -> Path:
+        """_summary_."""
+        return Path(self._json_file.name)
 
     @staticmethod
     def _temp_instance_file(

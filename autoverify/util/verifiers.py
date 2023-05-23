@@ -1,7 +1,7 @@
 """_summary_."""
 from typing import Type
 
-from autoverify.verifier import AbCrown, DummyVerifier, MnBab, Nnenum, OvalBab
+from autoverify.verifier import AbCrown, MnBab, Nnenum, OvalBab
 from autoverify.verifier.verifier import Verifier
 
 
@@ -9,7 +9,6 @@ from autoverify.verifier.verifier import Verifier
 def get_all_complete_verifier_names() -> list[str]:
     """Return a list of all complete verifier names."""
     return [
-        DummyVerifier.name,
         Nnenum.name,
         AbCrown.name,
         MnBab.name,
