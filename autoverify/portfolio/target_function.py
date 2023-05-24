@@ -32,7 +32,7 @@ def _process_target_function_result(
     if verification_result.result == "TIMEOUT":
         verification_result.took *= timeout_penalty
 
-    return verification_result.took
+    return float(verification_result.took)
 
 
 def run_verification_instance(

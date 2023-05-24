@@ -1,12 +1,11 @@
 """_summary_."""
 from pathlib import Path
-from typing import Type
 
 import pandas as pd
-from ConfigSpace import Configuration
 from result import Err, Ok
 
 from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
+from autoverify.portfolio.portfolio import Portfolio
 from autoverify.portfolio.target_function import run_verification_instance
 from autoverify.util.instances import (
     VerificationDataResult,
@@ -15,7 +14,6 @@ from autoverify.util.instances import (
     init_verification_result_csv,
 )
 from autoverify.util.loggers import verification_logger
-from autoverify.verifier.verifier import CompleteVerifier
 
 
 def append_df(
@@ -26,7 +24,7 @@ def append_df(
 
 
 def run_sequential_portfolio(
-    portfolio: list[tuple[Type[CompleteVerifier], Configuration | Path]],
+    portfolio: Portfolio,
     instances: list[VerificationInstance],
     *,
     output_csv_path: Path | None = None,
