@@ -5,11 +5,15 @@ from pathlib import Path
 from subprocess import CompletedProcess
 from typing import ContextManager
 
-from ConfigSpace import ConfigurationSpace
+from ConfigSpace import Configuration, ConfigurationSpace
 
 from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 from autoverify.util.env import cwd, get_file_path
+from autoverify.util.tempfiles import tmp_file
+from autoverify.verifier.complete.ovalbab.ovalbab_json_config import (
+    OvalbabJsonConfig,
+)
 from autoverify.verifier.verification_result import VerificationResultString
 from autoverify.verifier.verifier import CompleteVerifier
 
@@ -49,9 +53,7 @@ class OvalBab(CompleteVerifier):
         *,
         config: Path,
     ) -> tuple[str, Path | None]:
-        result_file = Path(tempfile.NamedTemporaryFile("w").name)
-        # TODO: Real Configs
-        config_file = get_file_path(Path(__file__)) / "temp_ovalbab_config.json"
+        result_file = Path(tmp_file(".txt").name)
         source_cmd = get_conda_source_cmd(get_conda_path())
 
         run_cmd = f"""
@@ -61,7 +63,7 @@ class OvalBab(CompleteVerifier):
         --onnx {str(network)} \
         --vnnlib {str(property)} \
         --result_file {str(result_file)} \
-        --json {config_file} \
+        --json {config} \
         --instance_timeout {sys.maxsize}
         """
 
@@ -73,5 +75,11 @@ class OvalBab(CompleteVerifier):
         property: Path,
         config: Path,
     ) -> Path:
-        # TODO:
-        return config
+        if isinstance(config, Configuration):
+            json_config = OvalbabJsonConfig.from_config(config)
+        elif isinstance(config, Path):
+            json_config = OvalbabJsonConfig.from_json(config)
+        else:
+            raise ValueError("Config should be a Configuration, Path or None")
+
+        return Path(json_config.get_json_file_path())
