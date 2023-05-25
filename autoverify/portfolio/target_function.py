@@ -93,7 +93,7 @@ def make_verifier_target_function(
     return target_function
 
 
-def make_select_verifier_target_function(
+def make_pick_verifier_target_function(
     *, timeout_penalty: int = 10
 ) -> SmacTargetFunction:
     """Return a new target_function for selecting a verifier.

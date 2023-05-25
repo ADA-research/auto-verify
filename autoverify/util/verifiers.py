@@ -1,6 +1,4 @@
 """_summary_."""
-from typing import Type
-
 from autoverify.verifier import AbCrown, MnBab, Nnenum, OvalBab
 from autoverify.verifier.verifier import Verifier
 
@@ -17,7 +15,7 @@ def get_all_complete_verifier_names() -> list[str]:
 
 
 # TODO: Dont hardcode this
-def verifier_from_name(name: str) -> Type[Verifier] | None:
+def verifier_from_name(name: str) -> type[Verifier] | None:
     """Return the class type from the verifier name."""
     if name == "abcrown":
         return AbCrown

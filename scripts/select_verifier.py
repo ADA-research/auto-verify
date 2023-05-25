@@ -6,7 +6,7 @@ from autoverify.portfolio.select_verifier_configspace import (
     make_select_verifier_configspace,
 )
 from autoverify.portfolio.target_function import (
-    make_select_verifier_target_function,
+    make_pick_verifier_target_function,
 )
 from autoverify.util.env import get_file_path
 from autoverify.util.instances import (
@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     verifiers = [AbCrown, Nnenum, OvalBab]
     config_space = make_select_verifier_configspace(verifiers)
-    target_function = make_select_verifier_target_function()
+    target_function = make_pick_verifier_target_function()
 
     scenario = Scenario(
         config_space,

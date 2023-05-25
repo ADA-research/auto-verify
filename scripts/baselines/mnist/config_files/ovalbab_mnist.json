@@ -12,8 +12,8 @@
         },
         "type": "beta-crown",
         "auto_iters": true,
-        "batch_size": 600,
-        "max_solver_batch": 1200
+        "batch_size": 300,
+        "max_solver_batch": 600
       },
       {
         "bounding_algorithm": "dual-anderson",
@@ -38,7 +38,7 @@
             "restrict_factor": 1.5
         },
         "auto_iters": true,
-        "batch_size": 300,
+        "batch_size": 150,
         "hard_overhead": 10
       }
     ],

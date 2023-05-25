@@ -10,3 +10,6 @@ install_logger.setLevel(logging.INFO)
 
 verification_logger = logging.getLogger(root_logname.format("verify"))
 verification_logger.setLevel(logging.DEBUG)
+
+hydra_logger = logging.getLogger(root_logname.format("hydra"))
+hydra_logger.setLevel(logging.DEBUG)

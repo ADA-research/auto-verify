@@ -127,7 +127,17 @@ def write_verification_results_to_csv(results: pd.DataFrame, csv_path: Path):
 def verification_instances_to_smac_instances(
     instances: list[VerificationInstance],
 ) -> list[str]:
-    """_summary_."""
+    """Convert a list of `VerificationInstace` objects to SMAC instances.
+
+    See the `as_smac_instance` docstring of the `VerificationInstance` class for
+    more details.
+
+    Args:
+        instances: The list of `VerificationInstance` objects to convert.
+
+    Returns:
+        list[str]: The SMAC instance strings.
+    """
     return [inst.as_smac_instance() for inst in instances]
 
 
