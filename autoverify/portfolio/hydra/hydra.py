@@ -4,16 +4,21 @@ import random
 from collections import defaultdict
 from pathlib import Path
 
+import numpy as np
 from ConfigSpace import Configuration
 from smac import (
     AlgorithmConfigurationFacade,
+    BlackBoxFacade,
+    HyperbandFacade,
     HyperparameterOptimizationFacade,
+    RunHistory,
     Scenario,
 )
 
 from autoverify.portfolio.hydra.hydra_verifier_scenario import (
     HydraVerifierScenario,
 )
+from autoverify.portfolio.hydra.incumbent import Incumbent, Incumbents
 from autoverify.portfolio.portfolio import ConfiguredVerifier, Portfolio
 from autoverify.portfolio.target_function import (
     SmacTargetFunction,
@@ -21,7 +26,9 @@ from autoverify.portfolio.target_function import (
     make_verifier_target_function,
 )
 from autoverify.util.loggers import hydra_logger
-from autoverify.verifier.verifier import CompleteVerifier
+from autoverify.util.smac import set_scenario_output_dir
+from autoverify.util.verifiers import verifier_from_name
+from autoverify.verifier.verifier import CompleteVerifier, Verifier
 
 
 class Hydra:
@@ -72,8 +79,16 @@ class Hydra:
             hydra_logger.info(f"Starting Hydra iteration {self._iter}")
 
             incumbents = self._do_smac_runs()
+            self._update_portfolio(incumbents)
 
         return portfolio
+
+    @property
+    def _instances(self) -> list[str]:
+        return self._scenario.scenario_kwargs["instances"]
+
+    def _update_portfolio(self, incumbents: Incumbents):
+        best_incs = incumbents.get_best_n(self._instances, self._incs_per_iter)
 
     def _get_pick_tune_time(self) -> tuple[float, float]:
         alpha = self._scenario.alpha
@@ -81,7 +96,13 @@ class Hydra:
 
         return walltime * alpha, walltime * (1 - alpha)
 
-    def _pick_verifier(self, scenario: Scenario) -> str:
+    def _pick_verifier(
+        self, pick_time: float, scenario: Scenario
+    ) -> type[Verifier]:
+        if pick_time <= 0:
+            random_verifier = random.choice(self._scenario.get_verifiers())
+            return verifier_from_name(random_verifier)
+
         target_function = make_pick_verifier_target_function()
         smac = HyperparameterOptimizationFacade(  # TODO: Which facade to use?
             scenario,
@@ -91,31 +112,66 @@ class Hydra:
         inc = smac.optimize()
 
         assert not isinstance(inc, list)  # please type-checkers
-        return str(inc["verifier"])
 
-    def _tune_verifier(self, verifier: type[CompleteVerifier]):
-        pass
+        verifier = str(inc["verifier"])
+        hydra_logger.info(f"Picked verifier: {verifier}")
 
-    def _do_smac_runs(self) -> list[ConfiguredVerifier]:
-        configured_verifiers: list[ConfiguredVerifier] = []
+        return verifier_from_name(verifier)
+
+    def _tune_verifier(
+        self,
+        tune_time: float,
+        verifier: type[CompleteVerifier],
+        scenario: Scenario,
+    ) -> Incumbent:
+        if tune_time <= 0:
+            return Incumbent((verifier, None))
+
+        target_function = make_verifier_target_function(verifier)
+        smac = AlgorithmConfigurationFacade(
+            scenario,
+            target_function,
+            overwrite=True,
+        )
+        inc = smac.optimize()
+
+        hydra_logger.info(f"Tuned verifier {verifier.name}")
+
+        return Incumbent((verifier, inc), smac.runhistory)
+
+    def _do_smac_runs(self) -> Incumbents:
+        incumbents: Incumbents = Incumbents()
         pick_time, tune_time = self._get_pick_tune_time()
 
         for smac_iter in range(self._smac_per_iter):
-            if pick_time > 0:
-                verifier = self._pick_verifier(
-                    self._scenario.as_smac_pick_scenario(pick_time)
-                )
-            else:
-                verifier = random.choice(self._scenario.get_verifiers())
+            hydra_logger.info(f"Starting SMAC run {smac_iter}")
 
-            hydra_logger.info(f"==={verifier}===")
-            #
-            # if tune_time > 0:
-            #     self._tune_verifier(
-            #         self._scenario.as_smac_tune_scenario(tune_time)
-            #     )
-            #
-        return configured_verifiers
+            verifier = self._pick_verifier(
+                pick_time,
+                self._scenario.as_smac_pick_scenario(
+                    pick_time,
+                    output_dir=self._output_path
+                    / self._SMAC_RUN_FMT.format("pick", self._iter, smac_iter),
+                ),
+            )
+
+            # FIXME: Should ideally not need this to please type checkers
+            assert issubclass(verifier, CompleteVerifier)
+
+            incumbent = self._tune_verifier(
+                tune_time,
+                verifier,
+                self._scenario.as_smac_tune_scenario(
+                    verifier.config_space,
+                    tune_time,
+                    output_dir=self._output_path
+                    / self._SMAC_RUN_FMT.format("tune", self._iter, smac_iter),
+                ),
+            )
+
+            incumbents.append(incumbent)
+
+        return incumbents
 
     def _get_target_function(self) -> SmacTargetFunction:
         def hydra_target_function(

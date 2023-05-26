@@ -15,7 +15,7 @@ def get_all_complete_verifier_names() -> list[str]:
 
 
 # TODO: Dont hardcode this
-def verifier_from_name(name: str) -> type[Verifier] | None:
+def verifier_from_name(name: str) -> type[Verifier]:
     """Return the class type from the verifier name."""
     if name == "abcrown":
         return AbCrown
@@ -26,4 +26,4 @@ def verifier_from_name(name: str) -> type[Verifier] | None:
     elif name == "ovalbab":
         return OvalBab
 
-    return None
+    raise ValueError(f"Invalid verifier name: {name}")

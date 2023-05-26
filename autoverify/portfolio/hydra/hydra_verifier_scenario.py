@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Literal
 
 from ConfigSpace import Categorical, ConfigurationSpace, Float
@@ -56,7 +57,12 @@ class HydraVerifierScenario:
         """_summary_."""
         return [i[0]().name for i in self.verifier_resources]
 
-    def as_smac_pick_scenario(self, pick_time: float) -> Scenario:
+    def as_smac_pick_scenario(
+        self,
+        pick_time: float,
+        *,
+        output_dir: Path | None = None,
+    ) -> Scenario:
         """_summary_."""
         config_space = ConfigurationSpace()
         config_space.add_hyperparameters(
@@ -70,6 +76,7 @@ class HydraVerifierScenario:
         # cpu time limit or something else
         scenario_kwargs = copy.deepcopy(self.scenario_kwargs)
         scenario_kwargs["walltime_limit"] = pick_time
+        scenario_kwargs["output_directory"] = output_dir
 
         return Scenario(config_space, **scenario_kwargs)
 
@@ -77,9 +84,12 @@ class HydraVerifierScenario:
         self,
         config_space: ConfigurationSpace,
         tune_time: float,
+        *,
+        output_dir: Path | None = None,
     ) -> Scenario:
         scenario_kwargs = copy.deepcopy(self.scenario_kwargs)
         scenario_kwargs["walltime_limit"] = tune_time
+        scenario_kwargs["output_directory"] = output_dir
 
         return Scenario(config_space, **scenario_kwargs)
 
