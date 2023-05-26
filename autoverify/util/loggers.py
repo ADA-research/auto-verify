@@ -13,3 +13,6 @@ verification_logger.setLevel(logging.DEBUG)
 
 hydra_logger = logging.getLogger(root_logname.format("hydra"))
 hydra_logger.setLevel(logging.DEBUG)
+
+experiment_logger = logging.getLogger(root_logname.format("experiment"))
+experiment_logger.setLevel(logging.INFO)
