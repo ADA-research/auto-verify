@@ -162,7 +162,9 @@ class CompleteVerifier(Verifier):
         )
 
         outcome = self._run_verification(
-            run_cmd, result_file=output_file, timeout=timeout
+            run_cmd,
+            result_file=output_file,
+            timeout=timeout,
         )
 
         # Shutting down after timeout may take some time, so we set the took

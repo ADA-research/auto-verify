@@ -74,11 +74,11 @@ AbCrownConfigspace.add_hyperparameters(
         ),
         # ============================================================
         # solver
-        Integer(
-            "solver__batch_size",
-            (1, 1000),
-            default=64,
-        ),  # up to 500000..
+        # Integer(
+        #     "solver__batch_size",
+        #     (1, 1000),
+        #     default=64,
+        # ),  # up to 500000..
         Float(
             "solver__min_batch_size_ratio",
             (0.0, 1.0),

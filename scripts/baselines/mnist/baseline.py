@@ -18,14 +18,14 @@ def run_mnist_baseline(
     # Run once and discard
     experiment_logger.info("Init run")
     run_sequential_portfolio(
-        portfolio[0:1],  # type: ignore
+        Portfolio([portfolio.at(0)]),
         mnist_instances[0:1],
         output_csv_path=output_csv,
     )
 
     experiment_logger.info("Real run")
     results = run_sequential_portfolio(
-        portfolio,  # type: ignore
+        portfolio,
         mnist_instances,
         output_csv_path=output_csv,
     )

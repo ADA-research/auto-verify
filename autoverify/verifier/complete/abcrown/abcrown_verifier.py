@@ -25,6 +25,7 @@ class AbCrown(CompleteVerifier):
 
     name: str = "abcrown"
     config_space: ConfigurationSpace = AbCrownConfigspace
+    batch_size: int = 512
 
     @property
     def contexts(self) -> list[ContextManager[None]]:
@@ -86,10 +87,12 @@ class AbCrown(CompleteVerifier):
     ) -> Path:
         if isinstance(config, Configuration):
             yaml_config = AbcrownYamlConfig.from_config(
-                config, network, property
+                config, network, property, batch_size=self.batch_size
             )
         elif isinstance(config, Path):
-            yaml_config = AbcrownYamlConfig.from_yaml(config, network, property)
+            yaml_config = AbcrownYamlConfig.from_yaml(
+                config, network, property, batch_size=self.batch_size
+            )
         else:
             raise ValueError("Config should be a Configuration or Path")
 

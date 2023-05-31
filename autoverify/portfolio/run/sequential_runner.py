@@ -84,7 +84,7 @@ def run_sequential_portfolio(
             elif isinstance(result, Err):
                 err_string = result.unwrap_err().err
 
-                verification_logger.info("HUH Exception during verification.")
+                verification_logger.info("Exception during verification.")
                 verification_logger.info(err_string)
 
                 verification_data = VerificationDataResult(

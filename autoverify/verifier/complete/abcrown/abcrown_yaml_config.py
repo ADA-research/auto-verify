@@ -17,7 +17,14 @@ class AbcrownYamlConfig:
         self._yaml_file = yaml_file
 
     @classmethod
-    def from_yaml(cls, yaml_file: Path, network: Path, property: Path):
+    def from_yaml(
+        cls,
+        yaml_file: Path,
+        network: Path,
+        property: Path,
+        *,
+        batch_size: int = 64,
+    ):
         """_summary_."""
         abcrown_dict = yaml.safe_load(yaml_file.read_text())
 
@@ -26,6 +33,7 @@ class AbcrownYamlConfig:
             abcrown_dict, ["specification", "vnnlib_path"], str(property)
         )
         nested_set(abcrown_dict, ["general", "save_adv_example"], True)
+        nested_set(abcrown_dict, ["solver", "batch_size"], batch_size)
 
         new_yaml_file = tmp_yaml_file()
         yaml.dump(abcrown_dict, new_yaml_file)
@@ -33,7 +41,14 @@ class AbcrownYamlConfig:
         return cls(new_yaml_file)
 
     @classmethod
-    def from_config(cls, config: Configuration, network: Path, property: Path):
+    def from_config(
+        cls,
+        config: Configuration,
+        network: Path,
+        property: Path,
+        *,
+        batch_size: int = 64,
+    ):
         """Initialize the YAML file based on the configuration."""
         dict_config: dict[str, Any] = config.get_dictionary()
         abcrown_dict: dict[str, Any] = {}
@@ -47,8 +62,9 @@ class AbcrownYamlConfig:
             abcrown_dict, ["specification", "vnnlib_path"], str(property)
         )
         nested_set(abcrown_dict, ["general", "save_adv_example"], True)
+        nested_set(abcrown_dict, ["solver", "batch_size"], batch_size)
 
-        # TODO: Remove
+        # TODO: Remove the mnist problem formulation
         # TODO: How is that shape determined
         nested_set(abcrown_dict, ["model", "input_shape"], [-1, 1, 28, 28])
 

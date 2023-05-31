@@ -20,7 +20,7 @@ class VerificationInstance:
 
     network: Path
     property: Path
-    timeout: int | None = None
+    timeout: int
 
     def as_smac_instance(self) -> str:
         """Return the instance in a `f"{network},{property},{timeout}` format.
@@ -170,13 +170,15 @@ def read_vnncomp_instances(benchmark: str) -> list[VerificationInstance]:
                 VerificationInstance(
                     Path(str(benchmark_dir / network)),
                     Path(str(benchmark_dir / property)),
-                    int(timeout),  # TODO: Is that always an integer?
+                    int(timeout),  # NOTE: Is that always an integer?
                 )
             )
 
     return verification_instances
 
 
+# NOTE: Maybe we could just pass the filter as an optional kwarg to
+# `read_vnncomp_instances`?
 def filter_verification_instances(
     instances: list[VerificationInstance],
     predicate: Callable[[VerificationInstance], bool],

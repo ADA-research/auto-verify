@@ -10,3 +10,8 @@ def mnist_small_filter(inst: VerificationInstance) -> bool:
 def mnist_medium_filter(inst: VerificationInstance) -> bool:
     """_summary_."""
     return inst.network.name.endswith("4.onnx")
+
+
+def mnist_large_filter(inst: VerificationInstance) -> bool:
+    """_summary_."""
+    return inst.network.name.endswith("6.onnx")

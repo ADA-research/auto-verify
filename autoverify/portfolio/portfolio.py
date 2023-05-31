@@ -35,6 +35,10 @@ class Portfolio:
     def __iter__(self) -> Iterator[ConfiguredVerifier]:
         return self.verifiers.__iter__()
 
+    def at(self, i: int) -> ConfiguredVerifier:
+        """_summary_."""
+        return self.verifiers[i]
+
     def add(self, configured_verifier: ConfiguredVerifier):
         """_summary_."""
         self.verifiers.append(configured_verifier)
@@ -47,6 +51,7 @@ class Portfolio:
         Args:
             configured_verifiers: TODO
         """
+        # TODO:
         for cv in configured_verifiers:
             pass
 
