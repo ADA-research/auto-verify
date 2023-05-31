@@ -16,8 +16,9 @@ from autoverify.verifier.complete.abcrown import AbCrownConfigspace
 logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
-    output_dir = Path(sys.argv[1])
-    cfg_out = Path(sys.argv[2])
+    walltime_limit = int(sys.argv[1])
+    output_dir = Path(sys.argv[2])
+    cfg_out = Path(sys.argv[3])
 
     mnist_fc = read_vnncomp_instances("mnist_fc")
 
