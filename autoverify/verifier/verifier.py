@@ -71,6 +71,7 @@ class Verifier(ABC):
         property: Path,
         *,
         config: Any,
+        timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> tuple[str, Path | None]:
         """_summary_."""
         raise NotImplementedError
@@ -107,6 +108,11 @@ class Verifier(ABC):
         """
         return self.config_space.sample_configuration(size=size)
 
+    @staticmethod
+    def is_same_config(config1: Any, config2: Any) -> bool:
+        """Check if a config is the same as the self config."""
+        raise NotImplementedError
+
 
 class CompleteVerifier(Verifier):
     """_summary_."""
@@ -117,7 +123,7 @@ class CompleteVerifier(Verifier):
         property: Path,
         *,
         config: Configuration | Path | None = None,
-        timeout: int = 600,
+        timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> CompleteVerificationResult:
         """Verify the property on the network.
 
@@ -152,14 +158,17 @@ class CompleteVerifier(Verifier):
         config = self._init_config(network, property, config)
 
         run_cmd, output_file = self._get_run_cmd(
-            network, property, config=config
+            network, property, config=config, timeout=timeout
         )
 
         outcome = self._run_verification(
-            run_cmd,
-            result_file=output_file,
-            timeout=timeout,
+            run_cmd, result_file=output_file, timeout=timeout
         )
+
+        # Shutting down after timeout may take some time, so we set the took
+        # value to the actual timeout
+        if outcome.result == "TIMEOUT":
+            outcome.took = timeout
 
         if outcome.err == "":  # TODO: Makes more sense if we set err to None
             return Ok(outcome)

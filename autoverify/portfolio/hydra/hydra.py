@@ -4,14 +4,10 @@ import random
 from collections import defaultdict
 from pathlib import Path
 
-import numpy as np
 from ConfigSpace import Configuration
 from smac import (
     AlgorithmConfigurationFacade,
-    BlackBoxFacade,
-    HyperbandFacade,
     HyperparameterOptimizationFacade,
-    RunHistory,
     Scenario,
 )
 
@@ -19,14 +15,13 @@ from autoverify.portfolio.hydra.hydra_verifier_scenario import (
     HydraVerifierScenario,
 )
 from autoverify.portfolio.hydra.incumbent import Incumbent, Incumbents
-from autoverify.portfolio.portfolio import ConfiguredVerifier, Portfolio
+from autoverify.portfolio.portfolio import Portfolio
 from autoverify.portfolio.target_function import (
     SmacTargetFunction,
     make_pick_verifier_target_function,
     make_verifier_target_function,
 )
 from autoverify.util.loggers import hydra_logger
-from autoverify.util.smac import set_scenario_output_dir
 from autoverify.util.verifiers import verifier_from_name
 from autoverify.verifier.verifier import CompleteVerifier, Verifier
 
@@ -79,7 +74,7 @@ class Hydra:
             hydra_logger.info(f"Starting Hydra iteration {self._iter}")
 
             incumbents = self._do_smac_runs()
-            self._update_portfolio(incumbents)
+            self._update_portfolio(portfolio, incumbents)
 
         return portfolio
 
@@ -87,8 +82,13 @@ class Hydra:
     def _instances(self) -> list[str]:
         return self._scenario.scenario_kwargs["instances"]
 
-    def _update_portfolio(self, incumbents: Incumbents):
-        best_incs = incumbents.get_best_n(self._instances, self._incs_per_iter)
+    def _update_portfolio(self, portfolio: Portfolio, incumbents: Incumbents):
+        best_incs = incumbents.get_best_n(
+            self._instances, self._incs_per_iter, remove_duplicates=False
+        )
+
+        for inc in best_incs:
+            pass
 
     def _get_pick_tune_time(self) -> tuple[float, float]:
         alpha = self._scenario.alpha
@@ -150,7 +150,7 @@ class Hydra:
                 pick_time,
                 self._scenario.as_smac_pick_scenario(
                     pick_time,
-                    output_dir=self._output_path
+                    output_dir=self._output_dir
                     / self._SMAC_RUN_FMT.format("pick", self._iter, smac_iter),
                 ),
             )
@@ -164,7 +164,7 @@ class Hydra:
                 self._scenario.as_smac_tune_scenario(
                     verifier.config_space,
                     tune_time,
-                    output_dir=self._output_path
+                    output_dir=self._output_dir
                     / self._SMAC_RUN_FMT.format("tune", self._iter, smac_iter),
                 ),
             )

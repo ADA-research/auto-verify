@@ -7,6 +7,7 @@ from typing import ContextManager
 
 from ConfigSpace import Configuration, ConfigurationSpace
 
+from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 from autoverify.util.env import cwd, environment
 from autoverify.util.loggers import verification_logger
@@ -59,6 +60,7 @@ class Nnenum(CompleteVerifier):
         property: Path,
         *,
         config: str,
+        timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> tuple[str, Path | None]:
         result_file = Path(tempfile.NamedTemporaryFile("w").name)
         source_cmd = get_conda_source_cmd(get_conda_path())
@@ -67,7 +69,7 @@ class Nnenum(CompleteVerifier):
         run_cmd = f"""
         {" ".join(source_cmd)}
         conda activate {self.conda_env_name}
-        python -m nnenum.nnenum {str(network)} {str(property)} {sys.maxsize} \
+        python -m nnenum.nnenum {str(network)} {str(property)} {str(timeout)} \
         {str(result_file)} \
         {str(cpu_count())} \
         {config}
@@ -92,3 +94,14 @@ class Nnenum(CompleteVerifier):
         verification_logger.warning("Invalid nnenum config, using default.")
 
         return str(self.default_config["settings_mode"])
+
+    @staticmethod
+    def is_same_config(
+        config1: Configuration | str, config2: Configuration | str
+    ) -> bool:
+        if isinstance(config1, Configuration):
+            config1 = str(config1["settings_mode"])  # type: ignore
+        if isinstance(config2, Configuration):
+            config2 = str(config2["settings_mode"])  # type: ignore
+
+        return config1 == config2

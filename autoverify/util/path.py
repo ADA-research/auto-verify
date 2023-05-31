@@ -13,3 +13,11 @@ def check_file_extension(file: Path, extension: str) -> bool:
         bool: True if the file ends with the extension, False otherwise.
     """
     return file.is_file() and file.suffix == extension
+
+
+def read_path_file(file: Path) -> str:
+    """Return the contents of the file the `Path` points to."""
+    with open(str(file)) as f:
+        s = f.read()
+
+    return s

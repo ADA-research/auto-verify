@@ -1,5 +1,5 @@
 """_summary_."""
-from autoverify.verifier import AbCrown, MnBab, Nnenum, OvalBab
+from autoverify.verifier import AbCrown, DummyVerifier, MnBab, Nnenum, OvalBab
 from autoverify.verifier.verifier import Verifier
 
 
@@ -25,5 +25,7 @@ def verifier_from_name(name: str) -> type[Verifier]:
         return MnBab
     elif name == "ovalbab":
         return OvalBab
+    elif name == "dummy":
+        return DummyVerifier
 
     raise ValueError(f"Invalid verifier name: {name}")

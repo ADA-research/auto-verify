@@ -1,17 +1,31 @@
 """_summary_."""
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterator
 
 from ConfigSpace import Configuration
 
-from autoverify.verifier.complete.nnenum.nnenum_verifier import Nnenum
-from autoverify.verifier.verifier import CompleteVerifier
+from autoverify.util.verifiers import verifier_from_name
 
-ConfiguredVerifier = tuple[type[CompleteVerifier], Configuration | Path]
+# ConfiguredVerifier = tuple[type[CompleteVerifier], Configuration | Path]
 
 
-# TODO: Dont allow duplicates in verifiers
+@dataclass
+class ConfiguredVerifier:
+    verifier: str
+    config: Configuration | Path
+
+    def is_equivalent(self, cv: ConfiguredVerifier) -> bool:
+        if self.verifier != cv.verifier:
+            return False
+
+        v = verifier_from_name(self.verifier)
+
+        return v.is_same_config(self.config, cv.config)
+
+
 @dataclass
 class Portfolio:
     """_summary_."""
@@ -25,13 +39,24 @@ class Portfolio:
         """_summary_."""
         self.verifiers.append(configured_verifier)
 
+    def update(self, configured_verifiers: list[ConfiguredVerifier]):
+        """Update the portfolio with new incumbents.
+
+        Does not add configured verifiers if they are already present.
+
+        Args:
+            configured_verifiers: TODO
+        """
+        for cv in configured_verifiers:
+            pass
+
     # TODO:
     def to_json(self, json_file: Path = Path("portfolio.json")):
         """_summary_."""
         raise NotImplementedError
 
     # TODO:
-    @classmethod
-    def from_json(cls, json_file: Path):
+    @staticmethod
+    def from_json(json_file: Path):
         """_summary_."""
         raise NotImplementedError

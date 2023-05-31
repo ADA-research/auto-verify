@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+import json
+from dataclasses import asdict, dataclass, field
 from typing import cast
 
 import numpy as np
@@ -20,6 +21,15 @@ class Incumbent:
 
     def __post_init__(self):
         self.config = self.tuned_verifier[1]
+
+    def to_hashable(self) -> str:
+        """_summary_."""
+        d: dict[str, str] = {}
+
+        d["verifier"] = self.tuned_verifier[0]().name
+        d["config"] = str(self.config)
+
+        return json.dumps(d, sort_keys=True)
 
     def mean_cost(self, instances: list[str]) -> float:
         """_summary_."""
@@ -87,6 +97,21 @@ class Incumbents:
         self._track_inc(incumbent)
         self.incumbents.append(incumbent)
 
+    def get_unique_incs(self) -> Incumbents:
+        """_summary_."""
+        unique_incs: list[Incumbent] = []
+        seen: set[str] = set()
+
+        for inc in self.incumbents:
+            h_inc = inc.to_hashable()
+
+            if h_inc not in seen:
+                unique_incs.append(inc)
+            else:
+                seen.add(h_inc)
+
+        return Incumbents(unique_incs)
+
     def get_best_n(
         self,
         instances: list[str],
@@ -94,20 +119,12 @@ class Incumbents:
         *,
         remove_duplicates: bool = True,
     ) -> Incumbents:
-        sortd = sorted(
-            self.incumbents, key=lambda inc: inc.mean_cost(instances)
+        incs_to_sort = (
+            self.get_unique_incs() if remove_duplicates else self.incumbents
         )
 
-        if remove_duplicates:
-            new_incs: list[Incumbents] = []
-            seen_incs = set()
+        sorted_incs = sorted(
+            incs_to_sort, key=lambda inc: inc.mean_cost(instances)
+        )
 
-            for inc in sortd:
-                name = str(inc.tuned_verifier[0].name)
-                config = inc.tuned_verifier[1]
-                t = (name, config)
-
-                # TODO:
-                seen_incs.add((name, config))
-
-        return Incumbents(sortd[:n])
+        return Incumbents(sorted_incs[:n])

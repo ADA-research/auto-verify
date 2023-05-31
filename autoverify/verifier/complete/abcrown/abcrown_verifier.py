@@ -5,6 +5,7 @@ from typing import ContextManager
 
 from ConfigSpace import Configuration, ConfigurationSpace
 
+from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 from autoverify.util.env import cwd, pkill_match_list
@@ -62,6 +63,7 @@ class AbCrown(CompleteVerifier):
         property: Path,
         *,
         config: Path,
+        timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> tuple[str, Path | None]:
         result_file = Path(tmp_file(".txt").name)
         source_cmd = get_conda_source_cmd(get_conda_path())
@@ -70,7 +72,8 @@ class AbCrown(CompleteVerifier):
         {" ".join(source_cmd)}
         conda activate {self.conda_env_name}
         python abcrown.py --config {str(config)} \
-        --results_file {str(result_file)}
+        --results_file {str(result_file)} \
+        --timeout {str(timeout)}
         """
 
         return run_cmd, result_file
