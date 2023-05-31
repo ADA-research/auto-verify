@@ -14,7 +14,7 @@ from autoverify.verifier import AbCrown
 from autoverify.verifier.complete.abcrown import AbCrownConfigspace
 
 logger = logging.getLogger(__name__)
-mnist_fc = read_vnncomp_instances("mnist_fc")[:3]
+mnist_fc = read_vnncomp_instances("mnist_fc")
 
 if __name__ == "__main__":
     output_dir = Path(sys.argv[1])
