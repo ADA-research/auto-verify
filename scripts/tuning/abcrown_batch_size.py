@@ -16,11 +16,16 @@ mnist_fc = filter_verification_instances(mnist_fc, mnist_large_filter)
 
 if __name__ == "__main__":
     ab = AbCrown()
+    ab.batch_size = 10000
 
     for inst in mnist_fc:
         logger.info(f"{inst.network.name} {inst.property.name} {inst.timeout}")
 
-        res = ab.verify_property(inst.network, inst.property, timeout=30)
+        res = ab.verify_property(
+            inst.network,
+            inst.property,
+            timeout=inst.timeout,
+        )
 
         if isinstance(res, Ok):
             logger.info("Verification went ok.")

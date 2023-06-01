@@ -79,10 +79,16 @@ AbCrownConfigspace.add_hyperparameters(
         #     (1, 1000),
         #     default=64,
         # ),  # up to 500000..
-        Float(
+        # Float(
+        #     "solver__min_batch_size_ratio",
+        #     (0.0, 1.0),
+        #     default=0.1,
+        # ),
+        # NOTE: Fixing the batch size for now because of OOM errors. It is
+        # instead a class attribute or passed as a param to verify_property`
+        Constant(
             "solver__min_batch_size_ratio",
-            (0.0, 1.0),
-            default=0.1,
+            0.1,
         ),
         Categorical(
             "solver__use_float64_in_last_iteration",

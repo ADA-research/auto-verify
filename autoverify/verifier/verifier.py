@@ -91,6 +91,8 @@ class Verifier(ABC):
         network: Path,
         property: Path,
         config: Any,
+        *,
+        batch_size: int | None = None,
     ) -> Any:
         """_summary."""
         raise NotImplementedError
@@ -124,6 +126,7 @@ class CompleteVerifier(Verifier):
         *,
         config: Configuration | Path | None = None,
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
+        batch_size: int | None = None,
     ) -> CompleteVerificationResult:
         """Verify the property on the network.
 
@@ -155,7 +158,9 @@ class CompleteVerifier(Verifier):
 
         # Tools use different configuration formats and methods, thus we let
         # them do some initialization here
-        config = self._init_config(network, property, config)
+        config = self._init_config(
+            network, property, config, batch_size=batch_size
+        )
 
         run_cmd, output_file = self._get_run_cmd(
             network, property, config=config, timeout=timeout
@@ -218,12 +223,12 @@ class CompleteVerifier(Verifier):
             result = "ERR"
             run_err = f"Exception during verification:\n{err}"
         finally:
+            took_t = time.time() - before_t
+
             if stdout == "":
                 stdout = (
                     sp_result.stdout.decode() if sp_result is not None else ""
                 )
-
-            took_t = time.time() - before_t
 
         if result is None:
             result, counter_example = self._parse_result(sp_result, result_file)

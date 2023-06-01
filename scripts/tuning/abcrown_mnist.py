@@ -26,8 +26,8 @@ if __name__ == "__main__":
         AbCrownConfigspace,
         instances=verification_instances_to_smac_instances(mnist_fc),
         instance_features=index_features(mnist_fc),
-        walltime_limit=60,
-        deterministic=True,
+        walltime_limit=walltime_limit,
+        deterministic=False,
         output_directory=output_dir,
     )
 

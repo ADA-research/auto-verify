@@ -26,7 +26,7 @@ def _process_target_function_result(
         float: TODO.
     """
     # If the result is an err, we raise an exception. SMAC automatically
-    # sets the cost to infinite if an exception is raised in the target_func
+    # sets the cost to infinite if an exception is raised in the target_function
     verification_result = result.unwrap_or_raise(Exception)
 
     if verification_result.result == "TIMEOUT":
@@ -39,6 +39,8 @@ def run_verification_instance(
     verifier: Type[CompleteVerifier],
     config: Configuration | Path | None,
     instance: str,
+    *,
+    batch_size: int | None = None,
 ) -> CompleteVerificationResult:
     """Run an instance and report the result and time taken.
 
@@ -54,7 +56,11 @@ def run_verification_instance(
     network, property, timeout = instance.split(",")
 
     result = verifier_instance.verify_property(
-        Path(network), Path(property), config=config, timeout=int(timeout)
+        Path(network),
+        Path(property),
+        config=config,
+        timeout=int(timeout),
+        batch_size=batch_size,
     )
 
     return result
@@ -64,6 +70,7 @@ def make_verifier_target_function(
     verifier: Type[CompleteVerifier],
     *,
     timeout_penalty: int = 10,
+    batch_size: int | None = None,
 ) -> SmacTargetFunction:
     """Return a new target_function that uses the specified verifier.
 
@@ -86,7 +93,9 @@ def make_verifier_target_function(
         report the `process_time` so SMAC can optimize for it.
         """
         seed += 1  # silence warning, cant rename the param to _ or smac errors
-        result = run_verification_instance(verifier, config, instance)
+        result = run_verification_instance(
+            verifier, config, instance, batch_size=batch_size
+        )
 
         return _process_target_function_result(result, timeout_penalty)
 
