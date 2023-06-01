@@ -16,6 +16,7 @@ class CompleteVerificationData:
     took: float
     counter_example: str | None = None
     err: str = ""
+    stdout: str = ""
 
 
 CompleteVerificationResult = Result[

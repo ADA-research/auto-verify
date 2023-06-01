@@ -190,6 +190,7 @@ class CompleteVerifier(Verifier):
         counter_example: str | None = None
         sp_result: CompletedProcess[bytes] | None = None
         run_err: str = ""
+        stdout: str = ""
 
         try:
             contexts = self.contexts or []
@@ -207,13 +208,21 @@ class CompleteVerifier(Verifier):
                     timeout=timeout,
                 )
         except subprocess.TimeoutExpired:
-            took_t = time.time() - before_t
             result = "TIMEOUT"
-        except Exception as err:
-            took_t = time.time() - before_t
+        except subprocess.CalledProcessError as err:
             result = "ERR"
-            run_err = f"Exception during verification:\n {err}"
-        else:
+            err_str = err.stderr.decode()
+            stdout = err.stdout.decode()
+            run_err = f"Exception in called process:\n{err_str}"
+        except Exception as err:
+            result = "ERR"
+            run_err = f"Exception during verification:\n{err}"
+        finally:
+            if stdout == "":
+                stdout = (
+                    sp_result.stdout.decode() if sp_result is not None else ""
+                )
+
             took_t = time.time() - before_t
 
         if result is None:
@@ -224,4 +233,5 @@ class CompleteVerifier(Verifier):
             took_t,
             counter_example,
             run_err,
+            stdout,
         )

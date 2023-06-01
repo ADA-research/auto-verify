@@ -20,13 +20,11 @@ if __name__ == "__main__":
     for inst in mnist_fc:
         logger.info(f"{inst.network.name} {inst.property.name} {inst.timeout}")
 
-        res = ab.verify_property(
-            inst.network, inst.property, timeout=inst.timeout
-        )
+        res = ab.verify_property(inst.network, inst.property, timeout=30)
 
         if isinstance(res, Ok):
             logger.info("Verification went ok.")
             logger.info(f"verification result was: {res.ok().result}")
         elif isinstance(res, Err):
             logger.info("Verification errored.")
-            logger.info(f"Err=\n{res.err()}")
+            logger.info(f"Err=\n{res.err().err}")

@@ -25,7 +25,7 @@ class AbCrown(CompleteVerifier):
 
     name: str = "abcrown"
     config_space: ConfigurationSpace = AbCrownConfigspace
-    batch_size: int = 512
+    batch_size: int = 5000  # 512
 
     @property
     def contexts(self) -> list[ContextManager[None]]:
