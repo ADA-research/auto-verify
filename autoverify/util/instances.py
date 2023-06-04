@@ -141,7 +141,11 @@ def verification_instances_to_smac_instances(
     return [inst.as_smac_instance() for inst in instances]
 
 
-def read_vnncomp_instances(benchmark: str) -> list[VerificationInstance]:
+def read_vnncomp_instances(
+    benchmark: str,
+    *,
+    predicate: Callable[[VerificationInstance], bool] | None = None,
+) -> list[VerificationInstance]:
     """Read the instances of a VNNCOMP benchmark.
 
     Reads the CSV file of a VNNCOMP benchmark, parsing the network, property and
@@ -149,6 +153,9 @@ def read_vnncomp_instances(benchmark: str) -> list[VerificationInstance]:
 
     Args:
         benchmark: The name of the benchmark directory.
+        predicate: A function that, given a `VerificationInstance` returns
+            either True or False. If False is returned, the
+            `VerificationInstance` is dropped from the returned instances.
 
     Returns:
         list[VerificationInstance]: A list of `VerificationInstance` objects
@@ -166,19 +173,23 @@ def read_vnncomp_instances(benchmark: str) -> list[VerificationInstance]:
         for row in reader:
             network, property, timeout = row
 
-            verification_instances.append(
-                VerificationInstance(
-                    Path(str(benchmark_dir / network)),
-                    Path(str(benchmark_dir / property)),
-                    int(timeout),  # NOTE: Is that always an integer?
-                )
+            instance = VerificationInstance(
+                Path(str(benchmark_dir / network)),
+                Path(str(benchmark_dir / property)),
+                int(timeout),  # NOTE: Is that always an integer?
             )
+
+            if predicate and not predicate(instance):
+                continue
+
+            verification_instances.append(instance)
 
     return verification_instances
 
 
 # NOTE: Maybe we could just pass the filter as an optional kwarg to
 # `read_vnncomp_instances`?
+# TODO: Deprecate in favour of kwarg in `read_vnncomp_instances`
 def filter_verification_instances(
     instances: list[VerificationInstance],
     predicate: Callable[[VerificationInstance], bool],

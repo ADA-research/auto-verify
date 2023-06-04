@@ -23,11 +23,11 @@ AbCrownConfigspace.add_hyperparameters(
             ["patches", "matrix"],
             default="patches",
         ),
-        Categorical(
-            "general__double_fp",
-            [True, False],
-            default=False,
-        ),
+        # Categorical(
+        #     "general__double_fp",
+        #     [True, False], # NOTE: many unsuccesfull queries if true
+        #     default=False,
+        # ),
         Categorical(
             "general__loss_reduction_func",
             ["sum", "min"],
@@ -43,15 +43,15 @@ AbCrownConfigspace.add_hyperparameters(
             ["bab", "mip", "bab_refine"],
             default="bab",
         ),
-        Categorical(
-            "general__enable_incomplete_verification",
-            [True, False],
-            default=True,
-        ),
-        # model - nothing
-        # data - nothing
-        # specification
-        # ============================================================
+        # Categorical( # NOTE: Errors
+        #     "general__enable_incomplete_verification",
+        #     [True, False],
+        #     default=True,
+        # ),
+        # # model - nothing
+        # # data - nothing
+        # # specification
+        # # ============================================================
         Categorical(
             "specification__type",
             ["lp", "bounds"],
@@ -62,39 +62,39 @@ AbCrownConfigspace.add_hyperparameters(
             ["verified-acc", "runnerup"],  # "specify-target"],
             default="verified-acc",
         ),
-        Categorical(
-            "specification__norm",
-            [1, 2, float("inf")],
-            default=float("inf"),
-        ),
-        Categorical(
-            "specification__epsilon",
-            ["null"],
-            default="null",
-        ),
-        # ============================================================
-        # solver
-        # Integer(
-        #     "solver__batch_size",
-        #     (1, 1000),
-        #     default=64,
-        # ),  # up to 500000..
-        # Float(
-        #     "solver__min_batch_size_ratio",
-        #     (0.0, 1.0),
-        #     default=0.1,
+        # Categorical(  # NOTE: Errors
+        #     "specification__norm",
+        #     [1, 2, float("inf")],
+        #     default=float("inf"),
         # ),
-        # NOTE: Fixing the batch size for now because of OOM errors. It is
-        # instead a class attribute or passed as a param to verify_property`
-        Constant(
-            "solver__min_batch_size_ratio",
-            0.1,
-        ),
-        Categorical(
-            "solver__use_float64_in_last_iteration",
-            [True, False],
-            default=False,
-        ),
+        # Categorical(
+        #     "specification__epsilon",
+        #     ["null"],
+        #     default="null",
+        # ),
+        # # ============================================================
+        # # solver
+        # # Integer(
+        # #     "solver__batch_size",
+        # #     (1, 1000),
+        # #     default=64,
+        # # ),  # up to 500000..
+        # # Float(
+        # #     "solver__min_batch_size_ratio",
+        # #     (0.0, 1.0),
+        # #     default=0.1,
+        # # ),
+        # # NOTE: Fixing the batch size for now because of OOM errors. It is
+        # # instead a class attribute or passed as a param to verify_property`
+        # Constant(
+        #     "solver__min_batch_size_ratio",
+        #     0.1,
+        # ),
+        # Categorical(
+        #     "solver__use_float64_in_last_iteration",
+        #     [True, False],
+        #     default=False,
+        # ),
         Integer(
             "solver__early_stop_patience",
             (1, 20),
@@ -109,18 +109,18 @@ AbCrownConfigspace.add_hyperparameters(
             "solver__bound_prop_method",
             [
                 "alpha-crown",
-                "crown",
-                "forward",
-                "forward+crown",
-                "alpha-forward",
-                "crown-ibp",
+                # "crown",
+                # "forward",
+                # "forward+crown",
+                # "alpha-forward",
+                # "crown-ibp",
                 "init-crown",
             ],
             default="alpha-crown",
         ),
         Categorical(
             "solver__prune_after_crown",
-            [False],
+            [True, False],
             default=False,
         ),
         Integer(
@@ -218,10 +218,10 @@ AbCrownConfigspace.add_hyperparameters(
             (1_000, 100_000),
             default=10_000,
         ),
-        Constant(
-            "solver__multi_class__multi_class_method",
-            "allclass_domain",  # the rest are deprecated
-        ),
+        # Constant(
+        #     "solver__multi_class__multi_class_method",
+        #     "allclass_domain",  # the rest are deprecated
+        # ),
         Integer(
             "solver__multi_class__label_batch_size",
             (1, 128),
@@ -232,11 +232,11 @@ AbCrownConfigspace.add_hyperparameters(
             [True, False],
             default=True,
         ),
-        Categorical(
-            "solver__mip__parallel_solvers",
-            ["null"],
-            default="null",
-        ),
+        # Categorical(
+        #     "solver__mip__parallel_solvers",
+        #     ["null"],
+        #     default="null",
+        # ),
         Integer(
             "solver__mip__refine_neuron_timeout",
             (1, 30),
@@ -292,10 +292,10 @@ AbCrownConfigspace.add_hyperparameters(
             [True, False],
             default=False,
         ),
-        Constant(
-            "bab__cut__method",
-            "null",
-        ),
+        # Constant(
+        #     "bab__cut__method",
+        #     "null",
+        # ),
         Float(
             "bab__cut__lr",
             (0.001, 0.2),
@@ -351,17 +351,16 @@ AbCrownConfigspace.add_hyperparameters(
             default=False,
         ),
         # TODO: Enable once using cplex
-        #
-        # Float(
-        #     "bab__cut__cplex_cuts_wait",
-        #     (0, 2),
-        #     default=0,
-        # ),
-        # Categorical(
-        #     "bab__cut__cplex_cuts_revpickup",
-        #     [True, False],
-        #     default=True,
-        # ),
+        Float(
+            "bab__cut__cplex_cuts_wait",
+            (0, 2),
+            default=0,
+        ),
+        Categorical(
+            "bab__cut__cplex_cuts_revpickup",
+            [True, False],
+            default=True,
+        ),
         Categorical(
             "bab__cut__cut_reference_bounds",
             [True, False],
@@ -404,12 +403,12 @@ AbCrownConfigspace.add_hyperparameters(
             [True, False],
             default=False,
         ),
-        Categorical(  # noqa: E501
+        Categorical(
             "bab__branching__input_split__enhanced_bound_prop_method",
             ["alpha-crown", "crown", "forward+crown", "crown-ibp"],
             default="alpha-crown",
         ),
-        Categorical(  # noqa: E501
+        Categorical(
             "bab__branching__input_split__enhanced_branching_method",
             ["naive", "sb"],
             default="naive",
@@ -434,7 +433,55 @@ AbCrownConfigspace.add_hyperparameters(
             (-1, 10),
             default=-1,
         ),
-        # bab-branching-attack
+        # bab-attack
+        Categorical(
+            "bab__attack__enabled",
+            [True, False],
+            default=False,
+        ),
+        Integer(
+            "bab__attack__beam_candidates",
+            (1, 20),
+            default=8,
+        ),
+        Integer(
+            "bab__attack__beam_depth",
+            (1, 15),
+            default=7,
+        ),
+        Float(
+            "bab__attack__max_dive_fix_ratio",
+            (0.51, 1.0),
+            default=0.8,
+        ),
+        Float(
+            "bab__attack__min_local_free_ratio",
+            (0.0, 0.50),
+            default=0.2,
+        ),
+        Integer(
+            "bab__attack__mip_start_iteration",
+            (1, 10),
+            default=5,
+        ),
+        Float(
+            "bab__attack__mip_timeout",
+            (10.0, 60.0),
+            default=30.0,
+        ),
+        # Constant(
+        #     "bab__attack__adv_pool_threshold",
+        #     "null",
+        # ),
+        Categorical(
+            "bab__attack__refined_mip_attacker",
+            [True, False],
+            default=False,
+        ),
+        # Constant(
+        #     "bab__attack__refined_batch_size",
+        #     "null",
+        # ),
         # attack
         Categorical(
             "attack__pgd_order",
@@ -543,20 +590,62 @@ AbCrownConfigspace.add_hyperparameters(
         ),
     ]
 )
+"""
 
+"""
 AbCrownConfigspace.add_conditions(
     [
         EqualsCondition(
-            AbCrownConfigspace.get_hyperparameter("solver__forward__dynamic"),
-            AbCrownConfigspace.get_hyperparameter("specification__norm"),
-            float("inf"),
-        ),
-        EqualsCondition(
+            AbCrownConfigspace.get_hyperparameter(
+                "bab__branching__input_split__enhanced_bound_prop_method"
+            ),
             AbCrownConfigspace.get_hyperparameter(
                 "bab__branching__input_split__enable"
             ),
+            True,
+        ),
+        EqualsCondition(
             AbCrownConfigspace.get_hyperparameter(
-                "general__enable_incomplete_verification"
+                "bab__branching__input_split__enhanced_branching_method"
+            ),
+            AbCrownConfigspace.get_hyperparameter(
+                "bab__branching__input_split__enable"
+            ),
+            True,
+        ),
+        EqualsCondition(
+            AbCrownConfigspace.get_hyperparameter(
+                "bab__branching__input_split__enhanced_bound_patience"
+            ),
+            AbCrownConfigspace.get_hyperparameter(
+                "bab__branching__input_split__enable"
+            ),
+            True,
+        ),
+        EqualsCondition(
+            AbCrownConfigspace.get_hyperparameter(
+                "bab__branching__input_split__attack_patience"
+            ),
+            AbCrownConfigspace.get_hyperparameter(
+                "bab__branching__input_split__enable"
+            ),
+            True,
+        ),
+        EqualsCondition(
+            AbCrownConfigspace.get_hyperparameter(
+                "bab__branching__input_split__adv_check"
+            ),
+            AbCrownConfigspace.get_hyperparameter(
+                "bab__branching__input_split__enable"
+            ),
+            True,
+        ),
+        EqualsCondition(
+            AbCrownConfigspace.get_hyperparameter(
+                "bab__branching__input_split__sort_domain_interval"
+            ),
+            AbCrownConfigspace.get_hyperparameter(
+                "bab__branching__input_split__enable"
             ),
             True,
         ),
@@ -572,5 +661,73 @@ AbCrownConfigspace.add_conditions(
         #     AbCrownConfigspace.get_hyperparameter("bab__cut__cplex_cuts"),
         #     True,
         # ),
+        EqualsCondition(
+            AbCrownConfigspace.get_hyperparameter(
+                "solver__alpha-crown__lr_alpha"
+            ),
+            AbCrownConfigspace.get_hyperparameter("solver__alpha-crown__alpha"),
+            True,
+        ),
+        EqualsCondition(
+            AbCrownConfigspace.get_hyperparameter(
+                "solver__alpha-crown__iteration"
+            ),
+            AbCrownConfigspace.get_hyperparameter("solver__alpha-crown__alpha"),
+            True,
+        ),
+        EqualsCondition(
+            AbCrownConfigspace.get_hyperparameter(
+                "solver__alpha-crown__share_slopes"
+            ),
+            AbCrownConfigspace.get_hyperparameter("solver__alpha-crown__alpha"),
+            True,
+        ),
+        EqualsCondition(
+            AbCrownConfigspace.get_hyperparameter(
+                "solver__alpha-crown__no_joint_opt"
+            ),
+            AbCrownConfigspace.get_hyperparameter("solver__alpha-crown__alpha"),
+            True,
+        ),
+        EqualsCondition(
+            AbCrownConfigspace.get_hyperparameter(
+                "solver__alpha-crown__lr_decay"
+            ),
+            AbCrownConfigspace.get_hyperparameter("solver__alpha-crown__alpha"),
+            True,
+        ),
+        EqualsCondition(
+            AbCrownConfigspace.get_hyperparameter(
+                "solver__alpha-crown__full_conv_alpha"
+            ),
+            AbCrownConfigspace.get_hyperparameter("solver__alpha-crown__alpha"),
+            True,
+        ),
+        #         EqualsCondition(
+        #             AbCrownConfigspace.get_hyperparameter("solver__forward__dynamic"),
+        #             AbCrownConfigspace.get_hyperparameter("specification__norm"),
+        #             float("inf"),
+        #         ),
+        #         EqualsCondition(
+        #             AbCrownConfigspace.get_hyperparameter(
+        #                 "bab__branching__input_split__enable"
+        #             ),
+        #             AbCrownConfigspace.get_hyperparameter(
+        #                 "general__enable_incomplete_verification"
+        #             ),
+        #             True,
+        #         ),
+        #         EqualsCondition(
+        #             AbCrownConfigspace.get_hyperparameter("bab__cut__cplex_cuts_wait"),
+        #             AbCrownConfigspace.get_hyperparameter("bab__cut__cplex_cuts"),
+        #             True,
+        #         ),
+        #         EqualsCondition(
+        #             AbCrownConfigspace.get_hyperparameter(
+        #                 "bab__cut__cplex_cuts_revpickup"
+        #             ),
+        #             AbCrownConfigspace.get_hyperparameter("bab__cut__cplex_cuts"),
+        #             True,
+        #         ),
     ]
 )

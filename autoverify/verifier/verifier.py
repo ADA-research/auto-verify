@@ -177,10 +177,8 @@ class CompleteVerifier(Verifier):
         if outcome.result == "TIMEOUT":
             outcome.took = timeout
 
-        if outcome.err == "":  # TODO: Makes more sense if we set err to None
-            return Ok(outcome)
-        else:
-            return Err(outcome)
+        # TODO: What is the point of wrapping in Ok/Err here
+        return Ok(outcome) if outcome.result != "ERR" else Err(outcome)
 
     def _run_verification(
         self,
@@ -212,8 +210,12 @@ class CompleteVerifier(Verifier):
                     shell=True,
                     timeout=timeout,
                 )
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as err:
             result = "TIMEOUT"
+            if err.stderr:
+                err_str = err.stderr.decode()
+            if err.stdout:
+                stdout = err.stdout.decode()
         except subprocess.CalledProcessError as err:
             result = "ERR"
             err_str = err.stderr.decode()

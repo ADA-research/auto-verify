@@ -2,7 +2,7 @@ import logging
 import sys
 from pathlib import Path
 
-from smac import AlgorithmConfigurationFacade, Scenario
+from smac import HyperparameterOptimizationFacade, Scenario
 
 from autoverify.portfolio.target_function import make_verifier_target_function
 from autoverify.util.instances import (
@@ -10,6 +10,7 @@ from autoverify.util.instances import (
     verification_instances_to_smac_instances,
 )
 from autoverify.util.smac import index_features
+from autoverify.util.vnncomp_filters import mnist_small_filter
 from autoverify.verifier import AbCrown
 from autoverify.verifier.complete.abcrown import AbCrownConfigspace
 
@@ -20,7 +21,7 @@ if __name__ == "__main__":
     output_dir = Path(sys.argv[2])
     cfg_out = Path(sys.argv[3])
 
-    mnist_fc = read_vnncomp_instances("mnist_fc")
+    mnist_fc = read_vnncomp_instances("mnist_fc", predicate=mnist_small_filter)
 
     scenario = Scenario(
         AbCrownConfigspace,
@@ -29,11 +30,12 @@ if __name__ == "__main__":
         walltime_limit=walltime_limit,
         deterministic=False,
         output_directory=output_dir,
+        n_trials=sys.maxsize,
     )
 
     target_function = make_verifier_target_function(AbCrown)
 
-    smac = AlgorithmConfigurationFacade(
+    smac = HyperparameterOptimizationFacade(
         scenario, target_function, overwrite=True
     )
 
