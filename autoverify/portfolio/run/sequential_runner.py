@@ -28,6 +28,7 @@ def run_sequential_portfolio(
     instances: list[VerificationInstance],
     *,
     output_csv_path: Path | None = None,
+    warmup: bool = False,
 ) -> list[VerificationDataResult]:
     """Run a portfolio sequentially on a set of instances.
 
@@ -40,12 +41,23 @@ def run_sequential_portfolio(
         portfolio: TODO.
         instances: TODO.
         output_csv_path: TODO.
+        warmup: TODO.
 
     Returns:
         list[VerificationDataResult]: TODO.
     """
     if output_csv_path is not None:
         init_verification_result_csv(output_csv_path)
+
+    if warmup:
+        verifier = portfolio.at(0).verifier_class
+        config = portfolio.at(0).config
+
+        run_verification_instance(
+            verifier,  # type: ignore
+            config,
+            instances[0],
+        )
 
     results: list[VerificationDataResult] = []
 
