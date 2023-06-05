@@ -49,7 +49,10 @@ def run_sequential_portfolio(
 
     results: list[VerificationDataResult] = []
 
-    for verifier, config in portfolio:
+    for configured_verifier in portfolio:
+        verifier = configured_verifier.verifier_class
+        config = configured_verifier.config
+
         for instance in instances:
             verification_logger.info(
                 f"Verifying property {instance.property.name} on "
@@ -59,7 +62,9 @@ def run_sequential_portfolio(
             )
 
             result = run_verification_instance(
-                verifier, config, instance.as_smac_instance()
+                verifier,  # type: ignore
+                config,
+                instance.as_smac_instance(),
             )
 
             verification_data: VerificationDataResult | None = None

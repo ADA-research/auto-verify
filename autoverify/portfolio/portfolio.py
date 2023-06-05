@@ -9,13 +9,16 @@ from ConfigSpace import Configuration
 
 from autoverify.util.verifiers import verifier_from_name
 
-# ConfiguredVerifier = tuple[type[CompleteVerifier], Configuration | Path]
-
 
 @dataclass
 class ConfiguredVerifier:
+    """_summary_."""
+
     verifier: str
     config: Configuration | Path
+
+    def __post_init__(self):
+        self.verifier_class = verifier_from_name(self.verifier)
 
     def is_equivalent(self, cv: ConfiguredVerifier) -> bool:
         if self.verifier != cv.verifier:

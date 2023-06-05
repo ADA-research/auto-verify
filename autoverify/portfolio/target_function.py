@@ -4,6 +4,7 @@ from typing import Callable, Type
 
 from ConfigSpace import Configuration
 
+from autoverify.util.instances import VerificationInstance
 from autoverify.util.verifiers import verifier_from_name
 from autoverify.verifier.verification_result import CompleteVerificationResult
 from autoverify.verifier.verifier import CompleteVerifier
@@ -38,7 +39,7 @@ def _process_target_function_result(
 def run_verification_instance(
     verifier: Type[CompleteVerifier],
     config: Configuration | Path | None,
-    instance: str,
+    instance: str | VerificationInstance,
     *,
     batch_size: int | None = None,
 ) -> CompleteVerificationResult:
@@ -53,6 +54,10 @@ def run_verification_instance(
         tuple[CompleteVerificationResult, float]: TODO.
     """
     verifier_instance = verifier()
+
+    if isinstance(instance, VerificationInstance):
+        instance = instance.as_smac_instance()
+
     network, property, timeout = instance.split(",")
 
     result = verifier_instance.verify_property(
@@ -124,9 +129,8 @@ def make_pick_verifier_target_function(
         We do not actually care about the verification result here, we just
         report the `process_time` so SMAC can optimize for it.
         """
+        config["seed"] = seed
         verifier = verifier_from_name(config["verifier"])
-
-        seed += 1  # silence warning, cant rename the param to _ or smac errors
 
         # FIXME: Verifier type mismatch between CompleteVerifier and Verifier
         result = run_verification_instance(
