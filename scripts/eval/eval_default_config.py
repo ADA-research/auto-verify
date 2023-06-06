@@ -17,7 +17,6 @@ if __name__ == "__main__":
 
     pf = Portfolio([ConfiguredVerifier(verifier.name, config)])
 
-    mnist_small = mnist_small[:2]
     run_sequential_portfolio(
         pf, mnist_small, output_csv_path=out_csv, warmup=True
     )
