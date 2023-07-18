@@ -58,11 +58,15 @@ if __name__ == "__main__":
     if not vnncomp_path.is_dir():
         raise ValueError(f"{vnncomp_path} is not a valid directory")
 
+    filter = None
+    if args.filter:
+        filter = filters[args.filter]
+
     instances = read_vnncomp_instances(
         args.benchmark,
         vnncomp_path,
         as_smac=True,
-        predicate=filters[args.filter],
+        predicate=filter,
     )
 
     config = smac_tune_verifier(
