@@ -6,8 +6,6 @@ from autoverify.util.instances import read_vnncomp_instances
 from autoverify.util.verifiers import verifier_from_name
 from autoverify.util.vnncomp_filters import filters
 
-vnncomp_path = Path("../benchmark/vnncomp2022")
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 

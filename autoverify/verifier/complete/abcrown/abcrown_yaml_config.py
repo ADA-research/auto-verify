@@ -47,7 +47,7 @@ class AbcrownYamlConfig:
         network: Path,
         property: Path,
         *,
-        batch_size: int = 64,
+        batch_size: int = 512,
     ):
         """Initialize the YAML file based on the configuration."""
         dict_config: dict[str, Any] = config.get_dictionary()

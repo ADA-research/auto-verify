@@ -133,6 +133,7 @@ class CompleteVerifier(Verifier):
         self,
         network: Path,
         property: Path,
+        *,
         config: Configuration | Path | None = None,
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> CompleteVerificationResult:

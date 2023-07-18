@@ -19,6 +19,8 @@ class CompleteVerificationData:
     stdout: str = ""
 
 
+# TODO: This doesnt make any sense
+# It should be something like Result[C.V.D., ErrorData]
 CompleteVerificationResult = Result[
     CompleteVerificationData, CompleteVerificationData
 ]
