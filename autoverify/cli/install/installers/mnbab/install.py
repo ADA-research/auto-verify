@@ -13,9 +13,9 @@ from autoverify.util.conda import (
 from autoverify.util.env import copy_env_file_to, cwd, environment
 
 MnBabRepoInfo = GitRepoInfo(
-    branch="public",
-    commit_hash="3b6fd05",
-    clone_url="https://github.com/mnmueller/mn_bab_vnn_2022.git",
+    branch="SABR_ready",
+    commit_hash="70751b8",
+    clone_url="https://github.com/eth-sri/mn-bab",
 )
 
 
@@ -53,8 +53,4 @@ def install(install_dir: Path):
     with cwd(install_dir / "tool"), environment(
         MPFR_PREFIX=mpfr_path, CDD_PREFIX=cddlib_path
     ):
-        subprocess.run(
-            elina_cmd,
-            executable="/bin/bash",
-            shell=True,
-        )
+        subprocess.run(elina_cmd, shell=True)

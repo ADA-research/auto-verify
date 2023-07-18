@@ -1,12 +1,11 @@
 """_summary_."""
 from __future__ import annotations
 
-import copy
 import csv
 import inspect
 from dataclasses import dataclass, fields, is_dataclass
 from pathlib import Path
-from typing import Any, Callable, Literal
+from typing import Any, Callable, Literal, overload
 
 import pandas as pd
 
@@ -23,7 +22,7 @@ class VerificationInstance:
     timeout: int
 
     def as_smac_instance(self) -> str:
-        """Return the instance in a `f"{network},{property},{timeout}` format.
+        """Return the instance in a `f"{network},{property},{timeout}"` format.
 
         A SMAC instance has to be passed as a single string to the
         target_function, in which we split the instance string on the comma
@@ -96,7 +95,7 @@ def init_verification_result_csv(csv_path: Path):
         writer.writerow(get_dataclass_field_names(VerificationDataResult))
 
 
-def append_verification_result_to_csv(
+def csv_append_verification_result(
     verification_result: VerificationDataResult, csv_path: Path
 ):
     """_summary_."""
@@ -141,11 +140,39 @@ def verification_instances_to_smac_instances(
     return [inst.as_smac_instance() for inst in instances]
 
 
+@overload
 def read_vnncomp_instances(
     benchmark: str,
+    vnncomp_path: Path,
     *,
     predicate: Callable[[VerificationInstance], bool] | None = None,
+    as_smac: Literal[False] = False,
 ) -> list[VerificationInstance]:
+    ...
+
+
+@overload
+def read_vnncomp_instances(
+    benchmark: str,
+    vnncomp_path: Path,
+    *,
+    predicate: Callable[[VerificationInstance], bool] | None = None,
+    as_smac: Literal[True] = True,
+) -> list[str]:
+    ...
+
+
+# TODO: Dont include the vnncomp2022 benchmark in the repo anymore.
+# Some of the benchmarks are multiple GBs large, have the user download it
+# themselves instead, perhaps with the a networks and properties unzipped
+# version. The `vnncomp_path` arg should then become mandatory.
+def read_vnncomp_instances(
+    benchmark: str,
+    vnncomp_path: Path,
+    *,
+    predicate: Callable[[VerificationInstance], bool] | None = None,
+    as_smac: bool = False,
+) -> list[VerificationInstance] | list[str]:
     """Read the instances of a VNNCOMP benchmark.
 
     Reads the CSV file of a VNNCOMP benchmark, parsing the network, property and
@@ -153,16 +180,27 @@ def read_vnncomp_instances(
 
     Args:
         benchmark: The name of the benchmark directory.
+        vnncomp_path: The path to the VNNCOMP benchmark directory
         predicate: A function that, given a `VerificationInstance` returns
             either True or False. If False is returned, the
             `VerificationInstance` is dropped from the returned instances.
+        as_smac: Return the instances as smac instance strings.
 
     Returns:
-        list[VerificationInstance]: A list of `VerificationInstance` objects
+        list[VerificationInstance] | list[str]: A list of
+            `VerificationInstance` or string objects
             that hold the network, property and timeout.
     """
-    vnncomp2022 = ROOT_DIR.parent / "benchmarks" / "vnncomp2022"
-    benchmark_dir = vnncomp2022 / benchmark
+    if not vnncomp_path.is_dir():
+        raise ValueError("Could not find VNNCOMP directory")
+
+    benchmark_dir = vnncomp_path / benchmark
+
+    if not benchmark_dir.is_dir():
+        raise ValueError(
+            f"{benchmark} is not a valid benchmark in {str(vnncomp_path)}"
+        )
+
     instances = benchmark_dir / "instances.csv"
 
     verification_instances = []
@@ -176,23 +214,15 @@ def read_vnncomp_instances(
             instance = VerificationInstance(
                 Path(str(benchmark_dir / network)),
                 Path(str(benchmark_dir / property)),
-                int(timeout),  # NOTE: Is that always an integer?
+                int(float(timeout)),  # FIXME: Timeouts can be floats
             )
 
             if predicate and not predicate(instance):
                 continue
 
+            if as_smac:
+                instance = instance.as_smac_instance()
+
             verification_instances.append(instance)
 
     return verification_instances
-
-
-# NOTE: Maybe we could just pass the filter as an optional kwarg to
-# `read_vnncomp_instances`?
-# TODO: Deprecate in favour of kwarg in `read_vnncomp_instances`
-def filter_verification_instances(
-    instances: list[VerificationInstance],
-    predicate: Callable[[VerificationInstance], bool],
-) -> list[VerificationInstance]:
-    """_summary_."""
-    return [copy.deepcopy(inst) for inst in instances if predicate(inst)]

@@ -1,10 +1,14 @@
 """SMAC util."""
 import copy
+import statistics
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
-from smac import Scenario
+from ConfigSpace import Configuration
+from smac import RunHistory, Scenario
 
+from autoverify.types import CostDict
 from autoverify.util.instances import VerificationInstance
 
 
@@ -65,3 +69,56 @@ def set_scenario_instances(
     scenario_dict["instance_features"] = instance_features
 
     return Scenario(**scenario_dict)
+
+
+def costs_from_runhistory(rh: RunHistory) -> CostDict:
+    """_summary_."""
+    costs: CostDict = {}
+
+    for config in rh.get_configs():
+        for isb in rh.get_instance_seed_budget_keys(config, False):
+            instance = isb.instance
+
+            if instance is None:
+                continue
+
+            cost = rh.average_cost(config, [isb], normalize=True)
+            cost = cast(float, cost)
+
+            if instance not in costs:
+                costs[instance] = {}
+
+            if config not in costs[instance]:
+                costs[instance][config] = []
+
+            costs[instance][config].append(cost)
+
+    return costs
+
+
+def costs_per_inst_from_rh(
+    rh: RunHistory,
+    config: Configuration,
+    *,
+    average=True,
+) -> dict[str, list[float]]:
+    """_summary_."""
+    costs: dict[str, list[float]] = {}
+
+    for isb in rh.get_instance_seed_budget_keys(config):
+        if isb.instance is None:
+            continue
+
+        avg_cost = rh.average_cost(config, [isb], normalize=True)
+        avg_cost = cast(float, avg_cost)
+
+        if isb.instance in costs:
+            costs[isb.instance].append(avg_cost)
+        else:
+            costs[isb.instance] = [avg_cost]
+
+    if average:
+        for inst, cost_list in costs.items():
+            costs[inst] = [statistics.mean(cost_list)]
+
+    return costs

@@ -1,4 +1,6 @@
 """Module-wide loggers."""
+# FIXME: Should use default logging conventions, this is bad
+# TODO: Why not just logging.getLogger(__name__)?????
 import logging
 
 root_logname = "[auto-verify::{}]"
@@ -16,3 +18,6 @@ hydra_logger.setLevel(logging.DEBUG)
 
 experiment_logger = logging.getLogger(root_logname.format("experiment"))
 experiment_logger.setLevel(logging.INFO)
+
+tuning_logger = logging.getLogger(root_logname.format("tuning"))
+tuning_logger.setLevel(logging.INFO)

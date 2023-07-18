@@ -14,7 +14,8 @@ from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.cli.install import TOOL_DIR_NAME, VERIFIER_DIR
 from autoverify.util.conda import get_verifier_conda_env_name
 from autoverify.util.path import check_file_extension
-from autoverify.verifier.verification_result import (
+
+from .verification_result import (
     CompleteVerificationData,
     CompleteVerificationResult,
     VerificationResultString,
@@ -23,6 +24,17 @@ from autoverify.verifier.verification_result import (
 
 class Verifier(ABC):
     """Abstract class to represent a verifier tool."""
+
+    # TODO: GPU Mode attribute
+    def __init__(self, batch_size: int = 512):
+        """_summary_."""
+        self._batch_size = batch_size
+
+    def get_init_attributes(self) -> dict[str, Any]:
+        """Get attributes provided during initialization of the verifier."""
+        return {
+            "batch_size": self._batch_size,
+        }
 
     @property
     @abstractmethod
@@ -61,7 +73,7 @@ class Verifier(ABC):
 
     @property
     def default_config(self) -> Configuration:
-        """Return the default configuration of the config level."""
+        """Return the default configuration."""
         return self.config_space.get_default_configuration()
 
     @abstractmethod
@@ -85,18 +97,16 @@ class Verifier(ABC):
         """_summary."""
         raise NotImplementedError
 
-    @abstractmethod
     def _init_config(
         self,
         network: Path,
         property: Path,
         config: Any,
-        *,
-        batch_size: int | None = None,
     ) -> Any:
-        """_summary."""
-        raise NotImplementedError
+        """_summary_."""
+        return config
 
+    # TODO: Overload like in ConfigSpace to distinguish between return types
     def sample_configuration(
         self, *, size: int = 1
     ) -> Configuration | list[Configuration]:
@@ -106,13 +116,13 @@ class Verifier(ABC):
             size: The number of configurations to sample.
 
         Returns:
-            Configuration | list[Configuration]: The sampled configurations.
+            Configuration | list[Configuration]: The sampled configuration(s).
         """
         return self.config_space.sample_configuration(size=size)
 
     @staticmethod
     def is_same_config(config1: Any, config2: Any) -> bool:
-        """Check if a config is the same as the self config."""
+        """Check if two configs are the same."""
         raise NotImplementedError
 
 
@@ -123,10 +133,8 @@ class CompleteVerifier(Verifier):
         self,
         network: Path,
         property: Path,
-        *,
         config: Configuration | Path | None = None,
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
-        batch_size: int | None = None,
     ) -> CompleteVerificationResult:
         """Verify the property on the network.
 
@@ -147,6 +155,8 @@ class CompleteVerifier(Verifier):
             CompleteVerificationResult: A `Result` object containing information
                 about the verification attempt. TODO: Link docs or something
         """
+        network, property = network.resolve(), property.resolve()
+
         if not check_file_extension(network, ".onnx"):
             raise ValueError("Network should be in onnx format")
 
@@ -156,11 +166,9 @@ class CompleteVerifier(Verifier):
         if config is None:
             config = self.default_config
 
-        # Tools use different configuration formats and methods, thus we let
+        # Tools use different configuration formats and methods, so we let
         # them do some initialization here
-        config = self._init_config(
-            network, property, config, batch_size=batch_size
-        )
+        config = self._init_config(network, property, config)
 
         run_cmd, output_file = self._get_run_cmd(
             network, property, config=config, timeout=timeout
@@ -179,6 +187,21 @@ class CompleteVerifier(Verifier):
 
         # TODO: What is the point of wrapping in Ok/Err here
         return Ok(outcome) if outcome.result != "ERR" else Err(outcome)
+
+    # TODO: Fix circular imports for `VerificationInstance`
+    def verify_instance(
+        self,
+        instance: Any,  # TODO: VerificationInstance
+        *,
+        config: Configuration | Path | None = None,
+    ) -> CompleteVerificationResult:
+        """_summary_."""
+        return self.verify_property(
+            instance.network,
+            instance.property,
+            timeout=instance.timeout,
+            config=config,
+        )
 
     def _run_verification(
         self,
@@ -227,10 +250,8 @@ class CompleteVerifier(Verifier):
         finally:
             took_t = time.time() - before_t
 
-            if stdout == "":
-                stdout = (
-                    sp_result.stdout.decode() if sp_result is not None else ""
-                )
+            if stdout == "" and sp_result is not None:
+                stdout = sp_result.stdout.decode()
 
         if result is None:
             result, counter_example = self._parse_result(sp_result, result_file)

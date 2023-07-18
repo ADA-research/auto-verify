@@ -2,8 +2,10 @@
 import os
 import shutil
 import sys
+from collections.abc import Iterable
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Callable
 
 from autoverify.util.proc import pkill_match
 
@@ -80,10 +82,20 @@ def sys_path(path: Path):
 
 
 @contextmanager
-def pkill_match_list(matches: list[str]):
+def pkill_matches(matches: Iterable[str]):
     """Kill a list of process name patterns when exiting context."""
     try:
         yield
     finally:
         for match in matches:
             pkill_match(match)
+
+
+@contextmanager
+def exit_functions(functions: list[Callable]):
+    """List of functions to run on context exit."""
+    try:
+        yield
+    finally:
+        for f in functions:
+            f()

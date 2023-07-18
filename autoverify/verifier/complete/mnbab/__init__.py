@@ -1,5 +1,5 @@
-from .mnbab_configspace import MnBabConfigspace
-from .mnbab_verifier import MnBab
+from .configspace import MnBabConfigspace
+from .verifier import MnBab
 
 __all__ = [
     "MnBab",

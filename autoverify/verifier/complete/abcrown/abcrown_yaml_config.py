@@ -66,7 +66,7 @@ class AbcrownYamlConfig:
 
         # TODO: Remove the mnist problem formulation
         # TODO: How is that shape determined
-        nested_set(abcrown_dict, ["model", "input_shape"], [-1, 1, 28, 28])
+        # nested_set(abcrown_dict, ["model", "input_shape"], [-1, 1, 28, 28])
 
         return cls(tmp_yaml_file_from_dict(abcrown_dict))
 

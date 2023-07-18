@@ -1,5 +1,5 @@
-from .abcrown_configspace import AbCrownConfigspace
-from .abcrown_verifier import AbCrown
+from .configspace import AbCrownConfigspace
+from .verifier import AbCrown
 
 __all__ = [
     "AbCrown",

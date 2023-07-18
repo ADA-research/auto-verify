@@ -1,6 +1,10 @@
+import json
 import string
 import sys
 from pathlib import Path
+from typing import Any
+
+basestring = (str, bytes)
 
 
 def get_python_path() -> Path:
@@ -32,3 +36,20 @@ def find_substring(needle: str, haystack: str) -> bool:
         return False
 
     return True
+
+
+def is_list_of_strings(lst: list[Any]) -> bool:
+    """Check if a list contains strings only."""
+    if lst and isinstance(lst, list):
+        return all(isinstance(elem, basestring) for elem in lst)
+    else:
+        return False
+
+
+def is_serializable(var: Any) -> bool:
+    """Check if a variable or object is serializable."""
+    try:
+        json.dumps(var)
+        return True
+    except (TypeError, OverflowError):
+        return False

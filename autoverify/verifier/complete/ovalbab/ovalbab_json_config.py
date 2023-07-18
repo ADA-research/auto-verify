@@ -30,15 +30,43 @@ class OvalbabJsonConfig:
     def from_config(cls, config: Configuration):
         """_summary."""
         dict_config: dict[str, Any] = config.get_dictionary()
-        ovalbab_dict: dict[str, Any] = {}
+        ovalbab_dict: dict[str, Any] = {
+            "bounding": {
+                "nets": [
+                    {
+                        "params": {"betas": [0.9, 0.999]},
+                    },
+                    {
+                        "params": {
+                            "betas": [0.9, 0.999],
+                            "init_params": {"betas": [0.9, 0.999]},
+                        }
+                    },
+                ]
+            }
+        }
 
         for key, value in dict_config.items():
+            if value == "null":
+                value = None  # cant directly use `None` in configspace
+
             nested_keys = key.split("__")
-            nested_set(ovalbab_dict, nested_keys, value)
+            sub_dict = ovalbab_dict
+
+            if len(nested_keys) >= 2:
+                if nested_keys[1].startswith("nets"):
+                    i = int(nested_keys[1][-1]) - 1
+                    sub_dict = sub_dict["bounding"]["nets"][i]
+                    nested_keys = nested_keys[2:]
+
+            if nested_keys[-1] == "best_among" and value:
+                value = value.split("__")
+
+            nested_set(sub_dict, nested_keys, value)
 
         return cls(tmp_json_file_from_dict(ovalbab_dict))
 
-    def get_json_file(self):  # -> IO[str]:
+    def get_json_file(self) -> IO[str]:
         """_summary_."""
         return self._json_file
 

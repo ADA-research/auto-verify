@@ -1,70 +1,37 @@
-"""_summary_."""
-from __future__ import annotations
+from collections.abc import MutableSet
 
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Iterator
-
-from ConfigSpace import Configuration
-
-from autoverify.util.verifiers import verifier_from_name
+from ..types import ConfiguredVerifier, CostDict
 
 
-@dataclass
-class ConfiguredVerifier:
+class Portfolio(MutableSet):
     """_summary_."""
 
-    verifier: str
-    config: Configuration | Path
+    def __init__(self, *cvs: ConfiguredVerifier):
+        self._pf_set: set[ConfiguredVerifier] = set(cvs)
+        self._costs: CostDict = {}
 
-    def __post_init__(self):
-        self.verifier_class = verifier_from_name(self.verifier)
+    def __contains__(self, cv: ConfiguredVerifier):
+        return cv in self._pf_set
 
-    def is_equivalent(self, cv: ConfiguredVerifier) -> bool:
-        if self.verifier != cv.verifier:
-            return False
+    def __iter__(self):
+        return iter(self._pf_set)
 
-        v = verifier_from_name(self.verifier)
+    def __len__(self):
+        return len(self._pf_set)
 
-        return v.is_same_config(self.config, cv.config)
+    def __str__(self):
+        res = ""
 
+        for cv in self:
+            res += str(cv) + "\n"
 
-@dataclass
-class Portfolio:
-    """_summary_."""
+        return res
 
-    verifiers: list[ConfiguredVerifier] = field(default_factory=list)
+    def add(self, cv: ConfiguredVerifier):
+        self._pf_set.add(cv)
 
-    def __iter__(self) -> Iterator[ConfiguredVerifier]:
-        return self.verifiers.__iter__()
+    def discard(self, cv: ConfiguredVerifier):
+        self._pf_set.discard(cv)
 
-    def at(self, i: int) -> ConfiguredVerifier:
-        """_summary_."""
-        return self.verifiers[i]
-
-    def add(self, configured_verifier: ConfiguredVerifier):
-        """_summary_."""
-        self.verifiers.append(configured_verifier)
-
-    def update(self, configured_verifiers: list[ConfiguredVerifier]):
-        """Update the portfolio with new incumbents.
-
-        Does not add configured verifiers if they are already present.
-
-        Args:
-            configured_verifiers: TODO
-        """
-        # TODO:
-        for cv in configured_verifiers:
-            pass
-
-    # TODO:
-    def to_json(self, json_file: Path = Path("portfolio.json")):
-        """_summary_."""
-        raise NotImplementedError
-
-    # TODO:
-    @staticmethod
-    def from_json(json_file: Path):
-        """_summary_."""
-        raise NotImplementedError
+    def update_costs(self, costs: CostDict):
+        pass

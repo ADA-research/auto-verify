@@ -1,3 +1,5 @@
+# TODO: Test this script
+
 # Clean
 rm -rf dist build */*.egg-info *.egg-info
 
@@ -7,4 +9,4 @@ python -m build
 # Publish
 twine upload dist/*
 
-# Github release: do manually
+# TODO: Github tagged release

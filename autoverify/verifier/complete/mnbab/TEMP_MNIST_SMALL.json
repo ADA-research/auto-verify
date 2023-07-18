@@ -1,5 +1,5 @@
 {
-  "network_path": "",
+  "network_path": "/home/c/thesis/auto-verify/benchmarks/vnncomp2022/mnist_fc/onnx/mnist-net_256x2.onnx.gz",
   "input_dim": [
     784
   ],
@@ -14,7 +14,7 @@
     "refine_intermediate_bounds": false,
     "refine_intermediate_bounds_prima": false
   },
-  "benchmark_instances_path": "",
+  "benchmark_instances_path": "/home/c/thesis/auto-verify/benchmarks/vnncomp2022/mnist_fc/instances.csv",
   "test_data_path": "",
   "eps": 0,
   "use_gpu": true,
