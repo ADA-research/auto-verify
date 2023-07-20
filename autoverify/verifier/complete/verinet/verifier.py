@@ -67,6 +67,9 @@ class Verinet(CompleteVerifier):
         source_cmd = get_conda_source_cmd(get_conda_path())
         input_shape = get_input_shape(network)
 
+        # params in order:
+        # network, prop, timeout, config, input_shape, max_procs, gpu_mode,
+        # dnnv_simplify
         run_cmd = f"""
         {" ".join(source_cmd)}
         conda activate {self.conda_env_name}
@@ -74,7 +77,9 @@ class Verinet(CompleteVerifier):
         {shlex.quote(str(dict(config)))} \
         {shlex.quote(str(input_shape))} \
         {-1} \
-        {True} \
+        {False} \
+        {False} \
         """
+        # TODO: GPU Mode param
 
         return run_cmd, None

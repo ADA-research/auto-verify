@@ -590,63 +590,45 @@ AbCrownConfigspace.add_hyperparameters(
         ),
     ]
 )
-"""
 
-"""
 AbCrownConfigspace.add_conditions(
     [
         EqualsCondition(
-            AbCrownConfigspace.get_hyperparameter(
+            AbCrownConfigspace[
                 "bab__branching__input_split__enhanced_bound_prop_method"
-            ),
-            AbCrownConfigspace.get_hyperparameter(
-                "bab__branching__input_split__enable"
-            ),
+            ],
+            AbCrownConfigspace["bab__branching__input_split__enable"],
             True,
         ),
         EqualsCondition(
-            AbCrownConfigspace.get_hyperparameter(
+            AbCrownConfigspace[
                 "bab__branching__input_split__enhanced_branching_method"
-            ),
-            AbCrownConfigspace.get_hyperparameter(
-                "bab__branching__input_split__enable"
-            ),
+            ],
+            AbCrownConfigspace["bab__branching__input_split__enable"],
             True,
         ),
         EqualsCondition(
-            AbCrownConfigspace.get_hyperparameter(
+            AbCrownConfigspace[
                 "bab__branching__input_split__enhanced_bound_patience"
-            ),
-            AbCrownConfigspace.get_hyperparameter(
-                "bab__branching__input_split__enable"
-            ),
+            ],
+            AbCrownConfigspace["bab__branching__input_split__enable"],
             True,
         ),
         EqualsCondition(
-            AbCrownConfigspace.get_hyperparameter(
-                "bab__branching__input_split__attack_patience"
-            ),
-            AbCrownConfigspace.get_hyperparameter(
-                "bab__branching__input_split__enable"
-            ),
+            AbCrownConfigspace["bab__branching__input_split__attack_patience"],
+            AbCrownConfigspace["bab__branching__input_split__enable"],
             True,
         ),
         EqualsCondition(
-            AbCrownConfigspace.get_hyperparameter(
-                "bab__branching__input_split__adv_check"
-            ),
-            AbCrownConfigspace.get_hyperparameter(
-                "bab__branching__input_split__enable"
-            ),
+            AbCrownConfigspace["bab__branching__input_split__adv_check"],
+            AbCrownConfigspace["bab__branching__input_split__enable"],
             True,
         ),
         EqualsCondition(
-            AbCrownConfigspace.get_hyperparameter(
+            AbCrownConfigspace[
                 "bab__branching__input_split__sort_domain_interval"
-            ),
-            AbCrownConfigspace.get_hyperparameter(
-                "bab__branching__input_split__enable"
-            ),
+            ],
+            AbCrownConfigspace["bab__branching__input_split__enable"],
             True,
         ),
         # EqualsCondition(
@@ -662,45 +644,33 @@ AbCrownConfigspace.add_conditions(
         #     True,
         # ),
         EqualsCondition(
-            AbCrownConfigspace.get_hyperparameter(
-                "solver__alpha-crown__lr_alpha"
-            ),
-            AbCrownConfigspace.get_hyperparameter("solver__alpha-crown__alpha"),
+            AbCrownConfigspace["solver__alpha-crown__lr_alpha"],
+            AbCrownConfigspace["solver__alpha-crown__alpha"],
             True,
         ),
         EqualsCondition(
-            AbCrownConfigspace.get_hyperparameter(
-                "solver__alpha-crown__iteration"
-            ),
-            AbCrownConfigspace.get_hyperparameter("solver__alpha-crown__alpha"),
+            AbCrownConfigspace["solver__alpha-crown__iteration"],
+            AbCrownConfigspace["solver__alpha-crown__alpha"],
             True,
         ),
         EqualsCondition(
-            AbCrownConfigspace.get_hyperparameter(
-                "solver__alpha-crown__share_slopes"
-            ),
-            AbCrownConfigspace.get_hyperparameter("solver__alpha-crown__alpha"),
+            AbCrownConfigspace["solver__alpha-crown__share_slopes"],
+            AbCrownConfigspace["solver__alpha-crown__alpha"],
             True,
         ),
         EqualsCondition(
-            AbCrownConfigspace.get_hyperparameter(
-                "solver__alpha-crown__no_joint_opt"
-            ),
-            AbCrownConfigspace.get_hyperparameter("solver__alpha-crown__alpha"),
+            AbCrownConfigspace["solver__alpha-crown__no_joint_opt"],
+            AbCrownConfigspace["solver__alpha-crown__alpha"],
             True,
         ),
         EqualsCondition(
-            AbCrownConfigspace.get_hyperparameter(
-                "solver__alpha-crown__lr_decay"
-            ),
-            AbCrownConfigspace.get_hyperparameter("solver__alpha-crown__alpha"),
+            AbCrownConfigspace["solver__alpha-crown__lr_decay"],
+            AbCrownConfigspace["solver__alpha-crown__alpha"],
             True,
         ),
         EqualsCondition(
-            AbCrownConfigspace.get_hyperparameter(
-                "solver__alpha-crown__full_conv_alpha"
-            ),
-            AbCrownConfigspace.get_hyperparameter("solver__alpha-crown__alpha"),
+            AbCrownConfigspace["solver__alpha-crown__full_conv_alpha"],
+            AbCrownConfigspace["solver__alpha-crown__alpha"],
             True,
         ),
         #         EqualsCondition(
