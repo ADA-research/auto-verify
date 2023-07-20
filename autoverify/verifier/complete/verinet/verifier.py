@@ -23,6 +23,21 @@ class Verinet(CompleteVerifier):
     name: str = "verinet"
     config_space: ConfigurationSpace = VerinetConfigspace
 
+    # HACK: Quick hack to add some attributes to a VeriNet instance.
+    # Ideally, these could be passed when calling `verify_property/instance`
+    # or inside the Configuration.
+    def __init__(
+        self,
+        batch_size: int = 512,
+        input_shape: list[int] | None = None,
+        dnnv_simplify: bool = True,
+        transpose_matmul_weights: bool = False,
+    ):
+        super().__init__(batch_size)
+        self._input_shape = input_shape
+        self._dnnv_simplify = dnnv_simplify
+        self._transpose_matmul_weights = transpose_matmul_weights
+
     @property
     def contexts(self) -> list[ContextManager[None]]:
         return [
@@ -65,7 +80,7 @@ class Verinet(CompleteVerifier):
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> tuple[str, Path | None]:
         source_cmd = get_conda_source_cmd(get_conda_path())
-        input_shape = get_input_shape(network)
+        input_shape = self._input_shape or get_input_shape(network)
 
         # params in order:
         # network, prop, timeout, config, input_shape, max_procs, gpu_mode,
@@ -78,7 +93,8 @@ class Verinet(CompleteVerifier):
         {shlex.quote(str(input_shape))} \
         {-1} \
         {False} \
-        {False} \
+        {self._dnnv_simplify} \
+        {self._transpose_matmul_weights} \
         """
         # TODO: GPU Mode param
 

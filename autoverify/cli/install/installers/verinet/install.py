@@ -7,7 +7,7 @@ from autoverify.util.env import copy_env_file_to
 
 VerinetRepoInfo = GitRepoInfo(
     branch="main",
-    commit_hash="54cfcb9",
+    commit_hash="721fd32",
     clone_url="https://github.com/kw-corne/VeriNet",
 )
 
