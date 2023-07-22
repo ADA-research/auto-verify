@@ -1,7 +1,7 @@
 import shlex
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import ContextManager
+from typing import Any, ContextManager, Iterable
 
 from ConfigSpace import Configuration, ConfigurationSpace
 

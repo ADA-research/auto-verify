@@ -88,6 +88,7 @@ def eval_verifier(
                 None,
                 err_string,
             )
+            results.append(verification_data)
 
         logger.info(f"Verification took {result.value.took} seconds.")
 

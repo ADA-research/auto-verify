@@ -41,17 +41,17 @@ class VerificationInstance:
 
 # TODO: Move this function to another file, it doesn't really belong here
 # NOTE: There is no type annotation for dataclasses
-def get_dataclass_field_names(data_cls: Any) -> list[str]:
+def get_dataclass_field_names(obj: Any) -> list[str]:
     """Returns the fields of a dataclass as a list of strings."""
-    if not inspect.isclass(data_cls):
+    if not inspect.isclass(obj):
         raise ValueError(
-            f"Argument data_cls should be a class, got {type(data_cls)}"
+            f"Argument data_cls should be a class, got {type(obj)}"
         )
 
-    if not is_dataclass(data_cls):
-        raise ValueError(f"'{data_cls.__class__.__name__}' is not a dataclass")
+    if not is_dataclass(obj):
+        raise ValueError(f"'{obj.__name__}' is not a dataclass")
 
-    return [field.name for field in fields(data_cls)]
+    return [field.name for field in fields(obj)]
 
 
 @dataclass
@@ -63,7 +63,7 @@ class VerificationDataResult:
     timeout: int | None
     verifier: str
     config: str
-    success: Literal["OK", "ERR"]  # TODO: Why not just a boolean?
+    success: Literal["OK", "ERR"]
     result: VerificationResultString
     took: float
     counter_example: str | tuple[str, str] | None
@@ -147,6 +147,7 @@ def read_vnncomp_instances(
     *,
     predicate: Callable[[VerificationInstance], bool] | None = None,
     as_smac: Literal[False] = False,
+    resolve_paths: bool = False,
 ) -> list[VerificationInstance]:
     ...
 
@@ -158,6 +159,7 @@ def read_vnncomp_instances(
     *,
     predicate: Callable[[VerificationInstance], bool] | None = None,
     as_smac: Literal[True] = True,
+    resolve_paths: bool = False,
 ) -> list[str]:
     ...
 
@@ -172,6 +174,7 @@ def read_vnncomp_instances(
     *,
     predicate: Callable[[VerificationInstance], bool] | None = None,
     as_smac: bool = False,
+    resolve_paths: bool = False,
 ) -> list[VerificationInstance] | list[str]:
     """Read the instances of a VNNCOMP benchmark.
 
@@ -211,9 +214,12 @@ def read_vnncomp_instances(
         for row in reader:
             network, property, timeout = row
 
+            net_path = Path(str(benchmark_dir / network))
+            prop_path = Path(str(benchmark_dir / property))
+
             instance = VerificationInstance(
-                Path(str(benchmark_dir / network)),
-                Path(str(benchmark_dir / property)),
+                net_path if not resolve_paths else net_path.resolve(),
+                prop_path if not resolve_paths else prop_path.resolve(),
                 int(float(timeout)),  # FIXME: Timeouts can be floats
             )
 

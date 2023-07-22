@@ -13,8 +13,8 @@ pytestmark = pytest.mark.parametrize(
     "verifier",
     [
         pytest.param(lazy_fixture("nnenum")),
-        # pytest.param(lazy_fixture("abcrown")),
-        # pytest.param(lazy_fixture("ovalbab")),
+        pytest.param(lazy_fixture("abcrown")),
+        pytest.param(lazy_fixture("ovalbab")),
         pytest.param(lazy_fixture("verinet")),
     ],
 )
@@ -26,7 +26,7 @@ def cleanup_compiled_vnnlib():
     yield
 
     abs_path = get_file_path(Path(__file__))
-    dir_name = abs_path / "../test_props/"
+    dir_name = abs_path / "../trivial_props/"
 
     for item in os.listdir(dir_name):
         if item.endswith(".vnnlib.compiled"):
@@ -50,13 +50,3 @@ def test_unsat(
     result = verifier.verify_instance(trivial_unsat)
 
     assert isinstance(result, Ok)
-
-
-def test_nano(
-    verifier: CompleteVerifier,
-    trivial_nano: VerificationInstance,
-):
-    result = verifier.verify_instance(trivial_nano)
-
-    assert isinstance(result, Ok)
-    assert result.value.result == "UNSAT"

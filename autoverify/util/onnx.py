@@ -5,7 +5,7 @@ import onnx
 import onnxruntime
 
 
-# TODO: Is a flat array always returned from `model.get_inputs()[0].shape`?
+# FIXME: This is not always a flat array of ints
 def get_input_shape(onnx_file: Path) -> list[int]:
     """Get the input shape of a network that is saved as an onnx file.
 

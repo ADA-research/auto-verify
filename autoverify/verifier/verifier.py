@@ -125,6 +125,14 @@ class Verifier(ABC):
         """Check if two configs are the same."""
         raise NotImplementedError
 
+    @staticmethod
+    def _check_instance(network: Path, property: Path):
+        if not check_file_extension(network, ".onnx"):
+            raise ValueError("Network should be in onnx format")
+
+        if not check_file_extension(property, ".vnnlib"):
+            raise ValueError("Property should be in vnnlib format")
+
 
 class CompleteVerifier(Verifier):
     """_summary_."""
@@ -157,12 +165,7 @@ class CompleteVerifier(Verifier):
                 about the verification attempt. TODO: Link docs or something
         """
         network, property = network.resolve(), property.resolve()
-
-        if not check_file_extension(network, ".onnx"):
-            raise ValueError("Network should be in onnx format")
-
-        if not check_file_extension(property, ".vnnlib"):
-            raise ValueError("Property should be in vnnlib format")
+        self._check_instance(network, property)
 
         if config is None:
             config = self.default_config
@@ -204,6 +207,31 @@ class CompleteVerifier(Verifier):
             config=config,
         )
 
+    #
+    # # TODO: Batch verification for all verifiers; Results in way less overhead
+    # # Depending on the verifier, it may be possible to keep the pipeline alive
+    # # while switching configurations.
+    # # TODO: Fix circular imports for `VerificationInstance`
+    # def verify_batch(
+    #     self,
+    #     instances: Iterable[Any],  # TODO: VerificationInstance
+    #     *,
+    #     config: Configuration | Path | None,
+    # ) -> list[CompleteVerificationResult]:
+    #     for instance in instances:
+    #         self._check_instance(instance.network, instance.property)
+    #
+    #     return self._verify_batch(instances, config=config)
+    #
+    # @abstractmethod
+    # def _verify_batch(
+    #     self,
+    #     instances: Iterable[Any],  # TODO: VerificationInstance
+    #     *,
+    #     config: Configuration | Path | None,
+    # ) -> list[CompleteVerificationResult]:
+    #     raise NotImplementedError
+    #
     def _run_verification(
         self,
         run_cmd: str,
@@ -212,12 +240,12 @@ class CompleteVerifier(Verifier):
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> CompleteVerificationData:
         """_summary_."""
-        before_t = time.time()
         result: VerificationResultString | None = None
         counter_example: str | None = None
         sp_result: CompletedProcess[bytes] | None = None
         run_err: str = ""
         stdout: str = ""
+        before_t = time.time()
 
         try:
             contexts = self.contexts or []
