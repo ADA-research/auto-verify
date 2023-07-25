@@ -12,7 +12,10 @@ from result import Err, Ok
 
 from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.cli.install import TOOL_DIR_NAME, VERIFIER_DIR
-from autoverify.util.conda import get_verifier_conda_env_name
+from autoverify.util.conda import (
+    get_conda_env_lib_path,
+    get_verifier_conda_env_name,
+)
 from autoverify.util.path import check_file_extension
 
 from .verification_result import (
@@ -70,6 +73,10 @@ class Verifier(ABC):
     def conda_env_name(self) -> str:
         """The conda environment name associated with the verifier."""
         return get_verifier_conda_env_name(self.name)
+
+    @property
+    def conda_lib_path(self) -> Path:
+        return get_conda_env_lib_path(self.conda_env_name)
 
     @property
     def default_config(self) -> Configuration:

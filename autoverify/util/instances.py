@@ -164,10 +164,6 @@ def read_vnncomp_instances(
     ...
 
 
-# TODO: Dont include the vnncomp2022 benchmark in the repo anymore.
-# Some of the benchmarks are multiple GBs large, have the user download it
-# themselves instead, perhaps with the a networks and properties unzipped
-# version. The `vnncomp_path` arg should then become mandatory.
 def read_vnncomp_instances(
     benchmark: str,
     vnncomp_path: Path,

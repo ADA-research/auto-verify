@@ -1,5 +1,6 @@
 """Conda utility functions."""
 
+import os
 import shlex
 import subprocess
 from pathlib import Path
@@ -89,6 +90,11 @@ def get_conda_path() -> Path:
     raise Exception(f"Could not fetch conda base environment info: {base_env}")
 
 
+def get_conda_path2() -> Path:
+    """Alternative way to get the conda path, only works if an env is active."""
+    return Path(os.environ["CONDA_PREFIX"]).parent.parent
+
+
 def get_conda_pkg_path(name: str, version: str, build: str) -> Path | None:
     """_summary_."""
     conda_path = get_conda_path()
@@ -100,6 +106,12 @@ def get_conda_pkg_path(name: str, version: str, build: str) -> Path | None:
         return None
 
     return pkg_path
+
+
+def get_conda_env_lib_path(env: str) -> Path:
+    """Return the path to the `lib` folder of an env."""
+    conda_path = get_conda_path2()
+    return conda_path / env / "lib"
 
 
 def get_conda_info() -> str:

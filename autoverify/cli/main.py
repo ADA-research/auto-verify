@@ -12,6 +12,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     """Setup the cli arg options."""
     parser = argparse.ArgumentParser()
 
+    # FIXME: This command and others are slow on bad hardware; Likely because
+    # we are importing many elements from the package which takes a while.
     parser.add_argument("-V", "--version", action="version", version=AV_VERSION)
 
     subparsers = parser.add_subparsers(

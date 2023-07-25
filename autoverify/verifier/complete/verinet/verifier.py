@@ -7,7 +7,11 @@ from ConfigSpace import Configuration, ConfigurationSpace
 
 from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.util import find_substring
-from autoverify.util.conda import get_conda_path, get_conda_source_cmd
+from autoverify.util.conda import (
+    get_conda_env_lib_path,
+    get_conda_path,
+    get_conda_source_cmd,
+)
 from autoverify.util.env import cwd, environment, pkill_matches
 from autoverify.util.onnx import get_input_shape
 from autoverify.verifier.verification_result import VerificationResultString
@@ -30,7 +34,7 @@ class Verinet(CompleteVerifier):
         self,
         batch_size: int = 512,
         input_shape: list[int] | None = None,
-        dnnv_simplify: bool = True,
+        dnnv_simplify: bool = False,
         transpose_matmul_weights: bool = False,
     ):
         super().__init__(batch_size)
@@ -42,7 +46,11 @@ class Verinet(CompleteVerifier):
     def contexts(self) -> list[ContextManager[None]]:
         return [
             cwd(self.tool_path),
-            environment(OPENBLAS_NUM_THREADS="1", OMP_NUM_THREADS="1"),
+            environment(
+                OPENBLAS_NUM_THREADS="1",
+                OMP_NUM_THREADS="1",
+                LD_LIBRARY_PATH=str(self.conda_lib_path),
+            ),
             pkill_matches(
                 [
                     "multiprocessing.spawn",
@@ -92,10 +100,9 @@ class Verinet(CompleteVerifier):
         {shlex.quote(str(dict(config)))} \
         {shlex.quote(str(input_shape))} \
         {-1} \
-        {False} \
+        {True} \
         {self._dnnv_simplify} \
         {self._transpose_matmul_weights} \
         """
-        # TODO: GPU Mode param
 
         return run_cmd, None
