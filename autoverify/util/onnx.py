@@ -5,7 +5,7 @@ import onnx
 import onnxruntime
 
 
-# FIXME: This is not always a flat array of ints
+# FIXME: This is not always an array of ints
 def get_input_shape(onnx_file: Path) -> list[int]:
     """Get the input shape of a network that is saved as an onnx file.
 

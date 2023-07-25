@@ -108,10 +108,25 @@ def get_conda_pkg_path(name: str, version: str, build: str) -> Path | None:
     return pkg_path
 
 
+def find_conda_lib(env: str, lib: str) -> Path:
+    """Tries to find where a library is in the given conda env."""
+    env_path = get_conda_path2() / "envs" / env
+    cmd = f"find {env_path} -name '{lib}'"
+    result = subprocess.run(shlex.split(cmd), check=True, capture_output=True)
+
+    result = result.stdout.decode()
+    lib_paths = result.splitlines()
+
+    if len(lib_paths) >= 1:
+        return Path(lib_paths[0]).parent
+    else:
+        raise ValueError(f"Lib {lib} could not be found in env {env}.")
+
+
 def get_conda_env_lib_path(env: str) -> Path:
     """Return the path to the `lib` folder of an env."""
     conda_path = get_conda_path2()
-    return conda_path / env / "lib"
+    return conda_path / "envs" / env / "lib"
 
 
 def get_conda_info() -> str:

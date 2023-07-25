@@ -8,6 +8,7 @@ from ConfigSpace import Configuration, ConfigurationSpace
 from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.util import find_substring
 from autoverify.util.conda import (
+    find_conda_lib,
     get_conda_env_lib_path,
     get_conda_path,
     get_conda_source_cmd,
@@ -33,6 +34,7 @@ class Verinet(CompleteVerifier):
     def __init__(
         self,
         batch_size: int = 512,
+        # gpu_mode: bool = True,
         input_shape: list[int] | None = None,
         dnnv_simplify: bool = False,
         transpose_matmul_weights: bool = False,
@@ -49,7 +51,9 @@ class Verinet(CompleteVerifier):
             environment(
                 OPENBLAS_NUM_THREADS="1",
                 OMP_NUM_THREADS="1",
-                LD_LIBRARY_PATH=str(self.conda_lib_path),
+                LD_LIBRARY_PATH=str(
+                    find_conda_lib(self.conda_env_name, "libcudart.so.11.0")
+                ),
             ),
             pkill_matches(
                 [

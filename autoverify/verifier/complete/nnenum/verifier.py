@@ -1,9 +1,11 @@
 """Nnenum verifier."""
+import shlex
 import tempfile
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import ContextManager
+from typing import Any, ContextManager
 
+import numpy as np
 from ConfigSpace import Configuration, ConfigurationSpace
 
 from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
@@ -59,7 +61,7 @@ class Nnenum(CompleteVerifier):
         network: Path,
         property: Path,
         *,
-        config: str,
+        config: dict[str, Any],
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> tuple[str, Path | None]:
         result_file = Path(tempfile.NamedTemporaryFile("w").name)
@@ -72,7 +74,7 @@ class Nnenum(CompleteVerifier):
         python -m nnenum.nnenum {str(network)} {str(property)} {str(timeout)} \
         {str(result_file)} \
         {str(cpu_count())} \
-        {config}
+        {shlex.quote(str(config))} \
         """
 
         return run_cmd, result_file
@@ -81,19 +83,23 @@ class Nnenum(CompleteVerifier):
         self,
         network: Path,
         property: Path,
-        config: Configuration | str | None,
-    ) -> str:
-        if config is None:
-            return str(self.default_config["settings_mode"])
+        config: Configuration | Path,
+    ) -> dict[str, Any]:
+        if not isinstance(config, Configuration):
+            raise ValueError("Configuration files for nnenum not supported yet")
 
-        if isinstance(config, Configuration):
-            return str(config["settings_mode"])  # type: ignore
-        elif isinstance(config, str):
-            return config
+        dict_config = dict(config)
 
-        verification_logger.warning("Invalid nnenum config, using default.")
+        if dict_config["INF_OVERAPPROX_MIN_GEN_LIMIT"] is True:
+            dict_config["OVERAPPROX_MIN_GEN_LIMIT"] = np.inf
 
-        return str(self.default_config["settings_mode"])
+        if dict_config["INF_OVERAPPROX_LP_TIMEOUT"] is True:
+            dict_config["OVERAPPROX_LP_TIMEOUT"] = np.inf
+
+        del dict_config["INF_OVERAPPROX_LP_TIMEOUT"]
+        del dict_config["INF_OVERAPPROX_MIN_GEN_LIMIT"]
+
+        return dict_config
 
     @staticmethod
     def is_same_config(

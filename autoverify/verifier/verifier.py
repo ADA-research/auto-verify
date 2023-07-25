@@ -108,9 +108,9 @@ class Verifier(ABC):
         self,
         network: Path,
         property: Path,
-        config: Any,
-    ) -> Any:
-        """_summary_."""
+        config: Configuration | Path,
+    ) -> Configuration | Path:
+        """Init the config, return type that is needed."""
         return config
 
     # TODO: Overload like in ConfigSpace to distinguish between return types
