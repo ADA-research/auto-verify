@@ -2,10 +2,15 @@ from pathlib import Path
 
 import pytest
 from ConfigSpace import Categorical, ConfigurationSpace, Float, Integer
+from result import Err, Ok
 
 from autoverify.util.env import get_file_path
 from autoverify.util.instances import VerificationInstance
 from autoverify.verifier import AbCrown, Nnenum, OvalBab, Verinet
+from autoverify.verifier.verification_result import (
+    CompleteVerificationData,
+    CompleteVerificationResult,
+)
 from autoverify.verifier.verifier import CompleteVerifier
 
 TEST_PROP_TIMEOUT = 60
@@ -54,6 +59,15 @@ def trivial_nano() -> VerificationInstance:
 
 
 @pytest.fixture
+def trivial_instances(
+    trivial_sat: VerificationInstance,
+    trivial_unsat: VerificationInstance,
+    trivial_nano: VerificationInstance,
+) -> list[VerificationInstance]:
+    return [trivial_sat, trivial_unsat, trivial_nano]
+
+
+@pytest.fixture
 def nnenum() -> Nnenum:
     return Nnenum()
 
@@ -73,3 +87,36 @@ def verinet() -> Verinet:
 @pytest.fixture
 def ovalbab() -> OvalBab:
     return OvalBab()
+
+
+@pytest.fixture
+def complete_verif_data() -> CompleteVerificationData:
+    return CompleteVerificationData(
+        result="SAT",
+        took=42.0,
+        counter_example="hello counter example",
+        err="a dummy error",
+        stdout="some output",
+    )
+
+
+@pytest.fixture
+def ok_complete_verif_res(
+    complete_verif_data: CompleteVerificationData,
+) -> CompleteVerificationResult:
+    return Ok(complete_verif_data)
+
+
+@pytest.fixture
+def timeout_complete_verif_res(
+    complete_verif_data: CompleteVerificationData,
+) -> CompleteVerificationResult:
+    complete_verif_data.result = "TIMEOUT"
+    return Ok(complete_verif_data)
+
+
+@pytest.fixture
+def err_complete_verif_res(
+    complete_verif_data: CompleteVerificationData,
+) -> CompleteVerificationResult:
+    return Err(complete_verif_data)

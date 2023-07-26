@@ -10,6 +10,8 @@ from typing import Callable
 from autoverify.util.proc import pkill_match
 
 
+# NOTE: Why not just `Path(...).resolve().parent`?
+# TODO: Implement above note
 def get_file_path(file: Path) -> Path:
     """Returns the absolute path to the file.
 
@@ -29,7 +31,7 @@ def copy_env_file_to(installer_py_file: Path, install_dir: Path):
 
     Args:
         installer_py_file: The path to the installer directory (e.g. nnenum),
-            this is used to find the `conda_env.yml` file.
+            this is used to find the `environment.yml` file.
         install_dir: The directory the file is copied to.
     """
     file_path = get_file_path(installer_py_file)
@@ -92,8 +94,8 @@ def pkill_matches(matches: Iterable[str]):
 
 
 @contextmanager
-def exit_functions(functions: list[Callable]):
-    """List of functions to run on context exit."""
+def exit_functions(functions: Iterable[Callable]):
+    """Functions to run on context exit."""
     try:
         yield
     finally:

@@ -26,7 +26,7 @@ def _run_verification_instance(
     if isinstance(instance, VerificationInstance):
         instance = instance.as_smac_instance()
 
-    # FIXME: What if there are commas in the network or prop name?
+    # FIXME: What if there are commas in the net or prop name?
     network, property, timeout = instance.split(",")
 
     result = verifier.verify_property(

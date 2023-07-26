@@ -25,6 +25,5 @@ if __name__ == "__main__":
     with open(str(inst_file), "w") as f:
         writer = csv.writer(f)
         for net in nets:
-            print(net)
             for prop in props:
                 writer.writerow([str(net), str(prop), str(TIMEOUT)])

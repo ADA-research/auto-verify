@@ -1,7 +1,6 @@
 """SMAC util."""
 import copy
 import statistics
-from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, cast
 
@@ -15,7 +14,7 @@ from autoverify.util.instances import VerificationInstance
 def index_features(
     instances: list[str] | list[VerificationInstance],
 ) -> dict[str, list[float]]:
-    """Use indices as simple instance features."""
+    """Returns list indices as the instance features."""
     features = {}
 
     for i, inst in enumerate(instances):
