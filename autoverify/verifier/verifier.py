@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from contextlib import ExitStack
 from pathlib import Path
 from subprocess import CompletedProcess
+from timeit import default_timer as timer
 from typing import Any, ContextManager
 
 from ConfigSpace import Configuration, ConfigurationSpace
@@ -214,7 +215,6 @@ class CompleteVerifier(Verifier):
             config=config,
         )
 
-    #
     # # TODO: Batch verification for all verifiers; Results in way less overhead
     # # Depending on the verifier, it may be possible to keep the pipeline alive
     # # while switching configurations.
@@ -238,7 +238,7 @@ class CompleteVerifier(Verifier):
     #     config: Configuration | Path | None,
     # ) -> list[CompleteVerificationResult]:
     #     raise NotImplementedError
-    #
+
     def _run_verification(
         self,
         run_cmd: str,

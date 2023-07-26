@@ -90,11 +90,12 @@ class Nnenum(CompleteVerifier):
 
         dict_config = dict(config)
 
+        # HACK: Cant safely evaluate `np.inf`, instead we pass it as a string
+        # that is converted back to `np.inf` in the nnenum code.
         if dict_config["INF_OVERAPPROX_MIN_GEN_LIMIT"] is True:
-            dict_config["OVERAPPROX_MIN_GEN_LIMIT"] = np.inf
-
+            dict_config["OVERAPPROX_MIN_GEN_LIMIT"] = "_inf"
         if dict_config["INF_OVERAPPROX_LP_TIMEOUT"] is True:
-            dict_config["OVERAPPROX_LP_TIMEOUT"] = np.inf
+            dict_config["OVERAPPROX_LP_TIMEOUT"] = "_inf"
 
         del dict_config["INF_OVERAPPROX_LP_TIMEOUT"]
         del dict_config["INF_OVERAPPROX_MIN_GEN_LIMIT"]

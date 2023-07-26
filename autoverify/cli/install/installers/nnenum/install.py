@@ -7,7 +7,7 @@ from autoverify.util.env import copy_env_file_to
 
 NnenumRepoInfo = GitRepoInfo(
     branch="vnncomp2022",
-    commit_hash="3b146ca",
+    commit_hash="a6eb6db",
     clone_url="https://github.com/kw-corne/nnenum",
 )
 

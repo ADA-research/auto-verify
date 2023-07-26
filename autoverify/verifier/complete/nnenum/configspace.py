@@ -4,20 +4,14 @@ from ConfigSpace import (
     ConfigurationSpace,
     EqualsCondition,
     Float,
+    ForbiddenAndConjunction,
+    ForbiddenEqualsClause,
+    ForbiddenInClause,
     Integer,
 )
 
 NnenumConfigspace = ConfigurationSpace(name="nnenum")
-# NnenumConfigspace.add_hyperparameters(
-#     [
-#         # https://github.com/stanleybak/nnenum/blob/55363ce71bb047f02dec1be0d4d58526c737ff53/src/nnenum/nnenum.py#LL150C25-L150C29
-#         Categorical(
-#             "settings_mode",
-#             ["auto", "control", "image", "exact"],
-#             default="auto",
-#         ),
-#     ]
-# )
+
 NnenumConfigspace.add_hyperparameters(
     [
         Categorical(
@@ -165,5 +159,14 @@ NnenumConfigspace.add_conditions(
             NnenumConfigspace["INF_OVERAPPROX_LP_TIMEOUT"],
             False,
         ),
+    ]
+)
+
+NnenumConfigspace.add_forbidden_clauses(
+    [
+        ForbiddenAndConjunction(
+            ForbiddenEqualsClause(NnenumConfigspace["EAGER_BOUNDS"], False),
+            ForbiddenInClause(NnenumConfigspace["SPLIT_ORDER"], [0, 1, 2]),
+        )
     ]
 )
