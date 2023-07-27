@@ -1,3 +1,4 @@
+"""CLI interface for tuning a verifier on a VNNCOMP-like benchmark."""
 import argparse
 from pathlib import Path
 
