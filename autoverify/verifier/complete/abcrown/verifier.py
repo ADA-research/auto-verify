@@ -1,7 +1,8 @@
 """ab-crown verifier."""
+from collections.abc import Iterable
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import ContextManager
+from typing import Any, ContextManager
 
 from ConfigSpace import Configuration, ConfigurationSpace
 
@@ -14,7 +15,10 @@ from autoverify.verifier.complete.abcrown.abcrown_yaml_config import (
     AbcrownYamlConfig,
 )
 from autoverify.verifier.complete.abcrown.configspace import AbCrownConfigspace
-from autoverify.verifier.verification_result import VerificationResultString
+from autoverify.verifier.verification_result import (
+    CompleteVerificationResult,
+    VerificationResultString,
+)
 from autoverify.verifier.verifier import CompleteVerifier
 
 
@@ -75,6 +79,15 @@ class AbCrown(CompleteVerifier):
         """
 
         return run_cmd, result_file
+
+    def _verify_batch(
+        self,
+        instances: Iterable[Any],
+        *,
+        config: Configuration | Path | None,
+    ) -> list[CompleteVerificationResult]:
+        source_cmd = get_conda_source_cmd()
+        # TODO:
 
     def _init_config(
         self,

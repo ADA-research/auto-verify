@@ -35,6 +35,7 @@ def vdr() -> VerificationDataResult:
         10.0,
         "a counter example",
         "an error string",
+        "some output",
     )
 
 
@@ -78,6 +79,7 @@ def test_vdr_csv_row(vdr: VerificationDataResult):
         "10.0",
         "a counter example",
         "an error string",
+        "some output",
     ]
 
     vdr.counter_example = ("a", "counter example")
@@ -92,6 +94,7 @@ def test_vdr_csv_row(vdr: VerificationDataResult):
         "10.0",
         "a\ncounter example",
         "an error string",
+        "some output",
     ]
 
 
@@ -163,6 +166,7 @@ def test_append_verification_result(
                 str(10.0),
                 "a counter example",
                 "an error string",
+                "some output",
             ]
         )
         + "\n"

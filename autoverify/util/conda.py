@@ -157,8 +157,11 @@ def get_field_from_conda_info(field: str) -> str | list[str] | None:
     return None
 
 
-def get_conda_source_cmd(conda_path: Path) -> list[str]:
+def get_conda_source_cmd(conda_path: Path | None = None) -> list[str]:
     """_summary_."""
+    if conda_path is None:
+        conda_path = get_conda_path()
+
     return shlex.split(
         f"source {str(conda_path / 'etc' / 'profile.d' / 'conda.sh')}"
     )

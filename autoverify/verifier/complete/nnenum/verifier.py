@@ -3,7 +3,7 @@ import shlex
 import tempfile
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import Any, ContextManager
+from typing import Any, ContextManager, Iterable
 
 import numpy as np
 from ConfigSpace import Configuration, ConfigurationSpace
@@ -13,7 +13,10 @@ from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 from autoverify.util.env import cwd, environment, pkill_matches
 from autoverify.util.loggers import verification_logger
 from autoverify.util.proc import cpu_count, pkill_match
-from autoverify.verifier.verification_result import VerificationResultString
+from autoverify.verifier.verification_result import (
+    CompleteVerificationResult,
+    VerificationResultString,
+)
 from autoverify.verifier.verifier import CompleteVerifier
 
 from .configspace import NnenumConfigspace
@@ -78,6 +81,15 @@ class Nnenum(CompleteVerifier):
         """
 
         return run_cmd, result_file
+
+    def _verify_batch(
+        self,
+        instances: Iterable[Any],
+        *,
+        config: Configuration | Path | None,
+    ) -> list[CompleteVerificationResult]:
+        source_cmd = get_conda_source_cmd()
+        # TODO:
 
     def _init_config(
         self,

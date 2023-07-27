@@ -8,6 +8,7 @@ from result import Ok
 from autoverify.util.env import get_file_path
 from autoverify.util.instances import VerificationInstance
 from autoverify.verifier.verifier import CompleteVerifier
+from autoverify.verify.eval_verifier import eval_verifier
 
 pytestmark = pytest.mark.parametrize(
     "verifier",

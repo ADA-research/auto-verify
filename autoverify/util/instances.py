@@ -2,56 +2,15 @@
 from __future__ import annotations
 
 import csv
-import inspect
-from dataclasses import dataclass, fields, is_dataclass
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Literal, overload
+from typing import Callable, Literal, overload
 
 import pandas as pd
 
-from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC, ROOT_DIR
+from autoverify.util.dataclass import get_dataclass_field_names
+from autoverify.util.verification_instance import VerificationInstance
 from autoverify.verifier.verification_result import VerificationResultString
-
-
-@dataclass
-class VerificationInstance:
-    """_summary_."""
-
-    network: Path
-    property: Path
-    timeout: int
-
-    def as_smac_instance(self) -> str:
-        """Return the instance in a `f"{network},{property},{timeout}"` format.
-
-        A SMAC instance has to be passed as a single string to the
-        target_function, in which we split the instance string on the comma
-        again to obtain the network, property and timeout.
-
-        If no timeout is specified, the `DEFAULT_VERIFICATION_TIMEOUT_SEC`
-        global is used.
-
-        Returns:
-            str: The smac instance string
-        """
-        timeout: int = self.timeout or DEFAULT_VERIFICATION_TIMEOUT_SEC
-
-        return f"{str(self.network)},{str(self.property)},{str(timeout)}"
-
-
-# TODO: Move this function to another file, it doesn't really belong here
-# NOTE: There is no type annotation for dataclasses
-def get_dataclass_field_names(obj: Any) -> list[str]:
-    """Returns the fields of a dataclass as a list of strings."""
-    if not inspect.isclass(obj):
-        raise ValueError(
-            f"Argument data_cls should be a class, got {type(obj)}"
-        )
-
-    if not is_dataclass(obj):
-        raise ValueError(f"'{obj.__name__}' is not a dataclass")
-
-    return [field.name for field in fields(obj)]
 
 
 @dataclass
@@ -67,7 +26,12 @@ class VerificationDataResult:
     result: VerificationResultString
     took: float
     counter_example: str | tuple[str, str] | None
-    error_string: str | None
+    stderr: str | None
+    stdout: str | None
+
+    def __post_init__(self):
+        if self.config == "None":
+            self.config = "default"
 
     def as_csv_row(self) -> list[str]:
         """Convert data to a csv row writeable."""
@@ -84,7 +48,8 @@ class VerificationDataResult:
             self.result,
             str(self.took),
             self.counter_example or "",
-            self.error_string or "",
+            self.stderr or "",
+            self.stdout or "",
         ]
 
 

@@ -15,7 +15,10 @@ from autoverify.util.conda import (
 )
 from autoverify.util.env import cwd, environment, pkill_matches
 from autoverify.util.onnx import get_input_shape
-from autoverify.verifier.verification_result import VerificationResultString
+from autoverify.verifier.verification_result import (
+    CompleteVerificationResult,
+    VerificationResultString,
+)
 from autoverify.verifier.verifier import CompleteVerifier
 
 from .configspace import VerinetConfigspace
@@ -110,3 +113,12 @@ class Verinet(CompleteVerifier):
         """
 
         return run_cmd, None
+
+    def _verify_batch(
+        self,
+        instances: Iterable[Any],
+        *,
+        config: Configuration | Path | None,
+    ) -> list[CompleteVerificationResult]:
+        source_cmd = get_conda_source_cmd()
+        # TODO:

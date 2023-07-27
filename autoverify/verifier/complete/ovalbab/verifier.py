@@ -1,7 +1,8 @@
 """OvalBab verifier."""
+from collections.abc import Iterable
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import ContextManager
+from typing import Any, ContextManager
 
 from ConfigSpace import Configuration, ConfigurationSpace
 
@@ -13,7 +14,10 @@ from autoverify.util.tempfiles import tmp_file
 from autoverify.verifier.complete.ovalbab.ovalbab_json_config import (
     OvalbabJsonConfig,
 )
-from autoverify.verifier.verification_result import VerificationResultString
+from autoverify.verifier.verification_result import (
+    CompleteVerificationResult,
+    VerificationResultString,
+)
 from autoverify.verifier.verifier import CompleteVerifier
 
 from .configspace import OvalBabConfigspace
@@ -83,3 +87,12 @@ class OvalBab(CompleteVerifier):
             raise ValueError("Config should be a Configuration, Path or None")
 
         return Path(json_config.get_json_file_path())
+
+    def _verify_batch(
+        self,
+        instances: Iterable[Any],
+        *,
+        config: Configuration | Path | None,
+    ) -> list[CompleteVerificationResult]:
+        source_cmd = get_conda_source_cmd()
+        # TODO:

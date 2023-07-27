@@ -1,10 +1,15 @@
 """YAML file utils."""
 # TODO: Clean up the tempfiles. Currently it will fill up storage until shutdown
+import csv
 import json
 import tempfile
-from typing import IO, Any
+from contextlib import contextmanager
+from pathlib import Path
+from typing import IO, Any, Iterable
 
 import yaml
+
+from autoverify.util.instances import VerificationInstance
 
 
 def tmp_file(extension: str) -> IO[str]:
@@ -39,3 +44,21 @@ def tmp_yaml_file_from_dict(a_dict: dict[Any, Any]) -> IO[str]:
     yaml.dump(a_dict, tmp_yaml)
 
     return tmp_yaml
+
+
+@contextmanager
+def tmp_instances_csv(instances: Iterable[VerificationInstance]):
+    tmp_csv = tempfile.NamedTemporaryFile("r", suffix=".csv", delete=False)
+
+    with open(tmp_csv.name, "w") as f:
+        writer = csv.writer(f, delimiter=",")
+
+        for inst in instances:
+            writer.writerow(inst.as_row())
+
+    try:
+        yield tmp_csv
+    finally:
+        Path(tmp_csv.name).unlink()
+
+    return tmp_csv

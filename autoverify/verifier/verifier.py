@@ -6,7 +6,7 @@ from contextlib import ExitStack
 from pathlib import Path
 from subprocess import CompletedProcess
 from timeit import default_timer as timer
-from typing import Any, ContextManager
+from typing import Any, ContextManager, Iterable
 
 from ConfigSpace import Configuration, ConfigurationSpace
 from result import Err, Ok
@@ -215,29 +215,29 @@ class CompleteVerifier(Verifier):
             config=config,
         )
 
-    # # TODO: Batch verification for all verifiers; Results in way less overhead
-    # # Depending on the verifier, it may be possible to keep the pipeline alive
-    # # while switching configurations.
-    # # TODO: Fix circular imports for `VerificationInstance`
-    # def verify_batch(
-    #     self,
-    #     instances: Iterable[Any],  # TODO: VerificationInstance
-    #     *,
-    #     config: Configuration | Path | None,
-    # ) -> list[CompleteVerificationResult]:
-    #     for instance in instances:
-    #         self._check_instance(instance.network, instance.property)
-    #
-    #     return self._verify_batch(instances, config=config)
-    #
-    # @abstractmethod
-    # def _verify_batch(
-    #     self,
-    #     instances: Iterable[Any],  # TODO: VerificationInstance
-    #     *,
-    #     config: Configuration | Path | None,
-    # ) -> list[CompleteVerificationResult]:
-    #     raise NotImplementedError
+    # TODO: Fix circular imports for `VerificationInstance`
+    def verify_batch(
+        self,
+        instances: Iterable[Any],  # TODO: VerificationInstance
+        *,
+        config: Configuration | Path | None,
+    ) -> list[CompleteVerificationResult]:
+        for instance in instances:
+            self._check_instance(instance.network, instance.property)
+
+        if config is None:
+            config = self.default_config
+
+        return self._verify_batch(instances, config=config)
+
+    @abstractmethod
+    def _verify_batch(
+        self,
+        instances: Iterable[Any],  # TODO: VerificationInstance
+        *,
+        config: Configuration | Path | None,
+    ) -> list[CompleteVerificationResult]:
+        raise NotImplementedError
 
     def _run_verification(
         self,
@@ -252,6 +252,7 @@ class CompleteVerifier(Verifier):
         sp_result: CompletedProcess[bytes] | None = None
         run_err: str = ""
         stdout: str = ""
+        stderr: str = ""
         before_t = time.time()
 
         try:
@@ -272,14 +273,14 @@ class CompleteVerifier(Verifier):
         except subprocess.TimeoutExpired as err:
             result = "TIMEOUT"
             if err.stderr:
-                err_str = err.stderr.decode()
+                stderr = err.stderr.decode()
             if err.stdout:
                 stdout = err.stdout.decode()
         except subprocess.CalledProcessError as err:
             result = "ERR"
-            err_str = err.stderr.decode()
+            stderr = err.stderr.decode()
             stdout = err.stdout.decode()
-            run_err = f"Exception in called process:\n{err_str}"
+            run_err = f"Exception in called process:\n{stderr}"
         except Exception as err:
             result = "ERR"
             run_err = f"Exception during verification:\n{err}"
@@ -291,6 +292,9 @@ class CompleteVerifier(Verifier):
 
         if result is None:
             result, counter_example = self._parse_result(sp_result, result_file)
+
+        if run_err == "" and stderr != "":
+            run_err = stderr
 
         return CompleteVerificationData(
             result,

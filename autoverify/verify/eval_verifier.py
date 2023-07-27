@@ -40,11 +40,11 @@ def eval_verifier(
 
     results: list[VerificationDataResult] = []
 
-    for instance in instances:
+    for i, instance in enumerate(instances):
         logger.info(
-            f"Verifying property {instance.property.name} on "
+            f"\nVerifying instance {i}; property {instance.property.name} on "
             f"{instance.network.name} with verifier {verifier.name} and "
-            f"configuration {config or 'default'}, "
+            f"configuration {config or 'default'} "
             f"(timeout = {instance.timeout} sec.)"
         )
 
@@ -53,7 +53,8 @@ def eval_verifier(
 
         if isinstance(result, Ok):
             logger.info("Verification finished succesfully.")
-            logger.info(f"Result: {result.value.result}")
+            result = result.unwrap()
+            logger.info(f"Result: {result.result}")
 
             verification_data = VerificationDataResult(
                 instance.network.name,
@@ -62,17 +63,18 @@ def eval_verifier(
                 verifier.name,
                 str(config),
                 "OK",
-                result.value.result,
-                result.value.took,
-                result.value.counter_example,
-                None,
+                result.result,
+                result.took,
+                result.counter_example,
+                result.err,
+                result.stdout,
             )
             results.append(verification_data)
         elif isinstance(result, Err):
-            err_string = result.unwrap_err().err
+            result = result.unwrap_err()
 
             logger.info("Exception during verification.")
-            logger.info(err_string)
+            logger.info(result.err)
 
             verification_data = VerificationDataResult(
                 instance.network.name,
@@ -84,13 +86,14 @@ def eval_verifier(
                 "ERR",
                 float(instance.timeout)
                 if instance.timeout
-                else DEFAULT_VERIFICATION_TIMEOUT_SEC,  # TODO: This is bad
+                else DEFAULT_VERIFICATION_TIMEOUT_SEC,
                 None,
-                err_string,
+                result.err,
+                result.stdout,
             )
             results.append(verification_data)
 
-        logger.info(f"Verification took {result.value.took} seconds.")
+        logger.info(f"Verification took {result.took} seconds.")
 
         if output_csv_path is not None and isinstance(
             verification_data, VerificationDataResult
