@@ -12,7 +12,10 @@ def check_file_extension(file: Path, extension: str) -> bool:
     Returns:
         bool: True if the file ends with the extension, False otherwise.
     """
-    return file.is_file() and file.suffix == extension
+    if not file.is_file():
+        raise FileNotFoundError(f"Network {file} does not exist.")
+
+    return file.suffix == extension
 
 
 def read_path_file(file: Path) -> str:

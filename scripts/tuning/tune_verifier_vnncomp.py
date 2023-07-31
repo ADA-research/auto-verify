@@ -7,7 +7,8 @@ from autoverify.util.instances import read_vnncomp_instances
 from autoverify.util.verifiers import verifier_from_name
 from autoverify.util.vnncomp_filters import filters
 
-if __name__ == "__main__":
+
+def build_argparser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -24,7 +25,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--vnncomp_path",
-        type=str,
+        type=Path,
         help="Path to VNNCOMP benchmarks",
         required=True,
     )
@@ -41,14 +42,30 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--output_dir",
-        type=str,
+        type=Path,
         help="SMAC output directory",
+    )
+    parser.add_argument(
+        "--run_name",
+        type=str,
+        help="Name of the SMAC run.",
+    )
+    parser.add_argument(
+        "--rh_csv_path",
+        type=Path,
+        help="Path where the RunHistory will be written to.",
     )
     parser.add_argument(
         "--config_out",
         type=str,
         help="Config output file",
     )
+
+    return parser
+
+
+if __name__ == "__main__":
+    parser = build_argparser()
     args = parser.parse_args()
 
     verifier = verifier_from_name(args.verifier.lower())()
@@ -76,6 +93,8 @@ if __name__ == "__main__":
         args.time,
         output_dir=output_dir,
         config_out=config_out,
+        run_name=args.run_name,
+        rh_csv_path=args.rh_csv_path,
     )
 
     print("*" * 80)

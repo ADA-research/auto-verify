@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import csv
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Literal, overload
@@ -193,3 +194,18 @@ def read_vnncomp_instances(
             verification_instances.append(instance)
 
     return verification_instances
+
+
+def read_all_vnncomp_instances(
+    vnncomp_path: Path,
+) -> dict[str, list[VerificationInstance]]:
+    """_summary_."""
+    instances: dict[str, list[VerificationInstance]] = {}
+
+    for path in vnncomp_path.iterdir():
+        if not path.is_dir():
+            continue
+
+        instances[path.name] = read_vnncomp_instances(path.name, vnncomp_path)
+
+    return instances

@@ -5,7 +5,7 @@ from pathlib import Path
 from ConfigSpace import Configuration
 from smac import AlgorithmConfigurationFacade, Scenario
 
-from autoverify.util.smac import index_features
+from autoverify.util.smac import index_features, runhistory_to_csv
 from autoverify.util.target_function import get_verifier_tf
 from autoverify.verifier.verifier import Verifier
 
@@ -19,6 +19,8 @@ def smac_tune_verifier(
     *,
     output_dir: Path | None = Path("tune_verifier/"),
     config_out: Path | None = Path("incumbent.txt"),
+    run_name: str | None = None,
+    rh_csv_path: Path | None = None,
 ) -> Configuration:
     """_summary_."""
     if output_dir is None:
@@ -29,6 +31,7 @@ def smac_tune_verifier(
 
     scenario = Scenario(
         verifier.config_space,
+        name=run_name,
         instances=instances,
         instance_features=index_features(instances),
         walltime_limit=walltime_limit,
@@ -56,9 +59,13 @@ def smac_tune_verifier(
 
     logger.info(f"Finished tuning {verifier.name}")
     logger.info(f"Got configuration:\n{inc}")
-    logger.info(f"Writing incumbent configuration to {config_out.name}")
+    logger.info(f"Writing incumbent configuration to {str(config_out)}")
 
     with open(str(config_out), "w") as f:
         f.write(str(inc))
+
+    if rh_csv_path:
+        logger.info(f"Writing RunHistory to {str(rh_csv_path)}")
+        runhistory_to_csv(smac.runhistory, rh_csv_path)
 
     return inc

@@ -1,6 +1,4 @@
 """_summary_."""
-from typing import Literal, Union, overload
-
 from autoverify.verifier import (
     AbCrown,
     DummyVerifier,

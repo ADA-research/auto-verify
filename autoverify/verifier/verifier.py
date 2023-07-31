@@ -18,6 +18,7 @@ from autoverify.util.conda import (
     get_verifier_conda_env_name,
 )
 from autoverify.util.path import check_file_extension
+from autoverify.util.verification_instance import VerificationInstance
 
 from .verification_result import (
     CompleteVerificationData,
@@ -200,10 +201,9 @@ class CompleteVerifier(Verifier):
         # TODO: What is the point of wrapping in Ok/Err here
         return Ok(outcome) if outcome.result != "ERR" else Err(outcome)
 
-    # TODO: Fix circular imports for `VerificationInstance`
     def verify_instance(
         self,
-        instance: Any,  # TODO: VerificationInstance
+        instance: VerificationInstance,
         *,
         config: Configuration | Path | None = None,
     ) -> CompleteVerificationResult:
@@ -215,10 +215,9 @@ class CompleteVerifier(Verifier):
             config=config,
         )
 
-    # TODO: Fix circular imports for `VerificationInstance`
     def verify_batch(
         self,
-        instances: Iterable[Any],  # TODO: VerificationInstance
+        instances: Iterable[VerificationInstance],
         *,
         config: Configuration | Path | None,
     ) -> list[CompleteVerificationResult]:

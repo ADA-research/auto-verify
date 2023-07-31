@@ -37,12 +37,13 @@ class Verinet(CompleteVerifier):
     def __init__(
         self,
         batch_size: int = 512,
-        # gpu_mode: bool = True,
+        gpu_mode: bool = True,
         input_shape: list[int] | None = None,
         dnnv_simplify: bool = False,
         transpose_matmul_weights: bool = False,
     ):
         super().__init__(batch_size)
+        self._gpu_mode = gpu_mode
         self._input_shape = input_shape
         self._dnnv_simplify = dnnv_simplify
         self._transpose_matmul_weights = transpose_matmul_weights
@@ -107,7 +108,7 @@ class Verinet(CompleteVerifier):
         {shlex.quote(str(dict(config)))} \
         {shlex.quote(str(input_shape))} \
         {-1} \
-        {True} \
+        {self._gpu_mode} \
         {self._dnnv_simplify} \
         {self._transpose_matmul_weights} \
         """

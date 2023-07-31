@@ -1,13 +1,17 @@
 """SMAC util."""
 import copy
+import csv
 import statistics
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any, cast
 
 from ConfigSpace import Configuration
 from smac import RunHistory, Scenario
+from smac.runhistory.dataclasses import TrialKey, TrialValue
 
 from autoverify.types import CostDict
+from autoverify.util.dataclass import get_dataclass_field_names
 from autoverify.util.instances import VerificationInstance
 
 
@@ -121,3 +125,18 @@ def costs_per_inst_from_rh(
             costs[inst] = [statistics.mean(cost_list)]
 
     return costs
+
+
+def runhistory_to_csv(rh: RunHistory, csv_path: Path):
+    """Write a RunHistory object to a CSV file."""
+    key_header = get_dataclass_field_names(TrialKey)
+    value_header = get_dataclass_field_names(TrialValue)
+
+    with open(csv_path, "w") as f:
+        writer = csv.DictWriter(f, fieldnames=key_header + value_header)
+        writer.writeheader()
+
+        for trial_info, trial_value in rh.items():
+            row_dict = asdict(trial_info)
+            row_dict.update(asdict(trial_value))
+            writer.writerow(row_dict)
