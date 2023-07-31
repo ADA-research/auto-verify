@@ -1,5 +1,4 @@
 """YAML file utils."""
-# TODO: Clean up the tempfiles. Currently it will fill up storage until shutdown
 import atexit
 import json
 import tempfile
