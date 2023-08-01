@@ -50,6 +50,15 @@ def trivial_unsat() -> VerificationInstance:
 
 
 @pytest.fixture
+def trivial_timeout() -> VerificationInstance:
+    return VerificationInstance(
+        property=test_props / "test_prop.vnnlib",
+        network=test_props / "test_sat.onnx",
+        timeout=0,
+    )
+
+
+@pytest.fixture
 def trivial_nano() -> VerificationInstance:
     return VerificationInstance(
         property=test_props / "test_nano.vnnlib",

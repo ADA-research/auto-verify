@@ -36,7 +36,9 @@ def test_check_file_extension_with_non_matching_extension(
 
 def test_check_file_extension_with_nonexistent_file():
     file = Path("non_existent_file.txt")
-    assert not check_file_extension(file, ".txt")
+
+    with pytest.raises(FileNotFoundError):
+        check_file_extension(file, ".txt")
 
 
 def test_read_path_file(sample_files: SampleFiles):

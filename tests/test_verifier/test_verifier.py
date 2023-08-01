@@ -51,3 +51,14 @@ def test_unsat(
     result = verifier.verify_instance(trivial_unsat)
 
     assert isinstance(result, Ok)
+    assert result.value.result == "UNSAT"
+
+
+def test_timeout(
+    verifier: CompleteVerifier,
+    trivial_timeout: VerificationInstance,
+):
+    result = verifier.verify_instance(trivial_timeout)
+
+    assert isinstance(result, Ok)
+    assert result.value.result == "TIMEOUT"
