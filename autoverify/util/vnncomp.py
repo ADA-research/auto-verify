@@ -26,8 +26,6 @@ def inst_bench_to_verifier(
                     "model__onnx_quirks": "{'Reshape': {'fix_batch_size': True}}"  # noqa: E501
                 }
             )
-        elif benchmark == "carvana_unet":
-            raise NotImplementedError  # TODO: ?
         return AbCrown()
     elif verifier == "ovalbab":
         return OvalBab()

@@ -7,9 +7,7 @@ from ConfigSpace import Configuration
 from autoverify.util.cli import parse_config_str_type
 from autoverify.util.configs import config_from_file
 from autoverify.util.instances import read_vnncomp_instances
-from autoverify.util.verifiers import verifier_from_name
 from autoverify.util.vnncomp_filters import filters
-from autoverify.verifier.verifier import CompleteVerifier
 from autoverify.verify.eval_verifier import eval_verifier
 
 
@@ -43,6 +41,14 @@ def build_argparser() -> argparse.ArgumentParser:
         "--warmup",
         action=argparse.BooleanOptionalAction,
         default=True,
+        help="Perform a short (10 sec) warmup run.",
+    )
+    parser.add_argument(
+        "--vnn_eval",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Get VNNCOMP specific verifiers.",
+        required=True,
     )
     parser.add_argument(
         "--output_file",
@@ -73,7 +79,7 @@ def build_argparser() -> argparse.ArgumentParser:
 if __name__ == "__main__":
     parser = build_argparser()
     args = parser.parse_args()
-    verifier = verifier_from_name(args.verifier.lower())()
+    verifier = args.verifier
     config: Configuration | None = None
 
     if args.config_str:
@@ -91,12 +97,12 @@ if __name__ == "__main__":
         predicate=filter,
     )
 
-    assert isinstance(verifier, CompleteVerifier)
-
     eval_verifier(
         verifier,
         instances,
         config,
         warmup=args.warmup,
         output_csv_path=args.output_file,
+        fetch_vnnc_verifier=args.vnn_eval,
+        benchmark_name=args.benchmark,
     )

@@ -1,18 +1,16 @@
 """Nnenum verifier."""
 import shlex
-import tempfile
 from pathlib import Path
 from subprocess import CompletedProcess
 from typing import Any, ContextManager, Iterable
 
-import numpy as np
 from ConfigSpace import Configuration, ConfigurationSpace
 
 from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 from autoverify.util.env import cwd, environment, pkill_matches
-from autoverify.util.loggers import verification_logger
-from autoverify.util.proc import cpu_count, pkill_match
+from autoverify.util.proc import cpu_count
+from autoverify.util.tempfiles import tmp_file
 from autoverify.verifier.verification_result import (
     CompleteVerificationResult,
     VerificationResultString,
@@ -67,7 +65,7 @@ class Nnenum(CompleteVerifier):
         config: dict[str, Any],
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> tuple[str, Path | None]:
-        result_file = Path(tempfile.NamedTemporaryFile("w").name)
+        result_file = Path(tmp_file(".txt").name)
         source_cmd = get_conda_source_cmd(get_conda_path())
 
         # The timeout is handled by subprocess.run, so its set it to maxint here
