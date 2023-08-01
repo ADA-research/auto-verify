@@ -28,6 +28,14 @@ class AbCrown(CompleteVerifier):
     name: str = "abcrown"
     config_space: ConfigurationSpace = AbCrownConfigspace
 
+    def __init__(
+        self,
+        batch_size: int = 512,
+        yaml_override: dict[str, Any] | None = None,
+    ):
+        super().__init__(batch_size)
+        self._yaml_override = yaml_override
+
     @property
     def contexts(self) -> list[ContextManager[None]]:
         # TODO: Narrow the pkill_match_list patterns further. People may be
