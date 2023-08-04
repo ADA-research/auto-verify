@@ -57,22 +57,6 @@ def build_argparser() -> argparse.ArgumentParser:
         required=True,
     )
 
-    config_group = parser.add_mutually_exclusive_group()
-    # TODO: Help message
-    config_group.add_argument(
-        "--config_file",
-        type=Path,
-        help="File where the configuration is saved, as... TODO",
-        default=None,
-    )
-    # TODO: Help message
-    config_group.add_argument(
-        "--config_str",
-        type=str,
-        help="Literal dict... TODO",
-        default=None,
-    )
-
     return parser
 
 
@@ -81,11 +65,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     verifier = args.verifier
     config: Configuration | None = None
-
-    if args.config_str:
-        config = parse_config_str_type(args.config_str, verifier.config_space)
-    elif args.config_file:
-        config = config_from_file(args.config_file, verifier.config_space)
 
     filter = None
     if args.filter:
@@ -103,6 +82,4 @@ if __name__ == "__main__":
         config,
         warmup=args.warmup,
         output_csv_path=args.output_file,
-        fetch_vnnc_verifier=args.vnn_eval,
-        benchmark_name=args.benchmark,
     )

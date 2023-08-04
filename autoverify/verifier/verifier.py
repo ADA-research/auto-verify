@@ -106,6 +106,7 @@ class Verifier(ABC):
         """_summary."""
         raise NotImplementedError
 
+    # TODO: Make the return type Any?
     def _init_config(
         self,
         network: Path,

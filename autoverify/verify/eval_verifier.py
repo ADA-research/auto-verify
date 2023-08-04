@@ -10,15 +10,18 @@ from pathlib import Path
 from ConfigSpace import Configuration
 from result import Err, Ok
 
-from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.util.instances import (
     VerificationDataResult,
     VerificationInstance,
     csv_append_verification_result,
     init_verification_result_csv,
+    read_vnncomp_instances,
 )
 from autoverify.util.verifiers import verifier_from_name
-from autoverify.util.vnncomp import inst_bench_to_verifier
+from autoverify.util.vnncomp import (
+    inst_bench_to_verifier,
+    inst_bench_verifier_config,
+)
 from autoverify.verifier.verifier import CompleteVerifier
 
 logger = logging.getLogger(__name__)
@@ -31,36 +34,89 @@ def _warmup(
 ):
     logger.info("Starting warmup run")
     warmup_inst = copy.deepcopy(instance)
-    warmup_inst.timeout = 10
 
     if isinstance(verifier, str):
         v = verifier_from_name(verifier)()
         assert isinstance(v, CompleteVerifier)
-        v.verify_instance(warmup_inst, config=config)
+        v.verify_property(
+            warmup_inst.network, warmup_inst.property, config=config, timeout=10
+        )
     else:
-        verifier.verify_instance(warmup_inst, config=config)
+        verifier.verify_property(
+            warmup_inst.network,
+            warmup_inst.property,
+            config=config,
+            timeout=10,
+        )
 
     logger.info("Finished warmup run")
 
 
+def eval_instance(
+    verifier: CompleteVerifier,
+    instance: VerificationInstance,
+    *,
+    config: Configuration | Path | None = None,
+) -> VerificationDataResult:
+    """_summary_."""
+    logger.info(
+        f"\nVerifying property {instance.property.name} on "
+        f"{instance.network.name} with verifier {verifier.name} and "
+        f"configuration {config or 'default'} "
+        f"(timeout = {instance.timeout} sec.)"
+    )
+
+    static_data = (
+        instance.network.name,
+        instance.property.name,
+        instance.timeout,
+        verifier.name,
+        str(config),
+    )
+
+    result = verifier.verify_instance(instance, config=config)
+
+    if isinstance(result, Ok):
+        logger.info("Verification finished succesfully.")
+        result = result.unwrap()
+        logger.info(f"Result: {result.result}")
+
+        return VerificationDataResult(
+            *static_data,
+            "OK",
+            result.result,
+            result.took,
+            result.counter_example,
+            result.err,
+            result.stdout,
+        )
+    elif isinstance(result, Err):
+        result = result.unwrap_err()
+        logger.info("Exception during verification.")
+        logger.info(result.err)
+
+        return VerificationDataResult(
+            *static_data,
+            "ERR",
+            result.result,
+            result.took,
+            None,
+            result.err,
+            result.stdout,
+        )
+
+    raise RuntimeError("Result should be Ok | Err")
+
+
 def eval_verifier(
-    verifier: CompleteVerifier | str,
+    verifier: CompleteVerifier,
     instances: list[VerificationInstance],
     config: Configuration | Path | None,
     *,
     warmup: bool = True,
     output_csv_path: Path | None = None,
-    fetch_vnnc_verifier: bool = False,
-    benchmark_name: str | None = None,
-) -> list[VerificationDataResult]:
-    """_summary_."""
-    if isinstance(verifier, str):
-        assert (
-            fetch_vnnc_verifier is True
-        ), "verifier str type only used for VNNCOMP eval"
-        assert (
-            benchmark_name is not None
-        ), "Need a benchmark name if verifier is str"
+) -> dict[VerificationInstance, VerificationDataResult]:
+    results: dict[VerificationInstance, VerificationDataResult] = {}
 
     if output_csv_path is not None:
         init_verification_result_csv(output_csv_path)
@@ -68,75 +124,83 @@ def eval_verifier(
     if warmup:
         _warmup(verifier, instances[0], config)
 
-    results: list[VerificationDataResult] = []
-
-    for i, instance in enumerate(instances):
-        iter_verifier: CompleteVerifier
-        if isinstance(verifier, str):
-            assert benchmark_name is not None
-            iter_verifier = inst_bench_to_verifier(
-                benchmark_name, instance, verifier
-            )
-        else:
-            iter_verifier = verifier
-
-        logger.info(
-            f"\nVerifying instance {i}; property {instance.property.name} on "
-            f"{instance.network.name} with verifier {iter_verifier.name} and "
-            f"configuration {config or 'default'} "
-            f"(timeout = {instance.timeout} sec.)"
-        )
-
-        verification_data: VerificationDataResult | None = None
-        result = iter_verifier.verify_instance(instance, config=config)
-
-        if isinstance(result, Ok):
-            logger.info("Verification finished succesfully.")
-            result = result.unwrap()
-            logger.info(f"Result: {result.result}")
-
-            verification_data = VerificationDataResult(
-                instance.network.name,
-                instance.property.name,
-                instance.timeout,
-                iter_verifier.name,
-                str(config),
-                "OK",
-                result.result,
-                result.took,
-                result.counter_example,
-                result.err,
-                result.stdout,
-            )
-            results.append(verification_data)
-        elif isinstance(result, Err):
-            result = result.unwrap_err()
-
-            logger.info("Exception during verification.")
-            logger.info(result.err)
-
-            verification_data = VerificationDataResult(
-                instance.network.name,
-                instance.property.name,
-                instance.timeout,
-                iter_verifier.name,
-                str(config),
-                "ERR",
-                "ERR",
-                float(instance.timeout)
-                if instance.timeout
-                else DEFAULT_VERIFICATION_TIMEOUT_SEC,
-                None,
-                result.err,
-                result.stdout,
-            )
-            results.append(verification_data)
+    for instance in instances:
+        result = eval_instance(verifier, instance, config=config)
+        results[instance] = result
 
         logger.info(f"Verification took {result.took} seconds.")
 
-        if output_csv_path is not None and isinstance(
-            verification_data, VerificationDataResult
-        ):
-            csv_append_verification_result(verification_data, output_csv_path)
+        if output_csv_path is not None:
+            csv_append_verification_result(result, output_csv_path)
+
+    return results
+
+
+def eval_vnn_default(
+    verifier: str,
+    benchmark: str,
+    vnncomp_path: Path,
+    output_csv_path: Path,
+    *,
+    warmup: bool = True,
+) -> dict[VerificationInstance, VerificationDataResult]:
+    """_summary_."""
+    results: dict[VerificationInstance, VerificationDataResult] = {}
+    instances = read_vnncomp_instances(benchmark, vnncomp_path)
+
+    if output_csv_path is not None:
+        init_verification_result_csv(output_csv_path)
+
+    if warmup:
+        _warmup(verifier, instances[0], None)
+
+    for inst in instances:
+        verifier_inst = inst_bench_to_verifier(benchmark, inst, verifier)
+
+        assert isinstance(verifier_inst, CompleteVerifier)
+        result = eval_instance(verifier_inst, inst)
+
+        logger.info(f"Verification took {result.took} seconds.")
+
+        if output_csv_path is not None:
+            csv_append_verification_result(result, output_csv_path)
+
+    return results
+
+
+def eval_vnn_verifier(
+    verifier: str,
+    benchmark: str,
+    vnncomp_path: Path,
+    output_csv_path: Path,
+    configs_dir: Path,
+    *,
+    warmup: bool = True,
+) -> dict[VerificationInstance, VerificationDataResult]:
+    """_summary_."""
+    results: dict[VerificationInstance, VerificationDataResult] = {}
+    instances = read_vnncomp_instances(benchmark, vnncomp_path)
+
+    if output_csv_path is not None:
+        init_verification_result_csv(output_csv_path)
+
+    if warmup:
+        _warmup(verifier, instances[0], None)
+
+    for inst in instances:
+        cfg = inst_bench_verifier_config(benchmark, inst, verifier, configs_dir)
+        # HACK:
+        if verifier == "verinet":
+            verifier_inst = inst_bench_to_verifier(benchmark, inst, "verinet")
+        else:
+            verifier_inst = verifier_from_name(verifier)()
+
+        assert isinstance(verifier_inst, CompleteVerifier)
+        result = eval_instance(verifier_inst, inst, config=cfg)
+
+        logger.info(f"Verification took {result.took} seconds.")
+
+        if output_csv_path is not None:
+            csv_append_verification_result(result, output_csv_path)
 
     return results

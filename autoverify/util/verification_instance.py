@@ -4,13 +4,18 @@ from pathlib import Path
 from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 
 
-@dataclass
+@dataclass(frozen=True, eq=True)
 class VerificationInstance:
     """_summary_."""
 
     network: Path
     property: Path
     timeout: int
+
+    def __hash__(self):
+        return hash(
+            (self.network.resolve(), self.property.resolve(), self.timeout)
+        )
 
     def as_smac_instance(self) -> str:
         """Return the instance in a `f"{network},{property},{timeout}"` format.

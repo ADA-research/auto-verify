@@ -74,6 +74,11 @@ VerinetConfigspace.add_hyperparameters(
             (0.5, 1.0),
             default=0.75,
         ),
+        Float(
+            "INDIRECT_INPUT_MULTIPLIER",
+            (0.5, 1.0),
+            default=0.75,
+        ),
         Categorical(
             "USE_BIAS_SEPARATED_CONSTRAINTS",
             [True, False],

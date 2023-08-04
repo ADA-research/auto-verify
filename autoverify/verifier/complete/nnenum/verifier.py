@@ -26,6 +26,12 @@ class Nnenum(CompleteVerifier):
     name: str = "nnenum"
     config_space: ConfigurationSpace = NnenumConfigspace
 
+    # HACK: Should not need to instantiate a whole new instance just to
+    # change `_use_auto_settings`.
+    def __init__(self, batch_size: int = 512, use_auto_settings: bool = False):
+        super().__init__(batch_size)
+        self._use_auto_settings = use_auto_settings
+
     @property
     def contexts(self) -> list[ContextManager[None]]:
         return [
@@ -68,13 +74,24 @@ class Nnenum(CompleteVerifier):
         result_file = Path(tmp_file(".txt").name)
         source_cmd = get_conda_source_cmd(get_conda_path())
 
-        # The timeout is handled by subprocess.run, so its set it to maxint here
+        # In nnenum, settings are normally passed as a one word string
+        # over the CLI. This word then selects from some pre-defined settings
+        # We want some more control however, so we also make an option to pass
+        # a stringified dict of exact settings.
+        # The "none" value for settings_str is used as a flag that makes
+        # nnenum use the dict of exact settings instead.
+        settings_str = "none"
+        if self._use_auto_settings:
+            settings_str = "auto"  # "auto" is the default
+            config = {}
+
         run_cmd = f"""
         {" ".join(source_cmd)}
         conda activate {self.conda_env_name}
         python -m nnenum.nnenum {str(network)} {str(property)} {str(timeout)} \
         {str(result_file)} \
         {str(cpu_count())} \
+        {settings_str} \
         {shlex.quote(str(config))} \
         """
 
@@ -86,8 +103,9 @@ class Nnenum(CompleteVerifier):
         *,
         config: Configuration | Path | None,
     ) -> list[CompleteVerificationResult]:
-        source_cmd = get_conda_source_cmd()
+        # source_cmd = get_conda_source_cmd()
         # TODO:
+        raise NotImplementedError("Batch verification not supported yet")
 
     def _init_config(
         self,
