@@ -193,7 +193,7 @@ def eval_vnn_verifier(
         # HACK:
         if verifier == "verinet":
             verifier_inst = inst_bench_to_verifier(benchmark, inst, "verinet")
-        elif verifier == "nnenum"
+        elif verifier == "nnenum":
             verifier_inst = Nnenum(use_auto_settings=True)
         else:
             verifier_inst = verifier_from_name(verifier)()
