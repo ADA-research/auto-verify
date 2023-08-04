@@ -16,7 +16,7 @@ def inst_bench_to_verifier(
 ) -> CompleteVerifier:
     """_summary_."""
     if verifier == "nnenum":
-        return Nnenum()
+        return Nnenum(use_auto_settings=True)
     elif verifier == "abcrown":  # NOTE: Not complete
         if benchmark == "acasxu":
             return AbCrown(yaml_override={"data__num_outputs": 5})
