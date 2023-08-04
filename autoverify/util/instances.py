@@ -56,6 +56,9 @@ class VerificationDataResult:
 
 def init_verification_result_csv(csv_path: Path):
     """_summary_."""
+    if not csv_path.exists():
+        csv_path.touch()
+
     with open(str(csv_path), "w") as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(get_dataclass_field_names(VerificationDataResult))
