@@ -4,8 +4,16 @@ from ConfigSpace import Configuration
 
 from autoverify.types import Cost, Instance, Seed, TargetFunction
 from autoverify.util.instances import VerificationInstance
+from autoverify.util.vnncomp import (
+    inst_bench_to_verifier,
+    inst_bench_verifier_config,
+)
 from autoverify.verifier.verification_result import CompleteVerificationResult
 from autoverify.verifier.verifier import CompleteVerifier, Verifier
+
+# Penalized Average Runtime
+# If an instance times out, its cost becomes cost * PAR
+_DEFAULT_PAR = 10
 
 
 def _run_verification_instance(
@@ -27,6 +35,7 @@ def _run_verification_instance(
         instance = instance.as_smac_instance()
 
     # FIXME: What if there are commas in the net or prop name?
+    # This problem occurs in multiple parts where we work with SMAC instances
     network, property, timeout = instance.split(",")
 
     result = verifier.verify_property(
@@ -62,8 +71,32 @@ def _process_target_function_result(
     return float(verification_result.took)
 
 
+def get_vnn_verifier_tf(
+    verifier: str,
+    benchmark: str,
+    *,
+    timeout_penalty: int = _DEFAULT_PAR,
+) -> TargetFunction:
+    """_summary_."""
+
+    def target_function(
+        config: Configuration, instance: Instance, seed: Seed
+    ) -> Cost:
+        """_summary_."""
+        seed += 1  # silence warning, cant rename the param to _ or smac errors
+
+        verifier_inst = inst_bench_to_verifier(
+            benchmark, VerificationInstance.from_str(instance), verifier
+        )
+
+        result = _run_verification_instance(verifier_inst, config, instance)
+        return _process_target_function_result(result, timeout_penalty)
+
+    return target_function
+
+
 def get_verifier_tf(
-    verifier: Verifier, *, timeout_penalty: int = 10
+    verifier: Verifier, *, timeout_penalty: int = _DEFAULT_PAR
 ) -> TargetFunction:
     """_summary_."""
 
@@ -84,7 +117,7 @@ def get_verifier_tf(
 
 
 def get_pick_tf(
-    verifiers: list[Verifier], *, timeout_penalty: int = 10
+    verifiers: list[Verifier], *, timeout_penalty: int = _DEFAULT_PAR
 ) -> TargetFunction:
     """_summary_."""
 

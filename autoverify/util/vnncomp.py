@@ -61,7 +61,7 @@ def _get_abcrown_config(benchmark: str, instance: VerificationInstance) -> str:
         if net_name == "CIFAR100_resnet_small.onnx":
             return "cifar100_small_2022.yaml"
         elif net_name == "CIFAR100_resnet_medium.onnx":
-            return "cifar100_medium_2022.yaml"
+            return "cifar100_med_2022.yaml"
         elif net_name == "CIFAR100_resnet_large.onnx":
             return "cifar100_large_2022.yaml"
         elif net_name == "CIFAR100_resnet_super.onnx":

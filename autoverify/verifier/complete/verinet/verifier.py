@@ -9,7 +9,6 @@ from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.util import find_substring
 from autoverify.util.conda import (
     find_conda_lib,
-    get_conda_env_lib_path,
     get_conda_path,
     get_conda_source_cmd,
 )

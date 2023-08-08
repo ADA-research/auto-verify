@@ -8,8 +8,12 @@ from ConfigSpace import Configuration, ConfigurationSpace
 
 from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.util import find_substring
-from autoverify.util.conda import get_conda_path, get_conda_source_cmd
-from autoverify.util.env import cwd
+from autoverify.util.conda import (
+    find_conda_lib,
+    get_conda_path,
+    get_conda_source_cmd,
+)
+from autoverify.util.env import cwd, environment
 from autoverify.util.tempfiles import tmp_file
 from autoverify.verifier.complete.ovalbab.ovalbab_json_config import (
     OvalbabJsonConfig,
@@ -31,7 +35,14 @@ class OvalBab(CompleteVerifier):
 
     @property
     def contexts(self) -> list[ContextManager[None]]:
-        return [cwd(self.tool_path)]
+        return [
+            cwd(self.tool_path),
+            environment(
+                LD_LIBRARY_PATH=str(
+                    find_conda_lib(self.conda_env_name, "libcudart.so.11.0")
+                )
+            ),
+        ]
 
     def _parse_result(
         self,

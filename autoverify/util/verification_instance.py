@@ -12,9 +12,19 @@ class VerificationInstance:
     property: Path
     timeout: int
 
+    @classmethod
+    def from_str(cls, smac_instance: str):
+        """_summary_."""
+        network, property, timeout = smac_instance.split(",")
+        return cls(Path(network), Path(property), int(timeout))
+
     def __hash__(self):
         return hash(
-            (self.network.resolve(), self.property.resolve(), self.timeout)
+            (
+                self.network.expanduser().resolve(),
+                self.property.expanduser().resolve(),
+                self.timeout,
+            )
         )
 
     def as_smac_instance(self) -> str:
@@ -37,11 +47,13 @@ class VerificationInstance:
     def as_row(self, resolve_paths: bool = True) -> list[str]:
         """Returns the instance as a list of strings."""
         net = (
-            str(self.network.resolve()) if resolve_paths else str(self.network)
+            str(self.network.expanduser().resolve())
+            if resolve_paths
+            else str(self.network)
         )
 
         prop = (
-            str(self.property.resolve())
+            str(self.property.expanduser().resolve())
             if resolve_paths
             else str(self.property)
         )
