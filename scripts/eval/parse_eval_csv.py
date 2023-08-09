@@ -1,16 +1,19 @@
 import argparse
+from pathlib import Path
 
 import pandas as pd
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("csv_path", help="Path to the csv to be processed")
+    parser.add_argument(
+        "csv_path", type=Path, help="Path to the csv to be processed"
+    )
 
     args = parser.parse_args()
     csv_path = args.csv_path
     df: pd.DataFrame = pd.read_csv(csv_path)
 
-    print(f"====== Stats for {csv_path} ======\n")
+    print(f"====== Stats for {csv_path.name} ======\n")
 
     print("Mean:", df["took"].mean())
     print("Median:", df["took"].median())
@@ -31,4 +34,4 @@ if __name__ == "__main__":
     print("UNSAT:", res_counts.get("UNSAT", 0))
     print("TIMEOUT:", res_counts.get("TIMEOUT", 0))
     print("ERR:", res_counts.get("ERR", 0))
-    print()
+    print("=========================================\n")

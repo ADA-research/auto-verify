@@ -3,6 +3,7 @@ import argparse
 from pathlib import Path
 
 from autoverify.tune import smac_tune_verifier
+from autoverify.tune.tune_verifier import vnn_smac_tune_verifier
 from autoverify.util.instances import read_vnncomp_instances
 from autoverify.util.verifiers import verifier_from_name
 from autoverify.util.vnncomp_filters import filters
@@ -18,6 +19,12 @@ def build_argparser() -> argparse.ArgumentParser:
         required=True,
     )
     parser.add_argument(
+        "--benchmark",
+        type=str,
+        help="Name of the VNNCOMP benchmark",
+        required=True,
+    )
+    parser.add_argument(
         "--time",
         type=int,
         help="Walltime limit",
@@ -27,12 +34,6 @@ def build_argparser() -> argparse.ArgumentParser:
         "--vnncomp_path",
         type=Path,
         help="Path to VNNCOMP benchmarks",
-        required=True,
-    )
-    parser.add_argument(
-        "--benchmark",
-        type=str,
-        help="Name of the VNNCOMP benchmark",
         required=True,
     )
     parser.add_argument(
@@ -67,6 +68,7 @@ def build_argparser() -> argparse.ArgumentParser:
 if __name__ == "__main__":
     parser = build_argparser()
     args = parser.parse_args()
+    print(args)
 
     verifier = verifier_from_name(args.verifier.lower())()
     vnncomp_path = Path(args.vnncomp_path)
@@ -75,6 +77,9 @@ if __name__ == "__main__":
 
     if not vnncomp_path.is_dir():
         raise ValueError(f"{vnncomp_path} is not a valid directory")
+
+    if output_dir and not output_dir.is_dir():
+        output_dir.mkdir(parents=True, exist_ok=True)
 
     filter = None
     if args.filter:
@@ -87,15 +92,26 @@ if __name__ == "__main__":
         predicate=filter,
     )
 
-    config = smac_tune_verifier(
-        verifier,
+    config = vnn_smac_tune_verifier(
+        args.verifier.lower(),
         instances,
+        args.benchmark,
         args.time,
         output_dir=output_dir,
         config_out=config_out,
         run_name=args.run_name,
         rh_csv_path=args.rh_csv_path,
     )
+
+    # config = smac_tune_verifier(
+    #     verifier,
+    #     instances,
+    #     args.time,
+    #     output_dir=output_dir,
+    #     config_out=config_out,
+    #     run_name=args.run_name,
+    #     rh_csv_path=args.rh_csv_path,
+    # )
 
     print("*" * 80)
     print("Incumbent:")
