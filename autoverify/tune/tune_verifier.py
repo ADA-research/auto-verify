@@ -5,7 +5,6 @@ from pathlib import Path
 from ConfigSpace import Configuration
 from smac import AlgorithmConfigurationFacade, Scenario
 
-from autoverify.util.instances import read_vnncomp_instances
 from autoverify.util.smac import index_features, runhistory_to_csv
 from autoverify.util.target_function import get_verifier_tf, get_vnn_verifier_tf
 from autoverify.util.verifiers import verifier_from_name
