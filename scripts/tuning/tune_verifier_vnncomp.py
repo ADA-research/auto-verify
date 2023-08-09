@@ -68,7 +68,6 @@ def build_argparser() -> argparse.ArgumentParser:
 if __name__ == "__main__":
     parser = build_argparser()
     args = parser.parse_args()
-    print(args)
 
     verifier = verifier_from_name(args.verifier.lower())()
     vnncomp_path = Path(args.vnncomp_path)
