@@ -135,6 +135,7 @@ class Verifier(ABC):
         """Check if two configs are the same."""
         raise NotImplementedError
 
+    # TODO: Make this a function in util/
     @staticmethod
     def _check_instance(network: Path, property: Path):
         if not check_file_extension(network, ".onnx"):

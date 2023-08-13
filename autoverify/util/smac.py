@@ -18,7 +18,7 @@ from autoverify.util.instances import VerificationInstance
 
 def get_smac_run_data(run_folder: Path) -> dict[str, Any]:
     """_summary_."""
-    data = {}
+    data: dict[str, Any] = {}
 
     with open(run_folder / "runhistory.json", "r") as f:
         runhist = json.load(f)

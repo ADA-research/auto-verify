@@ -16,7 +16,7 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "SMAC==2.0.1",
+    "SMAC==2.0.2",
     "result==0.9.0",
     "xdg-base-dirs==6.0.0",
     "onnxruntime==1.14.1",
@@ -27,9 +27,9 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "black", 
-    "isort", 
-    "tox", 
+    "black",
+    "isort",
+    "tox",
     "pytest",
     "pre-commit",
     "flake8",
@@ -88,12 +88,6 @@ tag = false
 push = false
 
 [tool.bumpver.file_patterns]
-"pyproject.toml" = [
-    'version = "{version}"',
-]
-"README.md" = [
-    "{version}",
-]
-"autoverify/__init__.py" = [
-    '__version__ = "{version}"',
-]
+"pyproject.toml" = ['version = "{version}"']
+"README.md" = ["{version}"]
+"autoverify/__init__.py" = ['__version__ = "{version}"']

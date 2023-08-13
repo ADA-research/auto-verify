@@ -1,3 +1,4 @@
+#!/bin/bash
 # TODO: Test this script
 
 # Clean
