@@ -7,7 +7,9 @@ from ConfigSpace import Configuration
 from autoverify.util.cli import parse_config_str_type
 from autoverify.util.configs import config_from_file
 from autoverify.util.instances import read_vnncomp_instances
+from autoverify.util.verifiers import verifier_from_name
 from autoverify.util.vnncomp_filters import filters
+from autoverify.verifier.verifier import CompleteVerifier
 from autoverify.verify.eval_verifier import eval_verifier
 
 
@@ -19,6 +21,13 @@ def build_argparser() -> argparse.ArgumentParser:
         type=str,
         help="Verifier name",
         required=True,
+    )
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=True,
+        required=False,
+        help="Path to the configuration.txt",
     )
     parser.add_argument(
         "--vnncomp_path",
@@ -44,13 +53,6 @@ def build_argparser() -> argparse.ArgumentParser:
         help="Perform a short (10 sec) warmup run.",
     )
     parser.add_argument(
-        "--vnn_eval",
-        action=argparse.BooleanOptionalAction,
-        default=True,
-        help="Get VNNCOMP specific verifiers.",
-        required=True,
-    )
-    parser.add_argument(
         "--output_file",
         type=Path,
         help="CSV file where evaluation data will be saved.",
@@ -63,8 +65,14 @@ def build_argparser() -> argparse.ArgumentParser:
 if __name__ == "__main__":
     parser = build_argparser()
     args = parser.parse_args()
-    verifier = args.verifier
+    verifier = verifier_from_name(args.verifier)()
+    assert isinstance(verifier, CompleteVerifier)
+
+    config_path: Path | None = args.config
     config: Configuration | None = None
+
+    if config_path:
+        config = config_from_file(config_path, verifier.config_space)
 
     filter = None
     if args.filter:
