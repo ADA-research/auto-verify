@@ -10,7 +10,10 @@ from autoverify.util.instances import read_vnncomp_instances
 from autoverify.util.verifiers import verifier_from_name
 from autoverify.util.vnncomp_filters import filters
 from autoverify.verifier.verifier import CompleteVerifier
-from autoverify.verify.eval_verifier import eval_verifier
+from autoverify.verify.eval_verifier import (
+    eval_verifier,
+    eval_verifier_vnncompat,
+)
 
 
 def build_argparser() -> argparse.ArgumentParser:
@@ -45,6 +48,12 @@ def build_argparser() -> argparse.ArgumentParser:
         "--filter",
         type=str,
         help="Name of filter for instances",
+    )
+    parser.add_argument(
+        "--vnn_compat",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Use VNN compatible mode",
     )
     parser.add_argument(
         "--warmup",
@@ -84,10 +93,20 @@ if __name__ == "__main__":
         predicate=filter,
     )
 
-    eval_verifier(
-        verifier,
-        instances,
-        config,
-        warmup=args.warmup,
-        output_csv_path=args.output_file,
-    )
+    if not args.vnn_compat:
+        eval_verifier(
+            verifier,
+            instances,
+            config,
+            warmup=args.warmup,
+            output_csv_path=args.output_file,
+        )
+    else:
+        eval_verifier_vnncompat(
+            args.verifier,
+            args.benchmark,
+            instances,
+            config,
+            warmup=args.warmup,
+            output_csv_path=args.output_file,
+        )
