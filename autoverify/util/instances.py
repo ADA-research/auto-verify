@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import csv
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Literal, overload
@@ -90,7 +90,7 @@ def write_verification_results_to_csv(results: pd.DataFrame, csv_path: Path):
 
 
 def verification_instances_to_smac_instances(
-    instances: list[VerificationInstance],
+    instances: Sequence[VerificationInstance],
 ) -> list[str]:
     """Convert a list of `VerificationInstace` objects to SMAC instances.
 

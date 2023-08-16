@@ -3,6 +3,7 @@ import copy
 import csv
 import json
 import statistics
+from collections.abc import Sequence
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any, cast
@@ -48,7 +49,7 @@ def get_smac_run_data(run_folder: Path) -> dict[str, Any]:
 
 
 def index_features(
-    instances: list[str] | list[VerificationInstance],
+    instances: Sequence[str] | Sequence[VerificationInstance],
 ) -> dict[str, list[float]]:
     """Returns list indices as the instance features."""
     features = {}

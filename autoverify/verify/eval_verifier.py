@@ -109,6 +109,39 @@ def eval_instance(
     raise RuntimeError("Result should be Ok | Err")
 
 
+# TODO: make vnncompat a param for `eval_verifier`
+# that probably means the `verifier` param needs to become a `str`
+# or maybe make it a param in one of the other functions
+def eval_verifier_vnncompat(
+    verifier: str,
+    benchmark: str,
+    instances: list[VerificationInstance],
+    config: Configuration | Path | None,
+    *,
+    warmup: bool = True,
+    output_csv_path: Path | None = None,
+) -> dict[VerificationInstance, VerificationDataResult]:
+    results: dict[VerificationInstance, VerificationDataResult] = {}
+
+    if output_csv_path is not None:
+        init_verification_result_csv(output_csv_path)
+
+    if warmup:
+        _warmup(verifier, instances[0], config)
+
+    for instance in instances:
+        verifier_inst = inst_bench_to_verifier(benchmark, instance, verifier)
+        result = eval_instance(verifier_inst, instance, config=config)
+        results[instance] = result
+
+        logger.info(f"Verification took {result.took} seconds.")
+
+        if output_csv_path is not None:
+            csv_append_verification_result(result, output_csv_path)
+
+    return results
+
+
 def eval_verifier(
     verifier: CompleteVerifier,
     instances: list[VerificationInstance],

@@ -53,3 +53,8 @@ def is_serializable(var: Any) -> bool:
         return True
     except (TypeError, OverflowError):
         return False
+
+
+def add_to_average(average: float, value: float, size: int) -> float:
+    """Update an average with a new value."""
+    return (size * average + value) / (size + 1)
