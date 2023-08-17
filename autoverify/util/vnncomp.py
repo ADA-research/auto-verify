@@ -32,7 +32,7 @@ def inst_bench_to_verifier(
     elif verifier == "verinet":
         if benchmark == "acasxu":
             return Verinet(transpose_matmul_weights=True)
-        elif benchmark == "cifar202":
+        elif benchmark == "cifar2020":
             if instance.network.name.find("convBigRELU") >= 0:
                 return Verinet(dnnv_simplify=True)
         elif benchmark == "cifar100_tinyimagenet_resnet":
