@@ -13,9 +13,9 @@ pytestmark = pytest.mark.parametrize(
     "verifier",
     [
         pytest.param(lazy_fixture("nnenum")),
-        pytest.param(lazy_fixture("abcrown")),
-        pytest.param(lazy_fixture("ovalbab")),
-        pytest.param(lazy_fixture("verinet")),
+        pytest.param(lazy_fixture("abcrown"), marks=pytest.mark.gpu),
+        pytest.param(lazy_fixture("ovalbab"), marks=pytest.mark.gpu),
+        pytest.param(lazy_fixture("verinet"), marks=pytest.mark.gpu),
     ],
 )
 
