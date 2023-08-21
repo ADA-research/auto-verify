@@ -5,7 +5,6 @@ from abc import ABC, abstractmethod
 from contextlib import ExitStack
 from pathlib import Path
 from subprocess import CompletedProcess
-from timeit import default_timer as timer
 from typing import Any, ContextManager, Iterable
 
 from ConfigSpace import Configuration, ConfigurationSpace
@@ -106,13 +105,12 @@ class Verifier(ABC):
         """_summary."""
         raise NotImplementedError
 
-    # TODO: Make the return type Any?
     def _init_config(
         self,
         network: Path,
         property: Path,
         config: Configuration | Path,
-    ) -> Configuration | Path:
+    ) -> Any:
         """Init the config, return type that is needed."""
         return config
 
@@ -223,6 +221,7 @@ class CompleteVerifier(Verifier):
         *,
         config: Configuration | Path | None,
     ) -> list[CompleteVerificationResult]:
+        """_summary_."""
         for instance in instances:
             self._check_instance(instance.network, instance.property)
 

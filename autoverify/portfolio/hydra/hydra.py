@@ -1,194 +1,186 @@
 """_summary_."""
-import copy
+import logging
 import random
 import sys
 
-from ConfigSpace import Categorical, Configuration, ConfigurationSpace
-from smac import AlgorithmConfigurationFacade, RunHistory, Scenario
+import numpy as np
+from ConfigSpace import Configuration
+from smac import AlgorithmConfigurationFacade as ACFacade
+from smac import RunHistory, Scenario
 
-from autoverify.util.cost_dict import (
-    get_best_config_per_instance,
-    merge_cost_dicts,
+from autoverify.portfolio.hydra.cost_matrix import CostMatrix
+from autoverify.portfolio.portfolio import (
+    ConfiguredVerifier,
+    Portfolio,
+    PortfolioScenario,
 )
-from autoverify.util.loggers import hydra_logger
-from autoverify.util.smac import costs_from_runhistory
-from autoverify.util.target_function import get_pick_tf, get_verifier_tf
-from autoverify.verifier.verifier import Verifier
+from autoverify.types import TargetFunction
+from autoverify.util.target_function import get_verifier_tf
+from autoverify.util.verifiers import verifier_from_name
+from autoverify.verifier.verifier import CompleteVerifier
 
-from ...types import ConfiguredVerifier, CostDict
-from ..portfolio import Portfolio
-from ..portfolio_scenario import PortfolioScenario
+logger = logging.getLogger(__name__)
+
+
+def _mean_unevaluated(costs: dict[str, float]) -> dict[str, float]:
+    """Set all the np.inf values to the mean of the non inf values."""
+    new_costs: dict[str, float] = {}
+
+    evaluated_costs: list[float] = [c for c in costs.values() if c != np.inf]
+    mean = float(np.mean(evaluated_costs))
+
+    for inst, cost in costs.items():
+        new_costs[inst] = mean if cost == np.inf else cost
+
+    return new_costs
 
 
 class Hydra:
     """_summary_."""
 
-    def __init__(self, alpha: float = 0.5):
-        if not 0 <= alpha <= 1:
-            raise ValueError(f"Alpha should be in [0.0, 1.0], got {alpha}")
+    # hydra_iter, configurator_iter, verifier_name
+    _SMAC_NAME = "hydra_{}_{}_{}"
 
-        self._tune_budget = 1 - alpha
-        self._pick_budget = alpha
+    def __init__(self, pf_scenario: PortfolioScenario):
+        """_summary_."""
+        self._scenario = pf_scenario
+        self._cost_matrix = CostMatrix()
+        self._stop = False
 
-    def create_portfolio(self, pf_scenario: PortfolioScenario) -> Portfolio:
+    def tune_portfolio(self) -> Portfolio:
+        """_summary_."""
         portfolio = Portfolio()
+        self._iter = 0
 
-        for i in range(pf_scenario.n_iters):
-            hydra_logger.info(f"Starting Hydra iteration {i}")
+        for self._iter in range(self._scenario.n_iters):
+            logger.info(f"Hydra iteration {self._iter}")
+            new_configs = self._configurator(portfolio)
+            self._updater(portfolio, new_configs)
 
-            # initial_config = self._initial_config_provider(None, self._costs)
-            new_configs, costs = self._configurator(pf_scenario)
-            self._portfolio_updater(portfolio, new_configs, costs)
+            logger.info(
+                f"Total cost after iteration {self._iter}"
+                f" = {portfolio.get_total_cost():.2f}, mean cost = "
+                f"{portfolio.get_mean_cost():.2f}"
+            )
 
-        return copy.deepcopy(portfolio)
+            if self._scenario.stop_early and self._stop:
+                logging.info(f"Stopping in iteration {self._iter}")
+                break
 
-    def _portfolio_updater(
-        self,
-        portfolio: Portfolio,
-        configs: Configuration | list[Configuration],
-        costs: CostDict,
-    ):
-        """
-        - beste configs pakken
-        - in de PF doen
-        - kosten pf bijhouden
-        """
-        best = get_best_config_per_instance(costs)
+        return portfolio
 
-        # for inst, cfg in best.items():
-        #     cv = ConfiguredVerifier.from_verifier_config(cfg, (-1, -1))
+    def _configurator(self, pf: Portfolio):
+        # TODO: Iter > 0
+        new_configs: list[tuple[Configuration, RunHistory]] = []
 
-        # portfolio.add()
+        for i in range(self._scenario.configs_per_iter):
+            logger.info(f"Configuration iteration {i}")
 
-    def _update_costs_from_runhistory(
-        self,
-        rh: RunHistory,
-        curr_costs: CostDict,
-        *,
-        config_key: Configuration | None = None,
-    ) -> CostDict:
-        new_costs = costs_from_runhistory(rh)
-        merged_costs = merge_cost_dicts(curr_costs, new_costs)
-        # best_configs = get_best_config_per_instance(new_costs)
+            verifier = self._pick()
 
-        # TODO: HIERZO:
-        """
-        - Merged implementatie dubbel checken: Prima vgm
-        - Portfolio updaten op basis van de kosten
-        - Maar geen configs weghalen?
-        - Kosten van PF bijhouden in PF object?
+            logger.info(f"Picked {verifier}")
+            logger.info(f"Tuning {verifier}")
 
-        - Bekijk de gemiddelde performance van elke config uit deze smac run op
-        elke instance, en voeg de beste daarvan toe aan de PF.
-        - Update de PF performance door de beste cost per instance te pakken
+            run_name = self._SMAC_NAME.format(self._iter, i, verifier)
+            tf = self._get_target_func(verifier, pf)
+            config, runhist = self._tune(verifier, run_name, tf)
 
-        - Na iteratie 0 moet de tf -> hydra_tf worden
-        - hydra_tf: Pak de laagste gecache waarde
-        """
-        # for k, v in merged_costs.items():
-        #     print(k)
-        #     print(v)
-        #     print("...............................")
+            new_configs.append((config, runhist))
 
-        return merged_costs
+        return new_configs
 
-    def _configurator(
-        self,
-        pf_scenario: PortfolioScenario,
-        *,
-        initial_config: Configuration | None = None,
-    ) -> tuple[Configuration | list[Configuration], CostDict]:
-        new_configs: list[Configuration] = []
-        all_costs: CostDict = {}
+    # TODO: Implement picking
+    def _pick(self) -> str:
+        verifiers = self._scenario.verifiers
+        return random.choice(verifiers)
 
-        for _ in range(pf_scenario.configs_per_iter):
-            # TODO: Enable
-            # if self._pick_budget > 0:
-            #     picked_verifier, rh = self._pick_verifier(pf_scenario)
-            #     all_costs = self._update_costs_from_runhistory(rh, all_costs)
-            # else:
-            #     pass
-            picked_verifier = random.choice(pf_scenario.verifiers)
-
-            hydra_logger.info(f"Picked {picked_verifier.name}")
-
-            if self._tune_budget > 0:
-                hydra_logger.info(f"Tuning {picked_verifier.name}")
-                new_config, rh = self._tune_verifier(
-                    picked_verifier, pf_scenario
-                )
-                # all_costs = self._update_costs_from_runhistory(rh, all_costs)
-            else:
-                new_config = picked_verifier.default_config
-
-            hydra_logger.info(f"Tuned {picked_verifier.name}")
-            hydra_logger.info(f"Got config: \n{new_config}")
-
-            new_configs.append(new_config)
-
-        return new_configs, all_costs
-
-    def _pick_verifier(
-        self, pf_scenario: PortfolioScenario
-    ) -> tuple[Verifier, RunHistory]:
-        # Create an "index" param to map it to an instantiated class
-        # since those cannot be used as an HP directly
-        index_space = ConfigurationSpace(name="index")
-        index_space.add_hyperparameter(
-            Categorical("index", [i for i in range(len(pf_scenario.verifiers))])
-        )
-
-        walltime_limit = (
-            pf_scenario.seconds_per_iter
-            * self._pick_budget
-            / pf_scenario.configs_per_iter
-        )
-
-        scenario = Scenario(
-            index_space,
-            walltime_limit=walltime_limit,
-            n_trials=sys.maxsize,  # we use walltime_limit
-            **pf_scenario.get_smac_scenario_kwargs(),
-        )
-
-        pick_tf = get_pick_tf(pf_scenario.verifiers)
-        smac = AlgorithmConfigurationFacade(scenario, pick_tf, overwrite=True)
-        inc = smac.optimize()
-
-        # Not dealing with > 1 config
-        assert isinstance(inc, Configuration)
-        return pf_scenario.verifiers[inc["index"]], smac.runhistory
-
-    def _tune_verifier(
-        self, verifier: Verifier, pf_scenario: PortfolioScenario
+    def _tune(
+        self, verifier: str, run_name: str, target_func: TargetFunction
     ) -> tuple[Configuration, RunHistory]:
+        verifier_inst = verifier_from_name(verifier)()
+
         walltime_limit = (
-            pf_scenario.seconds_per_iter
-            * self._tune_budget
-            / pf_scenario.configs_per_iter
+            self._scenario.seconds_per_iter
+            * self._scenario.tune_budget
+            / self._scenario.configs_per_iter
         )
 
-        scenario = Scenario(
-            verifier.config_space,
+        smac_scenario = Scenario(
+            verifier_inst.config_space,
             walltime_limit=walltime_limit,
             n_trials=sys.maxsize,  # we use walltime_limit
-            **pf_scenario.get_smac_scenario_kwargs(),
+            name=run_name,
+            **self._scenario.get_smac_scenario_kwargs(),
         )
 
-        tune_tf = get_verifier_tf(verifier)
-        smac = AlgorithmConfigurationFacade(scenario, tune_tf, overwrite=True)
+        smac = ACFacade(smac_scenario, target_func, overwrite=True)
         inc = smac.optimize()
 
         # Not dealing with > 1 config
         assert isinstance(inc, Configuration)
         return inc, smac.runhistory
 
-    # TODO:
-    def _initial_config_provider(
-        self, config_space: ConfigurationSpace, costs: CostDict
-    ):
-        pass
+    def _get_target_func(self, verifier: str, pf: Portfolio) -> TargetFunction:
+        """If iteration > 0, use the Hydra target function."""
+        verifier_class = verifier_from_name(verifier)
 
-    def _get_hydra_tf(self):
-        # TODO:
-        pass
+        name = str(verifier_class.name)
+        init_kwargs = {}  # TODO: Type
+
+        if (
+            self._scenario.verifier_kwargs is not None
+            and name in self._scenario.verifier_kwargs
+        ):
+            init_kwargs = self._scenario.verifier_kwargs[name]
+
+        verifier_inst = verifier_class(**init_kwargs)
+        verifier_tf = get_verifier_tf(verifier_inst)
+
+        if self._iter == 0:
+            return verifier_tf
+
+        def hydra_tf(config: Configuration, instance: str, seed: int) -> float:
+            seed += 1  # silence warning
+
+            assert isinstance(verifier_inst, CompleteVerifier)
+            cost = verifier_tf(config, instance, seed)
+            pf_cost = pf.get_cost(instance)
+
+            return float(min(cost, pf_cost))
+
+        return hydra_tf
+
+    # TODO: Support for adding > 1 config per iter
+    def _updater(
+        self,
+        pf: Portfolio,
+        new_configs: list[tuple[Configuration, RunHistory]],
+    ):
+        logger.info("Updating portfolio")
+
+        # TODO: Actually use the cost matrix for determining
+        # the initial config in the SMAC process
+        for _, rh in new_configs:
+            self._cost_matrix.update_matrix(rh)
+
+        cfg = new_configs[0][0]
+        # ConfigSpace name is optional, but we require it to
+        # make a distinction between the different verifiers
+        assert cfg.config_space.name is not None
+
+        cv = ConfiguredVerifier(cfg.config_space.name, cfg)
+        if cv in pf:
+            logger.info(f"Config {cv} already in portfolio")
+            self._stop = True
+            return
+
+        pf.add(cv)
+
+        # Re calculate the cost of the pf
+        vbs_cost = _mean_unevaluated(
+            self._cost_matrix.vbs_cost(
+                pf.configs, self._scenario.get_smac_instances()
+            )
+        )
+
+        pf.update_costs(vbs_cost)

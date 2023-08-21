@@ -12,11 +12,11 @@ from result import Err, Ok
 
 from autoverify.util.instances import (
     VerificationDataResult,
-    VerificationInstance,
     csv_append_verification_result,
     init_verification_result_csv,
     read_vnncomp_instances,
 )
+from autoverify.util.verification_instance import VerificationInstance
 from autoverify.util.verifiers import verifier_from_name
 from autoverify.util.vnncomp import (
     inst_bench_to_verifier,
@@ -79,31 +79,31 @@ def eval_instance(
 
     if isinstance(result, Ok):
         logger.info("Verification finished succesfully.")
-        result = result.unwrap()
-        logger.info(f"Result: {result.result}")
+        unwrap_result = result.unwrap()
+        logger.info(f"Result: {unwrap_result.result}")
 
         return VerificationDataResult(
             *static_data,
             "OK",
-            result.result,
-            result.took,
-            result.counter_example,
-            result.err,
-            result.stdout,
+            unwrap_result.result,
+            unwrap_result.took,
+            unwrap_result.counter_example,
+            unwrap_result.err,
+            unwrap_result.stdout,
         )
     elif isinstance(result, Err):
-        result = result.unwrap_err()
+        unwrap_result = result.unwrap_err()
         logger.info("Exception during verification.")
         logger.info(result.err)
 
         return VerificationDataResult(
             *static_data,
             "ERR",
-            result.result,
-            result.took,
+            unwrap_result.result,
+            unwrap_result.took,
             None,
-            result.err,
-            result.stdout,
+            unwrap_result.err,
+            unwrap_result.stdout,
         )
 
     raise RuntimeError("Result should be Ok | Err")
@@ -121,6 +121,7 @@ def eval_verifier_vnncompat(
     warmup: bool = True,
     output_csv_path: Path | None = None,
 ) -> dict[VerificationInstance, VerificationDataResult]:
+    """_summary_."""
     results: dict[VerificationInstance, VerificationDataResult] = {}
 
     if output_csv_path is not None:
@@ -150,6 +151,7 @@ def eval_verifier(
     warmup: bool = True,
     output_csv_path: Path | None = None,
 ) -> dict[VerificationInstance, VerificationDataResult]:
+    """_summary_."""
     results: dict[VerificationInstance, VerificationDataResult] = {}
 
     if output_csv_path is not None:
@@ -229,7 +231,9 @@ def eval_vnn_verifier(
         elif verifier == "nnenum":
             verifier_inst = Nnenum(use_auto_settings=True)
         else:
-            verifier_inst = verifier_from_name(verifier)()
+            verifier_t = verifier_from_name(verifier)()
+            assert isinstance(verifier_t, CompleteVerifier)
+            verifier_inst = verifier_t
 
         assert isinstance(verifier_inst, CompleteVerifier)
         result = eval_instance(verifier_inst, inst, config=cfg)

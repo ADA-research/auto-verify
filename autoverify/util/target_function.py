@@ -1,13 +1,11 @@
+"""_summary_."""
 from pathlib import Path
 
 from ConfigSpace import Configuration
 
 from autoverify.types import Cost, Instance, Seed, TargetFunction
-from autoverify.util.instances import VerificationInstance
-from autoverify.util.vnncomp import (
-    inst_bench_to_verifier,
-    inst_bench_verifier_config,
-)
+from autoverify.util.verification_instance import VerificationInstance
+from autoverify.util.vnncomp import inst_bench_to_verifier
 from autoverify.verifier.verification_result import CompleteVerificationResult
 from autoverify.verifier.verifier import CompleteVerifier, Verifier
 

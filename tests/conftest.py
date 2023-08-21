@@ -1,8 +1,15 @@
 from pathlib import Path
 
 import pytest
-from ConfigSpace import Categorical, ConfigurationSpace, Float, Integer
+from ConfigSpace import (
+    Categorical,
+    Configuration,
+    ConfigurationSpace,
+    Float,
+    Integer,
+)
 from result import Err, Ok
+from smac import RunHistory
 
 from autoverify.util.env import get_file_path
 from autoverify.util.instances import VerificationInstance
@@ -11,7 +18,6 @@ from autoverify.verifier.verification_result import (
     CompleteVerificationData,
     CompleteVerificationResult,
 )
-from autoverify.verifier.verifier import CompleteVerifier
 
 TEST_PROP_TIMEOUT = 60
 test_props = get_file_path(Path(__file__)) / "trivial_props/"
@@ -29,6 +35,22 @@ def simple_configspace() -> ConfigurationSpace:
     )
 
     return config_space
+
+
+@pytest.fixture
+def simple_config(simple_configspace: ConfigurationSpace) -> Configuration:
+    return simple_configspace.sample_configuration()
+
+
+@pytest.fixture
+def runhistory(simple_configspace: ConfigurationSpace) -> RunHistory:
+    cfg1, cfg2 = simple_configspace.sample_configuration(2)
+
+    rh = RunHistory()
+    rh.add(cfg1, 10.0, instance="foo")
+    rh.add(cfg2, 20.0, instance="bar")
+
+    return rh
 
 
 @pytest.fixture

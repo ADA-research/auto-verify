@@ -29,6 +29,7 @@ class Nnenum(CompleteVerifier):
     # HACK: Should not need to instantiate a whole new instance just to
     # change `_use_auto_settings`.
     def __init__(self, batch_size: int = 512, use_auto_settings: bool = False):
+        """_summary_."""
         super().__init__(batch_size)
         self._use_auto_settings = use_auto_settings
 
@@ -113,7 +114,7 @@ class Nnenum(CompleteVerifier):
         property: Path,
         config: Configuration | Path,
     ) -> dict[str, Any]:
-        if not isinstance(config, Configuration):
+        if isinstance(config, Path):
             raise ValueError("Configuration files for nnenum not supported yet")
 
         import copy
@@ -122,12 +123,12 @@ class Nnenum(CompleteVerifier):
 
         # HACK: Cant safely evaluate `np.inf`, instead we pass it as a string
         # that is converted back to `np.inf` in the nnenum code.
-        if dict_config["INF_OVERAPPROX_MIN_GEN_LIMIT"] is True:
-            dict_config["OVERAPPROX_MIN_GEN_LIMIT"] = "_inf"
-
-        if dict_config["INF_OVERAPPROX_LP_TIMEOUT"] is True:
-            dict_config["OVERAPPROX_LP_TIMEOUT"] = "_inf"
-
+        # if dict_config["INF_OVERAPPROX_MIN_GEN_LIMIT"] is True:
+        #     dict_config["OVERAPPROX_MIN_GEN_LIMIT"] = "_inf"
+        #
+        # if dict_config["INF_OVERAPPROX_LP_TIMEOUT"] is True:
+        #     dict_config["OVERAPPROX_LP_TIMEOUT"] = "_inf"
+        #
         # del dict_config["INF_OVERAPPROX_LP_TIMEOUT"]
         # del dict_config["INF_OVERAPPROX_MIN_GEN_LIMIT"]
 
@@ -137,6 +138,7 @@ class Nnenum(CompleteVerifier):
     def is_same_config(
         config1: Configuration | str, config2: Configuration | str
     ) -> bool:
+        """_summary_."""
         if isinstance(config1, Configuration):
             config1 = str(config1["settings_mode"])  # type: ignore
         if isinstance(config2, Configuration):

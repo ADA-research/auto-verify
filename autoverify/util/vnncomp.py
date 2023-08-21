@@ -1,7 +1,8 @@
 """Verifier VNNCOMP compatability.
 
-Return verifier instances that should be compatible with the given 
-benchmark + instance."""
+Return verifier instances that should be compatible with the given
+benchmark + instance.
+"""
 from pathlib import Path
 
 from ConfigSpace import Configuration

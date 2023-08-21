@@ -11,7 +11,8 @@ from ConfigSpace import Configuration, ConfigurationSpace
 def config_dict_from_config_str(cfg: str) -> dict[str, Any]:
     """_summary_."""
     cfg = re.sub(r"^.*?{", "{", cfg)
-    return ast.literal_eval(cfg[:-1])
+    dic: dict[str, Any] = ast.literal_eval(cfg[:-1])
+    return dic
 
 
 def config_from_str(cfg: str, cfg_space: ConfigurationSpace) -> Configuration:
@@ -43,6 +44,7 @@ def config_from_json_file(
 def config_from_file(
     file: Path, cfg_space: ConfigurationSpace
 ) -> Configuration:
+    """_summary_."""
     if file.suffix == ".txt":
         return config_from_txt_file(file, cfg_space)
     elif file.suffix == ".json":

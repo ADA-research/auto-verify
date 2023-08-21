@@ -1,3 +1,4 @@
+"""_summary_."""
 import shlex
 from pathlib import Path
 from subprocess import CompletedProcess
@@ -41,6 +42,7 @@ class Verinet(CompleteVerifier):
         dnnv_simplify: bool = False,
         transpose_matmul_weights: bool = False,
     ):
+        """_summary_."""
         super().__init__(batch_size)
         self._gpu_mode = gpu_mode
         self._input_shape = input_shape

@@ -37,6 +37,7 @@ class AbCrown(CompleteVerifier):
         batch_size: int = 512,
         yaml_override: dict[str, Any] | None = None,
     ):
+        """_summary_."""
         super().__init__(batch_size)
         self._yaml_override = yaml_override
 

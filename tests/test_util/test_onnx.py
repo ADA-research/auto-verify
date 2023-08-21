@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pytest
 
-from autoverify.util.instances import VerificationInstance
 from autoverify.util.onnx import get_input_ouput_names, get_input_shape
 
 

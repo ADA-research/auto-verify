@@ -2,7 +2,7 @@ import json
 import string
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeVar
 
 basestring = (str, bytes)
 
@@ -58,3 +58,16 @@ def is_serializable(var: Any) -> bool:
 def add_to_average(average: float, value: float, size: int) -> float:
     """Update an average with a new value."""
     return (size * average + value) / (size + 1)
+
+
+T = TypeVar("T")
+
+
+def merge_lists(*lists: list[T]) -> list[T]:
+    """_summary_."""
+    uniq = set()
+
+    for lst in lists:
+        uniq.update(set(lst))
+
+    return list(uniq)

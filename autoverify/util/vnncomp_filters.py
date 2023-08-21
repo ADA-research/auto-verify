@@ -1,7 +1,7 @@
 """_summary_."""
 from typing import Callable
 
-from autoverify.util.instances import VerificationInstance
+from autoverify.util.verification_instance import VerificationInstance
 
 filters: dict[str, Callable[[VerificationInstance], bool]] = {
     "mnist_small": lambda vi: vi.network.name.endswith("2.onnx"),

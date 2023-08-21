@@ -5,7 +5,7 @@ import sys
 from collections.abc import Iterable
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 
 from autoverify.util.proc import pkill_match
 
@@ -94,7 +94,7 @@ def pkill_matches(matches: Iterable[str]):
 
 
 @contextmanager
-def exit_functions(functions: Iterable[Callable]):
+def exit_functions(functions: Iterable[Callable[[], Any]]):
     """Functions to run on context exit."""
     try:
         yield

@@ -1,5 +1,4 @@
 """Nnenum verifier."""
-import subprocess
 from pathlib import Path
 from subprocess import CompletedProcess
 from typing import ContextManager
@@ -22,22 +21,24 @@ class MnBab(CompleteVerifier):
     name: str = "mnbab"
     config_space: ConfigurationSpace = MnBabConfigspace
 
-    def test(self):
-        source_cmd = get_conda_source_cmd(get_conda_path())
-        env_lib_path = get_conda_path() / "envs" / self.conda_env_name / "lib"
-
-        run_cmd = f"""
-        {" ".join(source_cmd)}
-        conda activate {self.conda_env_name}
-        export PYTHONPATH=$PYTHONPATH:$PWD
-        python src/run_instance.py
-        """
-
-        with cwd(self.tool_path), environment(
-            LD_LIBRARY_PATH=str(env_lib_path)
-        ):
-            subprocess.run(run_cmd, executable="/bin/bash", shell=True)
-
+    #
+    # def test(self):
+    #     """_summary_."""
+    #     source_cmd = get_conda_source_cmd(get_conda_path())
+    #     env_lib_path = get_conda_path() / "envs" / self.conda_env_name / "lib"
+    #
+    #     run_cmd = f"""
+    #     {" ".join(source_cmd)}
+    #     conda activate {self.conda_env_name}
+    #     export PYTHONPATH=$PYTHONPATH:$PWD
+    #     python src/run_instance.py
+    #     """
+    #
+    #     with cwd(self.tool_path), environment(
+    #         LD_LIBRARY_PATH=str(env_lib_path)
+    #     ):
+    #         subprocess.run(run_cmd, executable="/bin/bash", shell=True)
+    #
     @property
     def contexts(self) -> list[ContextManager[None]]:
         env_lib_path = get_conda_path() / "envs" / self.conda_env_name / "lib"

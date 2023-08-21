@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import csv
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Literal, overload
@@ -31,6 +31,7 @@ class VerificationDataResult:
     stdout: str | None
 
     def __post_init__(self):
+        """_summary_."""
         if self.config == "None":
             self.config = "default"
 
@@ -107,7 +108,7 @@ def verification_instances_to_smac_instances(
 
 
 @overload
-def read_vnncomp_instances(
+def read_vnncomp_instances(  # type: ignore
     benchmark: str,
     vnncomp_path: Path,
     *,
@@ -189,7 +190,7 @@ def read_vnncomp_instances(
                 continue
 
             if as_smac:
-                instance = instance.as_smac_instance()
+                instance = instance.as_smac_instance()  # type: ignore
 
             verification_instances.append(instance)
 

@@ -1,5 +1,4 @@
 from .abcrown import AbCrown
-from .dummy import DummyVerifier
 from .mnbab import MnBab
 from .nnenum import Nnenum
 from .ovalbab import OvalBab
@@ -11,5 +10,4 @@ __all__ = [
     "MnBab",
     "OvalBab",
     "Verinet",
-    "DummyVerifier",
 ]

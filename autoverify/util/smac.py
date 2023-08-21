@@ -14,7 +14,7 @@ from smac.runhistory.dataclasses import TrialKey, TrialValue
 
 from autoverify.types import CostDict
 from autoverify.util.dataclass import get_dataclass_field_names
-from autoverify.util.instances import VerificationInstance
+from autoverify.util.verification_instance import VerificationInstance
 
 
 def get_smac_run_data(run_folder: Path) -> dict[str, Any]:
@@ -52,7 +52,7 @@ def index_features(
     instances: Sequence[str] | Sequence[VerificationInstance],
 ) -> dict[str, list[float]]:
     """Returns list indices as the instance features."""
-    features = {}
+    features: dict[str, list[float]] = {}
 
     for i, inst in enumerate(instances):
         k = inst
@@ -60,6 +60,7 @@ def index_features(
         if isinstance(inst, VerificationInstance):
             k = inst.as_smac_instance()
 
+        assert isinstance(k, str)
         features[k] = [float(i)]
 
     return features

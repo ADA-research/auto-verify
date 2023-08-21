@@ -1,3 +1,4 @@
+"""_summary_."""
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -19,6 +20,7 @@ class VerificationInstance:
         return cls(Path(network), Path(property), int(timeout))
 
     def __hash__(self):
+        """_summary_."""
         return hash(
             (
                 self.network.expanduser().resolve(),

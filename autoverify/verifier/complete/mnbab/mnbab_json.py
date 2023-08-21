@@ -88,6 +88,7 @@ class MnbabJsonConfig:
         return cls(tmp_json_file_from_dict(mnbab_dict))
 
     def set_timeout(self, timeout: int):
+        """_summary_."""
         pass
 
     def get_json_file(self) -> IO[str]:

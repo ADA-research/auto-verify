@@ -92,6 +92,11 @@ def get_conda_path() -> Path:
 
 def get_conda_path2() -> Path:
     """Alternative way to get the conda path, only works if an env is active."""
+    if "CONDA_PREFIX" not in os.environ:
+        raise RuntimeError(
+            "This function only works if a Conda environment is active."
+        )
+
     return Path(os.environ["CONDA_PREFIX"]).parent.parent
 
 
@@ -110,12 +115,11 @@ def get_conda_pkg_path(name: str, version: str, build: str) -> Path | None:
 
 def find_conda_lib(env: str, lib: str) -> Path:
     """Tries to find where a library is in the given conda env."""
-    env_path = get_conda_path2() / "envs" / env
+    env_path = get_conda_path() / "envs" / env
     cmd = f"find {env_path} -name '{lib}'"
     result = subprocess.run(shlex.split(cmd), check=True, capture_output=True)
 
-    result = result.stdout.decode()
-    lib_paths = result.splitlines()
+    lib_paths = result.stdout.decode().splitlines()
 
     if len(lib_paths) >= 1:
         return Path(lib_paths[0]).parent

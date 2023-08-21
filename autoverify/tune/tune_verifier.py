@@ -1,3 +1,4 @@
+"""_summary_."""
 import logging
 import sys
 from pathlib import Path
@@ -24,6 +25,7 @@ def vnn_smac_tune_verifier(
     config_out: Path | None = Path("incumbent.txt"),
     rh_csv_path: Path | None = Path("runhistory.csv"),
 ) -> Configuration:
+    """_summary_."""
     if output_dir is None:
         output_dir = Path("tune_verifier/")
 
