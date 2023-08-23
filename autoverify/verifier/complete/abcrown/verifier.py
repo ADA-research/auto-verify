@@ -35,10 +35,11 @@ class AbCrown(CompleteVerifier):
     def __init__(
         self,
         batch_size: int = 512,
+        cpu_gpu_allocation: tuple[int, int, int] | None = None,
         yaml_override: dict[str, Any] | None = None,
     ):
         """_summary_."""
-        super().__init__(batch_size)
+        super().__init__(batch_size, cpu_gpu_allocation)
         self._yaml_override = yaml_override
 
     @property

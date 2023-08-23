@@ -58,6 +58,7 @@ class Hydra:
 
         for self._iter in range(self._scenario.n_iters):
             logger.info(f"Hydra iteration {self._iter}")
+
             new_configs = self._configurator(portfolio)
             self._updater(portfolio, new_configs)
 
@@ -138,7 +139,12 @@ class Hydra:
         ):
             init_kwargs = self._scenario.verifier_kwargs[name]
 
-        verifier_inst = verifier_class(**init_kwargs)
+        # TODO: CPU_GPU_ALLOCATION
+        cpus, gpus = self._ResourceTracker.deduct_from_name("nnenum", mock=True)
+
+        verifier_inst = verifier_class(
+            cpu_gpu_allocation=(0, cpus - 1, gpus), **init_kwargs
+        )
         verifier_tf = get_verifier_tf(verifier_inst)
 
         if self._iter == 0:

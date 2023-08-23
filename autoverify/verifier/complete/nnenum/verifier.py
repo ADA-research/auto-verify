@@ -28,9 +28,14 @@ class Nnenum(CompleteVerifier):
 
     # HACK: Should not need to instantiate a whole new instance just to
     # change `_use_auto_settings`.
-    def __init__(self, batch_size: int = 512, use_auto_settings: bool = False):
+    def __init__(
+        self,
+        batch_size: int = 512,
+        cpu_gpu_allocation: tuple[int, int, int] | None = None,
+        use_auto_settings: bool = False,
+    ):
         """_summary_."""
-        super().__init__(batch_size)
+        super().__init__(batch_size, cpu_gpu_allocation)
         self._use_auto_settings = use_auto_settings
 
     @property

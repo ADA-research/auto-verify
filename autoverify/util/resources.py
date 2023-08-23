@@ -30,6 +30,10 @@ class ResourceTracker:
         else:
             raise NotImplementedError
 
+    @property
+    def resources(self):
+        return self._resources
+
     def get_possible(self) -> list[str]:
         """_summary_."""
         possible: list[str] = []
@@ -49,8 +53,16 @@ class ResourceTracker:
             self._resources[1] - resources[1],
         )
 
-    def deduct_from_name(self, name: str):
+    # TODO: Respect strategy
+    def deduct_from_name(
+        self,
+        name: str,
+        *,
+        mock: bool = False,
+    ) -> tuple[int, int]:
         """_summary_."""
+        to_deduct: tuple[int, int] = (0, 0)
+
         for vr in self._verifier_resources:
             if vr[0] == name:
                 cpus_to_deduct = self._cpus_per
@@ -60,7 +72,12 @@ class ResourceTracker:
                     cpus_to_deduct += 1
                     self._cpus_remainder -= 1
 
-                self.deduct((cpus_to_deduct, gpus_to_deduct))
+                to_deduct = (cpus_to_deduct, gpus_to_deduct)
+
+                if not mock:
+                    self.deduct(to_deduct)
+
+        return to_deduct
 
     def _get_possible_auto(self) -> list[str]:
         """Auto strategy.

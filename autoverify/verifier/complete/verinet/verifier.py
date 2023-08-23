@@ -37,13 +37,14 @@ class Verinet(CompleteVerifier):
     def __init__(
         self,
         batch_size: int = 512,
+        cpu_gpu_allocation: tuple[int, int, int] | None = None,
         gpu_mode: bool = True,
         input_shape: list[int] | None = None,
         dnnv_simplify: bool = False,
         transpose_matmul_weights: bool = False,
     ):
         """_summary_."""
-        super().__init__(batch_size)
+        super().__init__(batch_size, cpu_gpu_allocation)
         self._gpu_mode = gpu_mode
         self._input_shape = input_shape
         self._dnnv_simplify = dnnv_simplify

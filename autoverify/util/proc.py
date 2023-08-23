@@ -31,6 +31,6 @@ def taskset_cpu_range(cpus: Iterable[int] | tuple[int, int]):
     template = "taskset --cpu-list {}"
 
     if isinstance(cpus, tuple):
-        cpus = [i for i in range(cpus[0], cpus[1])]
+        cpus = [i for i in range(cpus[0], cpus[1] + 1)]
 
     return template.format(",".join(str(c) for c in cpus))

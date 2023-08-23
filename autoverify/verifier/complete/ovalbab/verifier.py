@@ -33,6 +33,14 @@ class OvalBab(CompleteVerifier):
     name: str = "ovalbab"
     config_space: ConfigurationSpace = OvalBabConfigspace
 
+    def __init__(
+        self,
+        batch_size: int = 512,
+        cpu_gpu_allocation: tuple[int, int, int] | None = None,
+    ):
+        """_summary_."""
+        super().__init__(batch_size, cpu_gpu_allocation)
+
     @property
     def contexts(self) -> list[ContextManager[None]]:
         return [

@@ -31,9 +31,14 @@ class Verifier(ABC):
     """Abstract class to represent a verifier tool."""
 
     # TODO: GPU Mode attribute
-    def __init__(self, batch_size: int = 512):
+    def __init__(
+        self,
+        batch_size: int = 512,
+        cpu_gpu_allocation: tuple[int, int, int] | None = None,
+    ):
         """_summary_."""
         self._batch_size = batch_size
+        self._cpu_gpu_allocation = cpu_gpu_allocation
 
     def get_init_attributes(self) -> dict[str, Any]:
         """Get attributes provided during initialization of the verifier."""
@@ -154,7 +159,6 @@ class CompleteVerifier(Verifier):
         *,
         config: Configuration | Path | None = None,
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
-        cpu_gpu_allocation: tuple[int, int, int] | None = None,
     ) -> CompleteVerificationResult:
         """Verify the property on the network.
 
@@ -193,7 +197,6 @@ class CompleteVerifier(Verifier):
             run_cmd,
             result_file=output_file,
             timeout=timeout,
-            cpu_gpu_allocation=cpu_gpu_allocation,
         )
 
         # Shutting down after timeout may take some time, so we set the took
@@ -209,7 +212,6 @@ class CompleteVerifier(Verifier):
         instance: VerificationInstance,
         *,
         config: Configuration | Path | None = None,
-        cpu_gpu_allocation: tuple[int, int, int] | None = None,
     ) -> CompleteVerificationResult:
         """_summary_."""
         return self.verify_property(
@@ -217,7 +219,6 @@ class CompleteVerifier(Verifier):
             instance.property,
             timeout=instance.timeout,
             config=config,
-            cpu_gpu_allocation=cpu_gpu_allocation,
         )
 
     def verify_batch(
@@ -225,7 +226,6 @@ class CompleteVerifier(Verifier):
         instances: Iterable[VerificationInstance],
         *,
         config: Configuration | Path | None,
-        cpu_gpu_allocation: tuple[int, int, int] | None = None,
     ) -> list[CompleteVerificationResult]:
         """_summary_."""
         for instance in instances:
@@ -237,7 +237,6 @@ class CompleteVerifier(Verifier):
         return self._verify_batch(
             instances,
             config=config,
-            cpu_gpu_allocation=cpu_gpu_allocation,
         )
 
     @abstractmethod
@@ -246,7 +245,6 @@ class CompleteVerifier(Verifier):
         instances: Iterable[VerificationInstance],
         *,
         config: Configuration | Path | None,
-        cpu_gpu_allocation: tuple[int, int, int] | None = None,
     ) -> list[CompleteVerificationResult]:
         raise NotImplementedError
 
@@ -254,9 +252,10 @@ class CompleteVerifier(Verifier):
     def _allocate_run_cmd(
         self,
         run_cmd: str,
-        cpu_gpu_allocation: tuple[int, int, int],
     ) -> str:
-        taskset_cmd = taskset_cpu_range(cpu_gpu_allocation[0:2])
+        assert self._cpu_gpu_allocation is not None
+
+        taskset_cmd = taskset_cpu_range(self._cpu_gpu_allocation[0:2])
         lines = []
 
         for line in run_cmd.splitlines():
@@ -278,7 +277,6 @@ class CompleteVerifier(Verifier):
         *,
         result_file: Path | None = None,
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
-        cpu_gpu_allocation: tuple[int, int, int] | None = None,
     ) -> CompleteVerificationData:
         """_summary_."""
         result: VerificationResultString | None = None
@@ -289,8 +287,8 @@ class CompleteVerifier(Verifier):
         stderr: str = ""
         before_t = time.time()
 
-        if cpu_gpu_allocation is not None:
-            run_cmd = self._allocate_run_cmd(run_cmd, cpu_gpu_allocation)
+        if self._cpu_gpu_allocation is not None:
+            run_cmd = self._allocate_run_cmd(run_cmd)
 
         try:
             contexts = self.contexts or []
