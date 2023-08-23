@@ -16,6 +16,7 @@ from autoverify.util.conda import (
     get_conda_env_lib_path,
     get_verifier_conda_env_name,
 )
+from autoverify.util.env import environment
 from autoverify.util.path import check_file_extension
 from autoverify.util.proc import taskset_cpu_range
 from autoverify.util.verification_instance import VerificationInstance
@@ -248,15 +249,20 @@ class CompleteVerifier(Verifier):
     ) -> list[CompleteVerificationResult]:
         raise NotImplementedError
 
-    # TODO: GPU allocation
     def _allocate_run_cmd(
         self,
         run_cmd: str,
+        contexts: list[ContextManager[None]],
     ) -> str:
+        # TODO: GPU allocation
         assert self._cpu_gpu_allocation is not None
 
         taskset_cmd = taskset_cpu_range(self._cpu_gpu_allocation[0:2])
         lines = []
+
+        gpu_dev = self._cpu_gpu_allocation[2]
+        if gpu_dev >= 0:
+            contexts.append(environment(CUDA_VISIBLE_DEVICES=str(gpu_dev)))
 
         for line in run_cmd.splitlines():
             line = line.lstrip()
@@ -285,14 +291,13 @@ class CompleteVerifier(Verifier):
         run_err: str = ""
         stdout: str = ""
         stderr: str = ""
+        contexts = self.contexts or []
         before_t = time.time()
 
         if self._cpu_gpu_allocation is not None:
-            run_cmd = self._allocate_run_cmd(run_cmd)
+            run_cmd = self._allocate_run_cmd(run_cmd, contexts)
 
         try:
-            contexts = self.contexts or []
-
             with ExitStack() as stack:
                 for context in contexts:
                     stack.enter_context(context)
