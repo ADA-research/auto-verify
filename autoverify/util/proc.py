@@ -2,6 +2,8 @@
 import os
 import shlex
 import subprocess
+from collections.abc import Collection
+from typing import Iterable, Sequence
 
 
 def pkill_match(pattern: str):
@@ -22,3 +24,13 @@ def pkill_match(pattern: str):
 def cpu_count() -> int:
     """Return the number of available CPUs."""
     return len(os.sched_getaffinity(0))
+
+
+def taskset_cpu_range(cpus: Iterable[int] | tuple[int, int]):
+    """Make a taskset command with the specified CPUs."""
+    template = "taskset --cpu-list {}"
+
+    if isinstance(cpus, tuple):
+        cpus = [i for i in range(cpus[0], cpus[1])]
+
+    return template.format(",".join(str(c) for c in cpus))

@@ -9,6 +9,7 @@ import numpy as np
 from ConfigSpace import Configuration
 
 from autoverify.util.instances import verification_instances_to_smac_instances
+from autoverify.util.resource_strategy import ResourceStrategy
 from autoverify.util.smac import index_features
 from autoverify.util.verification_instance import VerificationInstance
 
@@ -26,15 +27,17 @@ class PortfolioScenario:
     """_summary_."""
 
     verifiers: Sequence[str]
+    resources: list[tuple[str, int, int]]
     instances: Sequence[VerificationInstance]
     length: int
     seconds_per_iter: float
 
     # Optional
-    alpha: float = 0.5  # tune/pick split
     configs_per_iter: int = 2
+    alpha: float = 0.5  # tune/pick split
     added_per_iter: int = 1
     stop_early = True
+    resource_strategy = ResourceStrategy.Auto
     output_dir: Path = Path("./hydra_out")
     verifier_kwargs: Mapping[str, dict[str, Any]] | None = None
 
@@ -55,6 +58,28 @@ class PortfolioScenario:
             raise ValueError("Entries added per iter should be <= length")
 
         self.n_iters = math.ceil(self.length / self.added_per_iter)
+        self._verify_resources()
+
+    def _verify_resources(self):
+        # Check for duplicates
+        seen = set()
+        for r in self.resources:
+            if r[0] in seen:
+                raise ValueError(f"Duplicate name '{r[0]}' in resources")
+
+            seen.add(r[0])
+
+        if self.resource_strategy == ResourceStrategy.Auto:
+            for r in self.resources:
+                if r[1] != 0:
+                    raise ValueError(
+                        "CPU resources should be 0 when using `Auto`"
+                    )
+        else:
+            raise NotImplementedError(
+                f"ResourceStrategy {self.resource_strategy} "
+                f"is not implemented yet."
+            )
 
     def get_smac_scenario_kwargs(self) -> dict[str, Any]:
         """_summary_."""

@@ -17,6 +17,7 @@ from autoverify.util.conda import (
     get_verifier_conda_env_name,
 )
 from autoverify.util.path import check_file_extension
+from autoverify.util.proc import taskset_cpu_range
 from autoverify.util.verification_instance import VerificationInstance
 
 from .verification_result import (
@@ -153,6 +154,7 @@ class CompleteVerifier(Verifier):
         *,
         config: Configuration | Path | None = None,
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
+        cpu_gpu_allocation: tuple[int, int, int] | None = None,
     ) -> CompleteVerificationResult:
         """Verify the property on the network.
 
@@ -191,6 +193,7 @@ class CompleteVerifier(Verifier):
             run_cmd,
             result_file=output_file,
             timeout=timeout,
+            cpu_gpu_allocation=cpu_gpu_allocation,
         )
 
         # Shutting down after timeout may take some time, so we set the took
@@ -206,6 +209,7 @@ class CompleteVerifier(Verifier):
         instance: VerificationInstance,
         *,
         config: Configuration | Path | None = None,
+        cpu_gpu_allocation: tuple[int, int, int] | None = None,
     ) -> CompleteVerificationResult:
         """_summary_."""
         return self.verify_property(
@@ -213,6 +217,7 @@ class CompleteVerifier(Verifier):
             instance.property,
             timeout=instance.timeout,
             config=config,
+            cpu_gpu_allocation=cpu_gpu_allocation,
         )
 
     def verify_batch(
@@ -220,6 +225,7 @@ class CompleteVerifier(Verifier):
         instances: Iterable[VerificationInstance],
         *,
         config: Configuration | Path | None,
+        cpu_gpu_allocation: tuple[int, int, int] | None = None,
     ) -> list[CompleteVerificationResult]:
         """_summary_."""
         for instance in instances:
@@ -228,16 +234,43 @@ class CompleteVerifier(Verifier):
         if config is None:
             config = self.default_config
 
-        return self._verify_batch(instances, config=config)
+        return self._verify_batch(
+            instances,
+            config=config,
+            cpu_gpu_allocation=cpu_gpu_allocation,
+        )
 
     @abstractmethod
     def _verify_batch(
         self,
-        instances: Iterable[Any],  # TODO: VerificationInstance
+        instances: Iterable[VerificationInstance],
         *,
         config: Configuration | Path | None,
+        cpu_gpu_allocation: tuple[int, int, int] | None = None,
     ) -> list[CompleteVerificationResult]:
         raise NotImplementedError
+
+    # TODO: GPU allocation
+    def _allocate_run_cmd(
+        self,
+        run_cmd: str,
+        cpu_gpu_allocation: tuple[int, int, int],
+    ) -> str:
+        taskset_cmd = taskset_cpu_range(cpu_gpu_allocation[0:2])
+        lines = []
+
+        for line in run_cmd.splitlines():
+            line = line.lstrip()
+            if len(line) == 0 or line.isspace():
+                continue
+
+            # TODO: Why does taskset not work with `source` and `conda`?
+            if line.startswith("source") or line.startswith("conda"):
+                lines.append(line)
+            else:
+                lines.append(taskset_cmd + " " + line)
+
+        return "\n".join(lines)
 
     def _run_verification(
         self,
@@ -245,6 +278,7 @@ class CompleteVerifier(Verifier):
         *,
         result_file: Path | None = None,
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
+        cpu_gpu_allocation: tuple[int, int, int] | None = None,
     ) -> CompleteVerificationData:
         """_summary_."""
         result: VerificationResultString | None = None
@@ -254,6 +288,9 @@ class CompleteVerifier(Verifier):
         stdout: str = ""
         stderr: str = ""
         before_t = time.time()
+
+        if cpu_gpu_allocation is not None:
+            run_cmd = self._allocate_run_cmd(run_cmd, cpu_gpu_allocation)
 
         try:
             contexts = self.contexts or []

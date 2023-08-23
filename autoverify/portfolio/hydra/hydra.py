@@ -15,6 +15,7 @@ from autoverify.portfolio.portfolio import (
     PortfolioScenario,
 )
 from autoverify.types import TargetFunction
+from autoverify.util.resources import ResourceTracker
 from autoverify.util.target_function import get_verifier_tf
 from autoverify.util.verifiers import verifier_from_name
 from autoverify.verifier.verifier import CompleteVerifier
@@ -35,6 +36,7 @@ def _mean_unevaluated(costs: dict[str, float]) -> dict[str, float]:
     return new_costs
 
 
+# TODO: Refactor this to use a more "Strategy"-like pattern
 class Hydra:
     """_summary_."""
 
@@ -46,6 +48,8 @@ class Hydra:
         self._scenario = pf_scenario
         self._cost_matrix = CostMatrix()
         self._stop = False
+
+        self._ResourceTracker = ResourceTracker(self._scenario)
 
     def tune_portfolio(self) -> Portfolio:
         """_summary_."""
@@ -89,10 +93,11 @@ class Hydra:
 
         return new_configs
 
-    # TODO: Implement picking
+    # TODO: Implement SMAC picking
     def _pick(self) -> str:
-        verifiers = self._scenario.verifiers
-        return random.choice(verifiers)
+        possible = self._ResourceTracker.get_possible()
+        _ = random.choice(possible)
+        return possible[self._iter]
 
     def _tune(
         self, verifier: str, run_name: str, target_func: TargetFunction
@@ -184,3 +189,11 @@ class Hydra:
         )
 
         pf.update_costs(vbs_cost)
+
+        # TODO: Update the resourcetracker
+        print("/" * 40)
+        print(cfg.config_space.name)
+        print("pre:", self._ResourceTracker._resources)
+        self._ResourceTracker.deduct_from_name(cfg.config_space.name)
+        print("post:", self._ResourceTracker._resources)
+        print("/" * 40)
