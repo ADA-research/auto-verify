@@ -35,6 +35,9 @@ class Nnenum(CompleteVerifier):
         use_auto_settings: bool = False,
     ):
         """_summary_."""
+        if cpu_gpu_allocation and cpu_gpu_allocation[2] >= 0:
+            raise ValueError("Nnenum does not use a GPU, please set it to -1.")
+
         super().__init__(batch_size, cpu_gpu_allocation)
         self._use_auto_settings = use_auto_settings
 
@@ -128,14 +131,14 @@ class Nnenum(CompleteVerifier):
 
         # HACK: Cant safely evaluate `np.inf`, instead we pass it as a string
         # that is converted back to `np.inf` in the nnenum code.
-        # if dict_config["INF_OVERAPPROX_MIN_GEN_LIMIT"] is True:
-        #     dict_config["OVERAPPROX_MIN_GEN_LIMIT"] = "_inf"
-        #
-        # if dict_config["INF_OVERAPPROX_LP_TIMEOUT"] is True:
-        #     dict_config["OVERAPPROX_LP_TIMEOUT"] = "_inf"
-        #
-        # del dict_config["INF_OVERAPPROX_LP_TIMEOUT"]
-        # del dict_config["INF_OVERAPPROX_MIN_GEN_LIMIT"]
+        if dict_config["INF_OVERAPPROX_MIN_GEN_LIMIT"] is True:
+            dict_config["OVERAPPROX_MIN_GEN_LIMIT"] = "_inf"
+
+        if dict_config["INF_OVERAPPROX_LP_TIMEOUT"] is True:
+            dict_config["OVERAPPROX_LP_TIMEOUT"] = "_inf"
+
+        del dict_config["INF_OVERAPPROX_LP_TIMEOUT"]
+        del dict_config["INF_OVERAPPROX_MIN_GEN_LIMIT"]
 
         return dict_config
 
