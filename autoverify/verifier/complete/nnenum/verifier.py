@@ -67,7 +67,7 @@ class Nnenum(CompleteVerifier):
         elif first_line == "timeout":
             return "TIMEOUT", None
 
-        return "ERR", None
+        return "TIMEOUT", None
 
     def _parse_counter_example(self, result_txt: str) -> str:
         return result_txt.split("\n", maxsplit=1)[1]

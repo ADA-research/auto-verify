@@ -2,8 +2,7 @@
 import os
 import shlex
 import subprocess
-from collections.abc import Collection
-from typing import Iterable, Sequence
+from typing import Iterable
 
 
 def pkill_match(pattern: str):
@@ -24,6 +23,21 @@ def pkill_match(pattern: str):
 def cpu_count() -> int:
     """Return the number of available CPUs."""
     return len(os.sched_getaffinity(0))
+
+
+def nvidia_gpu_count() -> int:
+    """Get the number of available NVIDIA GPUs."""
+    cmd = "nvidia-smi --query-gpu=name --format=csv,noheader"
+    cmd2 = "wc -l"
+
+    ps = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE)
+    count = (
+        subprocess.check_output(shlex.split(cmd2), stdin=ps.stdout)
+        .decode()
+        .rstrip()
+    )
+
+    return int(count)
 
 
 def taskset_cpu_range(cpus: Iterable[int] | tuple[int, int]):

@@ -44,6 +44,9 @@ class Verinet(CompleteVerifier):
         transpose_matmul_weights: bool = False,
     ):
         """_summary_."""
+        if cpu_gpu_allocation and cpu_gpu_allocation[2] < 0:
+            raise ValueError("VeriNet CPU only mode not yet supported")
+
         super().__init__(batch_size, cpu_gpu_allocation)
         self._gpu_mode = gpu_mode
         self._input_shape = input_shape
@@ -87,7 +90,7 @@ class Verinet(CompleteVerifier):
         elif find_substring("STATUS:  Status.Undecided", tool_result):
             return "TIMEOUT", None
 
-        return "ERR", None
+        return "TIMEOUT", None
 
     def _get_run_cmd(
         self,

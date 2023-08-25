@@ -21,6 +21,10 @@ class MnBab(CompleteVerifier):
     name: str = "mnbab"
     config_space: ConfigurationSpace = MnBabConfigspace
 
+    def __init__(self):
+        """_summary_."""
+        raise NotImplementedError
+
     #
     # def test(self):
     #     """_summary_."""

@@ -1,18 +1,22 @@
-import shlex
-import subprocess
-
+"""_summary_."""
 from autoverify.portfolio.portfolio import PortfolioScenario
-from autoverify.util.proc import cpu_count
+from autoverify.util.proc import cpu_count, nvidia_gpu_count
 from autoverify.util.resource_strategy import ResourceStrategy
 
 
 class ResourceTracker:
+    """_summary_."""
+
     def __init__(
         self,
         pf_scen: PortfolioScenario,
         *,
         strategy: ResourceStrategy | str = ResourceStrategy.Auto,
     ):
+        """_summary_."""
+        print(">" * 40)
+        print(pf_scen.resources)
+        print(">" * 40)
         self._verifiers = pf_scen.verifiers
         self._verifier_resources = pf_scen.resources
         self._pf_len = pf_scen.length
@@ -54,7 +58,7 @@ class ResourceTracker:
         )
 
     # TODO: Respect strategy
-    def deduct_from_name(
+    def deduct_by_name(
         self,
         name: str,
         *,
@@ -95,18 +99,3 @@ class ResourceTracker:
             possible.append(v[0])
 
         return possible
-
-
-def nvidia_gpu_count() -> int:
-    """Get the number of available NVIDIA GPUs."""
-    cmd = "nvidia-smi --query-gpu=name --format=csv,noheader"
-    cmd2 = "wc -l"
-
-    ps = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE)
-    count = (
-        subprocess.check_output(shlex.split(cmd2), stdin=ps.stdout)
-        .decode()
-        .rstrip()
-    )
-
-    return int(count)

@@ -1,4 +1,5 @@
 """_summary_."""
+import datetime
 import math
 from collections.abc import Iterable, Mapping, MutableSet, Sequence
 from dataclasses import dataclass
@@ -38,7 +39,7 @@ class PortfolioScenario:
     added_per_iter: int = 1
     stop_early = True
     resource_strategy = ResourceStrategy.Auto
-    output_dir: Path = Path("./hydra_out")
+    output_dir: Path | None = None
     verifier_kwargs: Mapping[str, dict[str, Any]] | None = None
 
     def __post_init__(self):
@@ -50,6 +51,11 @@ class PortfolioScenario:
 
         if not 0 <= self.alpha <= 1:
             raise ValueError(f"Alpha should be in [0.0, 1.0], got {self.alpha}")
+
+        if self.output_dir is None:
+            current_time = datetime.datetime.now()
+            formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+            self.output_dir = Path(f"hydra_out/{formatted_time}")
 
         self.tune_budget = self.alpha
         self.pick_budget = 1 - self.alpha
@@ -83,6 +89,9 @@ class PortfolioScenario:
 
     def get_smac_scenario_kwargs(self) -> dict[str, Any]:
         """_summary_."""
+        assert self.output_dir is not None  # This is set in `__post_init__`
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+
         return {
             "instances": verification_instances_to_smac_instances(
                 self.instances

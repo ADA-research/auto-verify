@@ -52,8 +52,8 @@ def test_deduct(resource_tracker: ResourceTracker):
 def test_deduct_from_name(resource_tracker: ResourceTracker):
     pre_cpu, pre_gpu = copy(resource_tracker.resources)
 
-    resource_tracker.deduct_from_name("nnenum")
+    resource_tracker.deduct_by_name("nnenum")
     assert resource_tracker.resources == (pre_cpu / 2, pre_gpu)
 
-    resource_tracker.deduct_from_name("verinet")
+    resource_tracker.deduct_by_name("verinet")
     assert resource_tracker.resources == (0, pre_gpu - 1)

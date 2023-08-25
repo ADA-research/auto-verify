@@ -39,6 +39,9 @@ class AbCrown(CompleteVerifier):
         yaml_override: dict[str, Any] | None = None,
     ):
         """_summary_."""
+        if cpu_gpu_allocation and cpu_gpu_allocation[2] < 0:
+            raise ValueError("AB-Crown CPU only mode not yet supported")
+
         super().__init__(batch_size, cpu_gpu_allocation)
         self._yaml_override = yaml_override
 
@@ -76,7 +79,7 @@ class AbCrown(CompleteVerifier):
         elif find_substring("Result: timeout", tool_result):
             return "TIMEOUT", None
 
-        return "ERR", None
+        return "TIMEOUT", None
 
     def _get_run_cmd(
         self,

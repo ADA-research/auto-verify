@@ -18,7 +18,7 @@ from autoverify.util.conda import (
 )
 from autoverify.util.env import environment
 from autoverify.util.path import check_file_extension
-from autoverify.util.proc import taskset_cpu_range
+from autoverify.util.proc import nvidia_gpu_count, taskset_cpu_range
 from autoverify.util.verification_instance import VerificationInstance
 
 from .verification_result import (
@@ -261,6 +261,14 @@ class CompleteVerifier(Verifier):
         lines = []
 
         gpu_dev = self._cpu_gpu_allocation[2]
+        gpus = nvidia_gpu_count()
+
+        if gpu_dev > gpus - 1:
+            raise ValueError(
+                f"Asked for GPU {gpu_dev} (0-indexed), "
+                f"but only found {gpus} GPU(s)"
+            )
+
         if gpu_dev >= 0:
             contexts.append(environment(CUDA_VISIBLE_DEVICES=str(gpu_dev)))
 
@@ -329,6 +337,8 @@ class CompleteVerifier(Verifier):
 
             if stdout == "" and sp_result is not None:
                 stdout = sp_result.stdout.decode()
+            if stderr == "" and sp_result is not None:
+                stderr = sp_result.stderr.decode()
 
         if result is None:
             result, counter_example = self._parse_result(sp_result, result_file)

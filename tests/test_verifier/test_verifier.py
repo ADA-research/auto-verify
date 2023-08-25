@@ -12,10 +12,19 @@ from autoverify.verifier.verifier import CompleteVerifier
 pytestmark = pytest.mark.parametrize(
     "verifier",
     [
-        pytest.param(lazy_fixture("nnenum")),
-        pytest.param(lazy_fixture("abcrown"), marks=pytest.mark.gpu),
-        pytest.param(lazy_fixture("ovalbab"), marks=pytest.mark.gpu),
-        pytest.param(lazy_fixture("verinet"), marks=pytest.mark.gpu),
+        pytest.param(lazy_fixture("nnenum"), marks=[pytest.mark.verifier]),
+        pytest.param(
+            lazy_fixture("abcrown"),
+            marks=[pytest.mark.gpu, pytest.mark.verifier],
+        ),
+        pytest.param(
+            lazy_fixture("ovalbab"),
+            marks=[pytest.mark.gpu, pytest.mark.verifier],
+        ),
+        pytest.param(
+            lazy_fixture("verinet"),
+            marks=[pytest.mark.gpu, pytest.mark.verifier],
+        ),
     ],
 )
 

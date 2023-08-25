@@ -2,9 +2,10 @@
 import logging
 import random
 import sys
+from typing import Any
 
 import numpy as np
-from ConfigSpace import Configuration
+from ConfigSpace import Categorical, Configuration, ConfigurationSpace
 from smac import AlgorithmConfigurationFacade as ACFacade
 from smac import RunHistory, Scenario
 
@@ -16,9 +17,9 @@ from autoverify.portfolio.portfolio import (
 )
 from autoverify.types import TargetFunction
 from autoverify.util.resources import ResourceTracker
-from autoverify.util.target_function import get_verifier_tf
+from autoverify.util.target_function import get_pick_tf, get_verifier_tf
 from autoverify.util.verifiers import verifier_from_name
-from autoverify.verifier.verifier import CompleteVerifier
+from autoverify.verifier.verifier import CompleteVerifier, Verifier
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,56 @@ def _mean_unevaluated(costs: dict[str, float]) -> dict[str, float]:
         new_costs[inst] = mean if cost == np.inf else cost
 
     return new_costs
+
+
+def _get_cpu_gpu_alloc(verifier: str, rt: ResourceTracker):
+    cpus, gpu = rt.deduct_by_name(verifier, mock=True)
+
+    # HACK: Need to refactor ResourceTracker
+    if gpu <= 0:
+        gpu = -1
+    else:
+        gpu = 0
+
+    return (0, cpus - 1, gpu)
+
+
+def _remap_rh_keys(
+    key_map: dict[Configuration, Configuration], rh: RunHistory
+) -> RunHistory:
+    new_rh = RunHistory()
+
+    for tk, tv in rh.items():
+        cfg = rh.get_config(tk.config_id)
+        cfg = key_map[cfg]
+        new_rh.add(
+            cfg,
+            tv.cost,
+            tv.time,
+            tv.status,
+            tk.instance,
+            tk.seed,
+            tk.budget,
+            tv.starttime,
+            tv.endtime,
+            tv.additional_info,
+        )
+
+    return new_rh
+
+
+def _get_init_kwargs(
+    verifier: str, scenario: PortfolioScenario
+) -> dict[str, Any]:
+    init_kwargs: dict[str, Any] = {}  # TODO: Type
+
+    if (
+        scenario.verifier_kwargs is not None
+        and verifier in scenario.verifier_kwargs
+    ):
+        init_kwargs = scenario.verifier_kwargs[verifier]
+
+    return init_kwargs
 
 
 # TODO: Refactor this to use a more "Strategy"-like pattern
@@ -74,14 +125,18 @@ class Hydra:
 
         return portfolio
 
-    def _configurator(self, pf: Portfolio):
+    def _configurator(
+        self, pf: Portfolio
+    ) -> list[tuple[Configuration, RunHistory]]:
         # TODO: Iter > 0
         new_configs: list[tuple[Configuration, RunHistory]] = []
 
         for i in range(self._scenario.configs_per_iter):
             logger.info(f"Configuration iteration {i}")
 
-            verifier = self._pick()
+            run_name = f"pick_{self._iter}_{i}"
+            logger.info("Picking verifier")
+            verifier = self._pick(run_name)
 
             logger.info(f"Picked {verifier}")
             logger.info(f"Tuning {verifier}")
@@ -94,16 +149,70 @@ class Hydra:
 
         return new_configs
 
-    # TODO: Implement SMAC picking
-    def _pick(self) -> str:
-        possible = self._ResourceTracker.get_possible()
-        _ = random.choice(possible)
-        return possible[self._iter]
+    # TODO: fix type errors
+    def _pick(self, run_name: str) -> str:
+        if self._scenario.pick_budget == 0:
+            logging.info("Pick budget is 0, selecting random verifier.")
+            return random.choice(self._scenario.verifiers)
+
+        verifier_insts: list[Verifier] = []
+
+        for name in self._ResourceTracker.get_possible():
+            verifier_class = verifier_from_name(name)
+            alloc = _get_cpu_gpu_alloc(name, self._ResourceTracker)
+            init_kwargs = _get_init_kwargs(name, self._scenario)
+            verifier_insts.append(
+                verifier_class(cpu_gpu_allocation=alloc, **init_kwargs)
+            )
+
+        target_func = get_pick_tf(verifier_insts)
+        pick_cfgspace = ConfigurationSpace()
+        pick_cfgspace.add_hyperparameter(
+            Categorical(
+                "index",
+                [i for i in range(len(verifier_insts))],
+                default=0,
+            )
+        )
+
+        walltime_limit = (
+            self._scenario.seconds_per_iter
+            * self._scenario.pick_budget
+            / self._scenario.configs_per_iter
+        )
+
+        smac_scenario = Scenario(
+            pick_cfgspace,
+            walltime_limit=walltime_limit,
+            n_trials=sys.maxsize,  # we use walltime_limit
+            name=run_name,
+            **self._scenario.get_smac_scenario_kwargs(),
+        )
+
+        smac = ACFacade(smac_scenario, target_func, overwrite=True)
+        inc = smac.optimize()
+
+        # Not dealing with > 1 config
+        assert isinstance(inc, Configuration)
+
+        key_map: dict[Configuration, Configuration] = {}
+        for i in range(len(verifier_insts)):
+            cfg = Configuration(pick_cfgspace, {"index": i})
+            key_map[cfg] = verifier_insts[i].default_config
+
+        rh = _remap_rh_keys(key_map, smac.runhistory)
+        self._cost_matrix.update_matrix(rh)
+
+        return str(verifier_insts[inc["index"]].name)
 
     def _tune(
         self, verifier: str, run_name: str, target_func: TargetFunction
     ) -> tuple[Configuration, RunHistory]:
         verifier_inst = verifier_from_name(verifier)()
+
+        if self._scenario.tune_budget == 0:
+            logger.info("Tune budget is 0, returning default configuration.")
+            return verifier_inst.default_config, RunHistory()
 
         walltime_limit = (
             self._scenario.seconds_per_iter
@@ -129,22 +238,10 @@ class Hydra:
     def _get_target_func(self, verifier: str, pf: Portfolio) -> TargetFunction:
         """If iteration > 0, use the Hydra target function."""
         verifier_class = verifier_from_name(verifier)
-
         name = str(verifier_class.name)
-        init_kwargs = {}  # TODO: Type
-
-        if (
-            self._scenario.verifier_kwargs is not None
-            and name in self._scenario.verifier_kwargs
-        ):
-            init_kwargs = self._scenario.verifier_kwargs[name]
-
-        # TODO: CPU_GPU_ALLOCATION
-        cpus, gpus = self._ResourceTracker.deduct_from_name("nnenum", mock=True)
-
-        verifier_inst = verifier_class(
-            cpu_gpu_allocation=(0, cpus - 1, gpus), **init_kwargs
-        )
+        init_kwargs = _get_init_kwargs(name, self._scenario)
+        alloc = _get_cpu_gpu_alloc(verifier, self._ResourceTracker)
+        verifier_inst = verifier_class(cpu_gpu_allocation=alloc, **init_kwargs)
         verifier_tf = get_verifier_tf(verifier_inst)
 
         if self._iter == 0:
@@ -195,11 +292,4 @@ class Hydra:
         )
 
         pf.update_costs(vbs_cost)
-
-        # TODO: Update the resourcetracker
-        print("/" * 40)
-        print(cfg.config_space.name)
-        print("pre:", self._ResourceTracker._resources)
-        self._ResourceTracker.deduct_from_name(cfg.config_space.name)
-        print("post:", self._ResourceTracker._resources)
-        print("/" * 40)
+        self._ResourceTracker.deduct_by_name(cfg.config_space.name)
