@@ -62,8 +62,8 @@ ignore-decorators = "property" # TODO: Dont ignore abstractmethod properties
 
 [tool.pytest.ini_options]
 markers = [
-    "cpu_only: mark a test that will only use the cpu",
-    "uses_gpu: mark a test that will use the gpu",
+    "gpu: test needs a Nvidia GPU to pass",
+    "verifier: test will use a verifier",
 ]
 
 [tool.mypy]
