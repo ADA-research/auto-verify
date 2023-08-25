@@ -14,9 +14,6 @@ class ResourceTracker:
         strategy: ResourceStrategy | str = ResourceStrategy.Auto,
     ):
         """_summary_."""
-        print(">" * 40)
-        print(pf_scen.resources)
-        print(">" * 40)
         self._verifiers = pf_scen.verifiers
         self._verifier_resources = pf_scen.resources
         self._pf_len = pf_scen.length

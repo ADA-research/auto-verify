@@ -8,6 +8,7 @@ from autoverify.util.resources import ResourceTracker
 from autoverify.util.verification_instance import VerificationInstance
 
 # TODO: Mock number of CPUs and GPUs
+pytestmark = pytest.mark.gpu
 
 
 @pytest.fixture
