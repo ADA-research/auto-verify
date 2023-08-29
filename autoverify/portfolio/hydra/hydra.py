@@ -302,13 +302,17 @@ class Hydra:
         cfg = new_configs[0][0]
         # ConfigSpace name is optional, but we require it to
         # make a distinction between the different verifiers
-        assert cfg.config_space.name is not None
+        name = cfg.config_space.name
+        assert name is not None
 
-        cv = ConfiguredVerifier(cfg.config_space.name, cfg)
+        cv = ConfiguredVerifier(
+            name, cfg, self._ResourceTracker.deduct_by_name(name, mock=True)
+        )
         if cv in pf:
             logger.info(f"Config {cv} already in portfolio")
-            self._stop = True
-            return
+            if self._scenario.stop_early:
+                self._stop = True
+                return
 
         pf.add(cv)
 
@@ -320,4 +324,4 @@ class Hydra:
         )
 
         pf.update_costs(vbs_cost)
-        self._ResourceTracker.deduct_by_name(cfg.config_space.name)
+        self._ResourceTracker.deduct_by_name(name)
