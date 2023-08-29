@@ -91,3 +91,6 @@ push = false
 "pyproject.toml" = ['version = "{version}"']
 "README.md" = ["{version}"]
 "autoverify/__init__.py" = ['__version__ = "{version}"']
+
+[tool.setuptools]
+py-modules = ["autoverify"]

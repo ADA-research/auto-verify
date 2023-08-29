@@ -2,7 +2,6 @@
 import argparse
 from pathlib import Path
 
-from autoverify.tune import smac_tune_verifier
 from autoverify.tune.tune_verifier import vnn_smac_tune_verifier
 from autoverify.util.instances import read_vnncomp_instances
 from autoverify.util.verifiers import verifier_from_name
@@ -101,16 +100,6 @@ if __name__ == "__main__":
         run_name=args.run_name,
         rh_csv_path=args.rh_csv_path,
     )
-
-    # config = smac_tune_verifier(
-    #     verifier,
-    #     instances,
-    #     args.time,
-    #     output_dir=output_dir,
-    #     config_out=config_out,
-    #     run_name=args.run_name,
-    #     rh_csv_path=args.rh_csv_path,
-    # )
 
     print("*" * 80)
     print("Incumbent:")

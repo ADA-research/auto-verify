@@ -17,9 +17,11 @@ from autoverify.portfolio.portfolio import (
 )
 from autoverify.types import TargetFunction
 from autoverify.util.resources import ResourceTracker
-from autoverify.util.target_function import get_pick_tf, get_verifier_tf
+from autoverify.util.target_function import get_verifier_tf
+from autoverify.util.verification_instance import VerificationInstance
 from autoverify.util.verifiers import verifier_from_name
-from autoverify.verifier.verifier import CompleteVerifier, Verifier
+from autoverify.util.vnncomp import inst_bench_to_kwargs
+from autoverify.verifier.verifier import CompleteVerifier
 
 logger = logging.getLogger(__name__)
 
@@ -74,20 +76,22 @@ def _remap_rh_keys(
 
 
 def _get_init_kwargs(
-    verifier: str, scenario: PortfolioScenario
+    verifier: str, scenario: PortfolioScenario, instance: VerificationInstance
 ) -> dict[str, Any]:
     init_kwargs: dict[str, Any] = {}  # TODO: Type
 
-    if (
-        scenario.verifier_kwargs is not None
-        and verifier in scenario.verifier_kwargs
-    ):
-        init_kwargs = scenario.verifier_kwargs[verifier]
+    if scenario.vnn_compat_mode:
+        assert scenario.benchmark is not None
+        init_kwargs = inst_bench_to_kwargs(
+            scenario.benchmark, verifier, instance
+        )
 
     return init_kwargs
 
 
-# TODO: Refactor this to use a more "Strategy"-like pattern
+# TODO: Refactor this to use a more Strategy-like pattern
+# Should be able to pass different strategies for components
+# such as the configurator and updater
 class Hydra:
     """_summary_."""
 
@@ -136,7 +140,7 @@ class Hydra:
 
             run_name = f"pick_{self._iter}_{i}"
             logger.info("Picking verifier")
-            verifier = self._pick(run_name)
+            verifier = self._pick(run_name, pf)
 
             logger.info(f"Picked {verifier}")
             logger.info(f"Tuning {verifier}")
@@ -149,36 +153,54 @@ class Hydra:
 
         return new_configs
 
-    # TODO: fix type errors
-    def _pick(self, run_name: str) -> str:
+    def _pick(self, run_name: str, pf: Portfolio) -> str:
         if self._scenario.pick_budget == 0:
             logging.info("Pick budget is 0, selecting random verifier.")
             return random.choice(self._scenario.verifiers)
 
-        verifier_insts: list[Verifier] = []
+        verifiers: list[str] = self._ResourceTracker.get_possible()
 
-        for name in self._ResourceTracker.get_possible():
-            verifier_class = verifier_from_name(name)
-            alloc = _get_cpu_gpu_alloc(name, self._ResourceTracker)
-            init_kwargs = _get_init_kwargs(name, self._scenario)
-            verifier_insts.append(
-                verifier_class(cpu_gpu_allocation=alloc, **init_kwargs)
+        def hydra_tf(config: Configuration, instance: str, seed: int) -> float:
+            seed += 1  # silence warning
+            verifier = verifiers[config["index"]]
+            assert isinstance(verifier, str)
+
+            verifier_class = verifier_from_name(verifier)
+            init_kwargs = _get_init_kwargs(
+                verifier,
+                self._scenario,
+                VerificationInstance.from_str(instance),
+            )
+            alloc = _get_cpu_gpu_alloc(verifier, self._ResourceTracker)
+            verifier_inst = verifier_class(
+                cpu_gpu_allocation=alloc, **init_kwargs
             )
 
-        target_func = get_pick_tf(verifier_insts)
-        pick_cfgspace = ConfigurationSpace()
-        pick_cfgspace.add_hyperparameter(
-            Categorical(
-                "index",
-                [i for i in range(len(verifier_insts))],
-                default=0,
-            )
-        )
+            verifier_tf = get_verifier_tf(verifier_inst)
+
+            assert isinstance(verifier_inst, CompleteVerifier)
+            cost = verifier_tf(verifier_inst.default_config, instance, seed)
+
+            if self._iter == 0:
+                return cost
+            else:
+                pf_cost = pf.get_cost(instance)
+
+            return float(min(cost, pf_cost))
 
         walltime_limit = (
             self._scenario.seconds_per_iter
             * self._scenario.pick_budget
             / self._scenario.configs_per_iter
+        )
+
+        pick_cfgspace = ConfigurationSpace()
+        pick_cfgspace.add_hyperparameter(
+            Categorical(
+                "index",
+                [i for i in range(len(verifiers))],
+                default=0,
+            )
         )
 
         smac_scenario = Scenario(
@@ -189,21 +211,21 @@ class Hydra:
             **self._scenario.get_smac_scenario_kwargs(),
         )
 
-        smac = ACFacade(smac_scenario, target_func, overwrite=True)
+        smac = ACFacade(smac_scenario, hydra_tf, overwrite=True)
         inc = smac.optimize()
 
         # Not dealing with > 1 config
         assert isinstance(inc, Configuration)
 
         key_map: dict[Configuration, Configuration] = {}
-        for i in range(len(verifier_insts)):
+        for i in range(len(verifiers)):
             cfg = Configuration(pick_cfgspace, {"index": i})
-            key_map[cfg] = verifier_insts[i].default_config
+            key_map[cfg] = verifier_from_name(verifiers[i])().default_config
 
         rh = _remap_rh_keys(key_map, smac.runhistory)
         self._cost_matrix.update_matrix(rh)
 
-        return str(verifier_insts[inc["index"]].name)
+        return str(verifiers[inc["index"]])
 
     def _tune(
         self, verifier: str, run_name: str, target_func: TargetFunction
@@ -239,20 +261,26 @@ class Hydra:
         """If iteration > 0, use the Hydra target function."""
         verifier_class = verifier_from_name(verifier)
         name = str(verifier_class.name)
-        init_kwargs = _get_init_kwargs(name, self._scenario)
-        alloc = _get_cpu_gpu_alloc(verifier, self._ResourceTracker)
-        verifier_inst = verifier_class(cpu_gpu_allocation=alloc, **init_kwargs)
-        verifier_tf = get_verifier_tf(verifier_inst)
-
-        if self._iter == 0:
-            return verifier_tf
 
         def hydra_tf(config: Configuration, instance: str, seed: int) -> float:
             seed += 1  # silence warning
 
+            init_kwargs = _get_init_kwargs(
+                name, self._scenario, VerificationInstance.from_str(instance)
+            )
+            alloc = _get_cpu_gpu_alloc(verifier, self._ResourceTracker)
+            verifier_inst = verifier_class(
+                cpu_gpu_allocation=alloc, **init_kwargs
+            )
+            verifier_tf = get_verifier_tf(verifier_inst)
+
             assert isinstance(verifier_inst, CompleteVerifier)
             cost = verifier_tf(config, instance, seed)
-            pf_cost = pf.get_cost(instance)
+
+            if self._iter == 0:
+                return cost
+            else:
+                pf_cost = pf.get_cost(instance)
 
             return float(min(cost, pf_cost))
 

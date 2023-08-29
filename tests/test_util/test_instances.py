@@ -233,7 +233,15 @@ def test_read_vnncomp_instances():
     def _nano_filter(inst: VerificationInstance) -> bool:
         return inst.network.name == "test_nano.onnx"
 
+    def _sat_filter(inst: VerificationInstance) -> bool:
+        return inst.network.name == "test_sat.onnx"
+
     instances = read_vnncomp_instances(
         bench_name, vnncomp_path, predicate=_nano_filter
     )
     assert len(instances) == 2
+
+    instances = read_vnncomp_instances(
+        bench_name, vnncomp_path, predicate=[_nano_filter, _sat_filter]
+    )
+    assert len(instances) == 4

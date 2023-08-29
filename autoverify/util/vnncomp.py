@@ -4,47 +4,62 @@ Return verifier instances that should be compatible with the given
 benchmark + instance.
 """
 from pathlib import Path
+from typing import Any
 
 from ConfigSpace import Configuration
 
 from autoverify.util.verification_instance import VerificationInstance
-from autoverify.verifier import AbCrown, Nnenum, OvalBab, Verinet
+from autoverify.util.verifiers import verifier_from_name
+from autoverify.verifier import Verinet
 from autoverify.verifier.verifier import CompleteVerifier
+
+
+# HACK:
+def inst_bench_to_kwargs(
+    benchmark: str,
+    verifier: str,
+    instance: VerificationInstance,
+) -> dict[str, Any]:
+    """_summary_."""
+    if verifier == "nnenum":
+        return {"use_auto_settings": True}
+    elif verifier == "abcrown":  # TODO: All benchmarks
+        if benchmark == "acasxu":
+            return {"yaml_override": {"data__num_outputs": 5}}
+        elif benchmark.startswith("sri_resnet_"):
+            return {
+                "yaml_override": {
+                    "model__onnx_quirks": "{'Reshape': {'fix_batch_size': True}}"  # noqa: E501
+                }
+            }
+        return {}
+    elif verifier == "ovalbab":
+        return {}
+    elif verifier == "verinet":
+        if benchmark == "acasxu":
+            return {"transpose_matmul_weights": True}
+        elif benchmark == "cifar2020":
+            if instance.network.name.find("convBigRELU") >= 0:
+                return {"dnnv_simplify": True}
+        elif benchmark == "cifar100_tinyimagenet_resnet":
+            return {"dnnv_simplify": True}
+        elif benchmark == "nn4sys":
+            if instance.network.name == "lindex.onnx":
+                return {"dnnv_simplify": True}
+        return {}
+
+    raise ValueError("Invalid verifier")
 
 
 def inst_bench_to_verifier(
     benchmark: str, instance: VerificationInstance, verifier: str
 ) -> CompleteVerifier:
     """_summary_."""
-    if verifier == "nnenum":
-        return Nnenum(use_auto_settings=True)
-    elif verifier == "abcrown":  # NOTE: Not complete
-        if benchmark == "acasxu":
-            return AbCrown(yaml_override={"data__num_outputs": 5})
-        elif benchmark.startswith("sri_resnet_"):
-            return AbCrown(
-                yaml_override={
-                    "model__onnx_quirks": "{'Reshape': {'fix_batch_size': True}}"  # noqa: E501
-                }
-            )
-        return AbCrown()
-    elif verifier == "ovalbab":
-        return OvalBab()
-    elif verifier == "verinet":
-        if benchmark == "acasxu":
-            return Verinet(transpose_matmul_weights=True)
-        elif benchmark == "cifar2020":
-            if instance.network.name.find("convBigRELU") >= 0:
-                return Verinet(dnnv_simplify=True)
-        elif benchmark == "cifar100_tinyimagenet_resnet":
-            return Verinet(dnnv_simplify=True)
-        elif benchmark == "nn4sys":
-            if instance.network.name == "lindex.onnx":
-                return Verinet(dnnv_simplify=True)
-
-        return Verinet()
-
-    raise ValueError("Invalid verifier")
+    verifier_inst = verifier_from_name(verifier)(
+        **inst_bench_to_kwargs(benchmark, verifier, instance)
+    )
+    assert isinstance(verifier_inst, CompleteVerifier)
+    return verifier_inst
 
 
 def _get_abcrown_config(benchmark: str, instance: VerificationInstance) -> str:

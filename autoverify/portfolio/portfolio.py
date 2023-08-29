@@ -1,5 +1,8 @@
 """_summary_."""
+from __future__ import annotations
+
 import datetime
+import json
 import math
 from collections.abc import Iterable, Mapping, MutableSet, Sequence
 from dataclasses import dataclass
@@ -7,12 +10,13 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from ConfigSpace import Configuration
+from ConfigSpace import Configuration, ConfigurationSpace
 
 from autoverify.util.instances import verification_instances_to_smac_instances
 from autoverify.util.resource_strategy import ResourceStrategy
 from autoverify.util.smac import index_features
 from autoverify.util.verification_instance import VerificationInstance
+from autoverify.util.verifiers import get_verifier_configspace
 
 
 @dataclass(frozen=True, eq=True, repr=True)
@@ -21,6 +25,7 @@ class ConfiguredVerifier:
 
     verifier: str
     configuration: Configuration
+    resources: tuple[int, int] | None = None
 
 
 @dataclass
@@ -37,10 +42,11 @@ class PortfolioScenario:
     configs_per_iter: int = 2
     alpha: float = 0.5  # tune/pick split
     added_per_iter: int = 1
-    stop_early = True
-    resource_strategy = ResourceStrategy.Auto
+    stop_early: bool = True
+    resource_strategy: ResourceStrategy = ResourceStrategy.Auto
     output_dir: Path | None = None
-    verifier_kwargs: Mapping[str, dict[str, Any]] | None = None
+    vnn_compat_mode: bool = False
+    benchmark: str | None = None
 
     def __post_init__(self):
         """_summary_."""
@@ -63,6 +69,10 @@ class PortfolioScenario:
         if self.added_per_iter > self.length:
             raise ValueError("Entries added per iter should be <= length")
 
+        if self.vnn_compat_mode:
+            if not self.benchmark:
+                raise ValueError("Use a benchmark name if vnn_compat_mode=True")
+
         self.n_iters = math.ceil(self.length / self.added_per_iter)
         self._verify_resources()
 
@@ -72,6 +82,9 @@ class PortfolioScenario:
         for r in self.resources:
             if r[0] in seen:
                 raise ValueError(f"Duplicate name '{r[0]}' in resources")
+
+            if r[0] not in self.verifiers:
+                raise ValueError(f"{r[0]} in resources but not in verifiers.")
 
             seen.add(r[0])
 
@@ -190,3 +203,63 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
             raise ValueError(f"{cv} is not in the portfolio")
 
         self._pf_set.discard(cv)
+
+    def to_json(self, out_json_path: Path):
+        """Write the portfolio in JSON format to the specified path."""
+        json_list: list[dict[str, Any]] = []
+
+        for cv in self._pf_set:
+            cfg_dict = dict(cv.configuration)
+            to_write = {
+                "verifier": cv.verifier,
+                "configuration": cfg_dict,
+                "resources": cv.resources,
+            }
+            json_list.append(to_write)
+
+        with open(out_json_path, "w") as f:
+            json.dump(json_list, f, indent=4, default=str)
+
+    @classmethod
+    def from_json(
+        cls,
+        json_file: Path,
+        config_space_map: Mapping[str, ConfigurationSpace] | None = None,
+    ) -> Portfolio:
+        """Instantiate a new Portfolio class from a JSON file."""
+        with open(json_file) as f:
+            pf_json = json.load(f)
+
+        pf = Portfolio()
+
+        for cv in pf_json:
+            if config_space_map is None:
+                cfg_space = get_verifier_configspace(cv["verifier"])
+            else:
+                cfg_space = config_space_map[cv["verifier"]]
+
+            cv["configuration"] = Configuration(cfg_space, cv["configuration"])
+
+            if cv["resources"]:
+                cv["resources"] = tuple(cv["resources"])
+
+            pf.add(ConfiguredVerifier(**cv))
+
+        return pf
+
+    def str_compact(self) -> str:
+        """Get the portfolio in string form in a compact way."""
+        cvs: list[str] = []
+
+        for cv in self:
+            cvs.append(
+                "\t".join(
+                    [
+                        str(cv.verifier),
+                        str(hash(cv.configuration)),
+                        str(cv.resources),
+                    ]
+                )
+            )
+
+        return "\n".join(cvs)

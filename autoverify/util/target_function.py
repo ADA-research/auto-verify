@@ -5,7 +5,8 @@ from ConfigSpace import Configuration
 
 from autoverify.types import Cost, Instance, Seed, TargetFunction
 from autoverify.util.verification_instance import VerificationInstance
-from autoverify.util.vnncomp import inst_bench_to_verifier
+from autoverify.util.verifiers import verifier_from_name
+from autoverify.util.vnncomp import inst_bench_to_kwargs, inst_bench_to_verifier
 from autoverify.verifier.verification_result import CompleteVerificationResult
 from autoverify.verifier.verifier import CompleteVerifier, Verifier
 
@@ -115,7 +116,7 @@ def get_verifier_tf(
 
 
 def get_pick_tf(
-    verifiers: list[Verifier], *, timeout_penalty: int = _DEFAULT_PAR
+    verifiers: list[str], benchmark: str, *, timeout_penalty: int = _DEFAULT_PAR
 ) -> TargetFunction:
     """_summary_."""
 
@@ -124,8 +125,16 @@ def get_pick_tf(
     ) -> Cost:
         """_summary_."""
         seed += 1  # silence warning, cant rename the param to _ or smac errors
+
+        verifier = verifiers[config["index"]]
+        verifier_inst = verifier_from_name(verifier)
+
         result = _run_verification_instance(
-            verifiers[config["index"]],
+            verifier_inst(  # type: ignore
+                **inst_bench_to_kwargs(
+                    benchmark, verifier, VerificationInstance.from_str(instance)
+                )
+            ),
             None,
             instance,
         )

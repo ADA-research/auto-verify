@@ -5,7 +5,7 @@ import csv
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Literal, overload
+from typing import Callable, Iterable, Literal, overload
 
 import pandas as pd
 
@@ -107,12 +107,33 @@ def verification_instances_to_smac_instances(
     return [inst.as_smac_instance() for inst in instances]
 
 
+_InstancePredicate = Callable[[VerificationInstance], bool]
+
+
+def _passes_at_least_1(
+    predicates: Iterable[_InstancePredicate], instance: VerificationInstance
+) -> bool:
+    for pred in predicates:
+        if pred(instance):
+            return True
+    return False
+
+
+def _passes_all(
+    predicates: Iterable[_InstancePredicate], instance: VerificationInstance
+) -> bool:
+    for pred in predicates:
+        if not pred(instance):
+            return False
+    return True
+
+
 @overload
 def read_vnncomp_instances(  # type: ignore
     benchmark: str,
     vnncomp_path: Path,
     *,
-    predicate: Callable[[VerificationInstance], bool] | None = None,
+    predicate: _InstancePredicate | Iterable[_InstancePredicate] | None = None,
     as_smac: Literal[False] = False,
     resolve_paths: bool = False,
 ) -> list[VerificationInstance]:
@@ -124,7 +145,7 @@ def read_vnncomp_instances(
     benchmark: str,
     vnncomp_path: Path,
     *,
-    predicate: Callable[[VerificationInstance], bool] | None = None,
+    predicate: _InstancePredicate | Iterable[_InstancePredicate] | None = None,
     as_smac: Literal[True] = True,
     resolve_paths: bool = False,
 ) -> list[str]:
@@ -135,7 +156,7 @@ def read_vnncomp_instances(
     benchmark: str,
     vnncomp_path: Path,
     *,
-    predicate: Callable[[VerificationInstance], bool] | None = None,
+    predicate: _InstancePredicate | Iterable[_InstancePredicate] | None = None,
     as_smac: bool = False,
     resolve_paths: bool = False,
 ) -> list[VerificationInstance] | list[str]:
@@ -171,6 +192,9 @@ def read_vnncomp_instances(
 
     verification_instances = []
 
+    if predicate and not isinstance(predicate, Iterable):
+        predicate = [predicate]
+
     with open(str(instances)) as csv_file:
         reader = csv.reader(csv_file)
 
@@ -186,7 +210,7 @@ def read_vnncomp_instances(
                 int(float(timeout)),  # FIXME: Timeouts can be floats
             )
 
-            if predicate and not predicate(instance):
+            if predicate and not _passes_at_least_1(predicate, instance):
                 continue
 
             if as_smac:

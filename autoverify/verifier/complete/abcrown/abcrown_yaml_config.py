@@ -56,7 +56,7 @@ class AbcrownYamlConfig:
         yaml_override: dict[str, Any] | None = None,
     ):
         """Initialize the YAML file based on the configuration."""
-        dict_config: dict[str, Any] = config.get_dictionary()
+        dict_config: dict[str, Any] = dict(config)
         abcrown_dict: dict[str, Any] = {}
 
         for key, value in dict_config.items():

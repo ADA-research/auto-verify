@@ -1,6 +1,6 @@
 """_summary_."""
 # from dataclasses import dataclass, field
-from typing import Callable, Sequence
+from typing import Callable
 
 from ConfigSpace import Configuration
 
@@ -15,4 +15,4 @@ CostDict = dict[Instance, dict[Configuration, list[Cost]]]
 
 
 VerifierResources = tuple[str, int, int]
-ResourceList = Sequence[VerifierResources]
+ResourceList = list[VerifierResources]

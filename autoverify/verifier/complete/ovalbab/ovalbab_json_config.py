@@ -29,7 +29,7 @@ class OvalbabJsonConfig:
     @classmethod
     def from_config(cls, config: Configuration):
         """_summary."""
-        dict_config: dict[str, Any] = config.get_dictionary()
+        dict_config: dict[str, Any] = dict(config)
         ovalbab_dict: dict[str, Any] = {
             "bounding": {
                 "nets": [

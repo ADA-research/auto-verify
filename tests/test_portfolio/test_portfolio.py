@@ -68,8 +68,14 @@ def test_to_json(portfolio: Portfolio, tmpdir: Path):
     assert all(v for v in seen.values())
 
 
-def test_from_json(portfolio_json: Path):
-    pf = Portfolio.from_json(portfolio_json)
+def test_from_json(
+    portfolio_json: Path, simple_configspace: ConfigurationSpace
+):
+    cfg_space_map = {
+        "foo": simple_configspace,
+        "hello": simple_configspace,
+    }
+    pf = Portfolio.from_json(portfolio_json, cfg_space_map)
     assert len(pf) == 2
 
     cvs = list(pf)
@@ -77,3 +83,4 @@ def test_from_json(portfolio_json: Path):
 
     assert cvs[0].verifier == "foo"
     assert cvs[1].verifier == "hello"
+    assert isinstance(cvs[0].configuration, Configuration)  # TODO:
