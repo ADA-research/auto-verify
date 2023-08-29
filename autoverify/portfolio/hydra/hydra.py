@@ -95,9 +95,6 @@ def _get_init_kwargs(
 class Hydra:
     """_summary_."""
 
-    # hydra_iter, configurator_iter, verifier_name
-    _SMAC_NAME = "hydra_{}_{}_{}"
-
     def __init__(self, pf_scenario: PortfolioScenario):
         """_summary_."""
         self._scenario = pf_scenario
@@ -105,6 +102,41 @@ class Hydra:
         self._stop = False
 
         self._ResourceTracker = ResourceTracker(self._scenario)
+        self._init_logs()
+
+    def _init_logs(self):
+        assert self._scenario.output_dir
+        self._scenario.output_dir.mkdir(parents=True)
+        logs_path = self._scenario.output_dir
+        self._log_file = (logs_path / "hydra.log").expanduser().resolve()
+        self._log_file.touch(exist_ok=False)
+
+        file_handler = logging.FileHandler(str(self._log_file))
+        file_handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter(
+            "%(asctime)s - %(levelname)s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+
+    def _log_iter(self, pf: Portfolio):
+        logger.info(
+            f"Total cost after iteration {self._iter}"
+            f" = {pf.get_total_cost():.2f}, mean cost = "
+            f"{pf.get_mean_cost():.2f}"
+            f"{pf.get_median_cost():.2f}"
+        )
+        logger.info(f"Current portfolio:\n{pf.str_compact()}")
+
+        # TODO: Who in the PF does this best cost belong to?
+        logger.info("Cost per instance:")
+        for inst, cost in pf.get_all_costs().items():
+            s = inst.split(",")
+            inst = s[0].split("/")[-1] + "::" + s[1].split("/")[-1]
+            logger.info(f"{inst} = {cost}")
+
+        logger.info(">" * 80)
 
     def tune_portfolio(self) -> Portfolio:
         """_summary_."""
@@ -117,11 +149,7 @@ class Hydra:
             new_configs = self._configurator(portfolio)
             self._updater(portfolio, new_configs)
 
-            logger.info(
-                f"Total cost after iteration {self._iter}"
-                f" = {portfolio.get_total_cost():.2f}, mean cost = "
-                f"{portfolio.get_mean_cost():.2f}"
-            )
+            self._log_iter(portfolio)
 
             if self._scenario.stop_early and self._stop:
                 logging.info(f"Stopping in iteration {self._iter}")
@@ -145,7 +173,7 @@ class Hydra:
             logger.info(f"Picked {verifier}")
             logger.info(f"Tuning {verifier}")
 
-            run_name = self._SMAC_NAME.format(self._iter, i, verifier)
+            run_name = f"tune_{self._iter}_{i}_{verifier}"
             tf = self._get_target_func(verifier, pf)
             config, runhist = self._tune(verifier, run_name, tf)
 
