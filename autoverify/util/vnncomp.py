@@ -52,11 +52,15 @@ def inst_bench_to_kwargs(
 
 
 def inst_bench_to_verifier(
-    benchmark: str, instance: VerificationInstance, verifier: str
+    benchmark: str,
+    instance: VerificationInstance,
+    verifier: str,
+    allocation: tuple[int, int, int] | None = None,
 ) -> CompleteVerifier:
     """_summary_."""
     verifier_inst = verifier_from_name(verifier)(
-        **inst_bench_to_kwargs(benchmark, verifier, instance)
+        **inst_bench_to_kwargs(benchmark, verifier, instance),
+        cpu_gpu_allocation=allocation,
     )
     assert isinstance(verifier_inst, CompleteVerifier)
     return verifier_inst

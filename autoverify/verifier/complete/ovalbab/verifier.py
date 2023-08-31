@@ -13,7 +13,7 @@ from autoverify.util.conda import (
     get_conda_path,
     get_conda_source_cmd,
 )
-from autoverify.util.env import cwd, environment
+from autoverify.util.env import cwd, environment, pkill_matches
 from autoverify.util.tempfiles import tmp_file
 from autoverify.verifier.complete.ovalbab.ovalbab_json_config import (
     OvalbabJsonConfig,
@@ -52,11 +52,12 @@ class OvalBab(CompleteVerifier):
                     find_conda_lib(self.conda_env_name, "libcudart.so.11.0")
                 )
             ),
+            pkill_matches(["python tools/bab_tools/bab_from_vnnlib.py"]),
         ]
 
     def _parse_result(
         self,
-        _: CompletedProcess[bytes] | None,
+        _: str,
         result_file: Path | None,
     ) -> tuple[VerificationResultString, str | None]:
         with open(str(result_file), "r") as f:

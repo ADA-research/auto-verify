@@ -75,19 +75,14 @@ class Verinet(CompleteVerifier):
 
     def _parse_result(
         self,
-        sp_result: CompletedProcess[bytes] | None,
+        output: str,
         _: Path | None,
     ) -> tuple[VerificationResultString, str | None]:
-        tool_result = ""
-
-        if sp_result is not None:
-            tool_result = sp_result.stdout.decode()
-
-        if find_substring("STATUS:  Status.Safe", tool_result):
+        if find_substring("STATUS:  Status.Safe", output):
             return "UNSAT", None
-        elif find_substring("STATUS:  Status.Unsafe", tool_result):
+        elif find_substring("STATUS:  Status.Unsafe", output):
             return "SAT", None
-        elif find_substring("STATUS:  Status.Undecided", tool_result):
+        elif find_substring("STATUS:  Status.Undecided", output):
             return "TIMEOUT", None
 
         return "TIMEOUT", None

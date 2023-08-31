@@ -50,9 +50,7 @@ class Nnenum(CompleteVerifier):
         ]
 
     def _parse_result(
-        self,
-        _: CompletedProcess[bytes] | None,
-        result_file: Path | None,
+        self, _: str, result_file: Path | None
     ) -> tuple[VerificationResultString, str | None]:
         with open(str(result_file), "r") as f:
             result_txt = f.read()

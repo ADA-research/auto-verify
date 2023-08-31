@@ -1,10 +1,10 @@
 """TODO docstring."""
+import sched
 import subprocess
 import time
 from abc import ABC, abstractmethod
 from contextlib import ExitStack
 from pathlib import Path
-from subprocess import CompletedProcess
 from typing import Any, ContextManager, Iterable
 
 from ConfigSpace import Configuration, ConfigurationSpace
@@ -106,7 +106,7 @@ class Verifier(ABC):
     @abstractmethod
     def _parse_result(
         self,
-        sp_result: CompletedProcess[bytes] | None,
+        output: str,
         result_file: Path | None,
     ) -> tuple[VerificationResultString, str | None]:
         """_summary."""
@@ -293,63 +293,62 @@ class CompleteVerifier(Verifier):
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> CompleteVerificationData:
         """_summary_."""
-        result: VerificationResultString | None = None
-        counter_example: str | None = None
-        sp_result: CompletedProcess[bytes] | None = None
-        run_err: str = ""
-        stdout: str = ""
-        stderr: str = ""
         contexts = self.contexts or []
-        before_t = time.time()
+        output_lines: list[str] = []
 
         if self._cpu_gpu_allocation is not None:
             run_cmd = self._allocate_run_cmd(run_cmd, contexts)
 
-        try:
-            with ExitStack() as stack:
-                for context in contexts:
-                    stack.enter_context(context)
+        with ExitStack() as stack:
+            for context in contexts:
+                stack.enter_context(context)
 
-                sp_result = subprocess.run(
-                    run_cmd,
-                    executable="/bin/bash",
-                    capture_output=True,
-                    check=True,
-                    shell=True,
-                    timeout=timeout,
-                )
-        except subprocess.TimeoutExpired as err:
-            result = "TIMEOUT"
-            if err.stderr:
-                stderr = err.stderr.decode()
-            if err.stdout:
-                stdout = err.stdout.decode()
-        except subprocess.CalledProcessError as err:
-            result = "ERR"
-            stderr = err.stderr.decode()
-            stdout = err.stdout.decode()
-            run_err = f"Exception in called process:\n{stderr}"
-        except Exception as err:
-            result = "ERR"
-            run_err = f"Exception during verification:\n{err}"
-        finally:
+            process = subprocess.Popen(
+                run_cmd,
+                executable="/bin/bash",
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                shell=True,
+                universal_newlines=True,
+            )
+
+            assert process.stdout
+            before_t = time.time()
+
+            # TODO: Make result a TIMEOUT
+            def _terminate():
+                process.terminate()
+
+            s = sched.scheduler(time.monotonic, time.sleep)
+            timeout_event = s.enter(timeout, 0, _terminate)
+            s.run(blocking=False)
+
+            for line in iter(process.stdout.readline, ""):
+                output_lines.append(line)
+
+            if timeout_event in s.queue:
+                s.cancel(timeout_event)
+
+            process.stdout.close()
+            return_code = process.wait()
             took_t = time.time() - before_t
 
-            if stdout == "" and sp_result is not None:
-                stdout = sp_result.stdout.decode()
-            if stderr == "" and sp_result is not None:
-                stderr = sp_result.stderr.decode()
+            output_str = "\n".join(output_lines)
+            counter_example: str | None = None
 
-        if result is None:
-            result, counter_example = self._parse_result(sp_result, result_file)
+            if return_code > 0:
+                result = "ERR"
+            else:
+                result, counter_example = self._parse_result(
+                    output_str, result_file
+                )
 
-        if run_err == "" and stderr != "":
-            run_err = stderr
+            return CompleteVerificationData(
+                result,
+                took_t,
+                counter_example,
+                "",  # TODO: Remove err field; we pipe it to stdout
+                output_str,
+            )
 
-        return CompleteVerificationData(
-            result,
-            took_t,
-            counter_example,
-            run_err,
-            stdout,
-        )
+        raise RuntimeError("Exception during handling of verification")

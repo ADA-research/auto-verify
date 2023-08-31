@@ -61,22 +61,17 @@ class AbCrown(CompleteVerifier):
 
     def _parse_result(
         self,
-        sp_result: CompletedProcess[bytes] | None,
+        output: str,
         result_file: Path | None,
     ) -> tuple[VerificationResultString, str | None]:
-        tool_result = ""
-
-        if sp_result is not None:
-            tool_result = sp_result.stdout.decode()
-
-        if find_substring("Result: sat", tool_result):
+        if find_substring("Result: sat", output):
             with open(str(result_file), "r") as f:
                 counter_example = f.read()
 
             return "SAT", counter_example
-        elif find_substring("Result: unsat", tool_result):
+        elif find_substring("Result: unsat", output):
             return "UNSAT", None
-        elif find_substring("Result: timeout", tool_result):
+        elif find_substring("Result: timeout", output):
             return "TIMEOUT", None
 
         return "TIMEOUT", None

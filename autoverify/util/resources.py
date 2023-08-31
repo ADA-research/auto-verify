@@ -4,6 +4,12 @@ from autoverify.util.proc import cpu_count, nvidia_gpu_count
 from autoverify.util.resource_strategy import ResourceStrategy
 
 
+def to_allocation(resources: tuple[int, int]) -> tuple[int, int, int]:
+    """Go from (n_cpu, n_gpu) to a real allocation."""
+    gpu = -1 if resources[1] <= 0 else resources[1] - 1
+    return (0, resources[0] - 1, gpu)
+
+
 class ResourceTracker:
     """_summary_."""
 
