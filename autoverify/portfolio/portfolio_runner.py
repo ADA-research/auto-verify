@@ -1,5 +1,4 @@
 """_summary_."""
-import concurrent.futures
 import logging
 from typing import TypeVar
 
@@ -124,14 +123,14 @@ class PortfolioRunner:
 
         for cv, instance_costs in cost_dict.items():
             for instance, cost in instance_costs.items():
-                instance = str(instance)
+                str_inst = str(instance)
 
-                if instance not in vbs:
-                    vbs[instance] = (cost, cv.verifier)
+                if str_inst not in vbs:
+                    vbs[str_inst] = (cost, cv.verifier)
                     continue
 
-                if cost < vbs[instance][0]:
-                    vbs[instance] = (cost, cv.verifier)
+                if cost < vbs[str_inst][0]:
+                    vbs[str_inst] = (cost, cv.verifier)
 
         return vbs
 

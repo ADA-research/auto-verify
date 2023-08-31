@@ -174,6 +174,7 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
         return costs
 
     def get_all_costs(self) -> dict[str, float]:
+        """All the recorded costs."""
         return self._costs
 
     def get_mean_cost(self) -> float:

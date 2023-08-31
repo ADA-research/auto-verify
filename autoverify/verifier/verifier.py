@@ -20,7 +20,7 @@ from autoverify.util.conda import (
 )
 from autoverify.util.env import environment
 from autoverify.util.path import check_file_extension
-from autoverify.util.proc import nvidia_gpu_count, taskset_cpu_range
+from autoverify.util.proc import nvidia_gpu_count, pid_exists, taskset_cpu_range
 from autoverify.util.verification_instance import VerificationInstance
 
 from .verification_result import (
@@ -316,26 +316,30 @@ class CompleteVerifier(Verifier):
                 preexec_fn=os.setsid,
             )
 
-            assert process.stdout
             before_t = time.time()
+            timeout_event = threading.Event()
 
-            # TODO: Make result a TIMEOUT
-            # FIXME: This is never called
             def _terminate(timeout_sec):
-                time.sleep(timeout_sec)
-                global result
-                result = "TIMEOUT"
-                os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+                on_time = timeout_event.wait(timeout_sec)
+
+                if not on_time:
+                    global result
+                    result = "TIMEOUT"  # type: ignore
+
+                if pid_exists(process.pid):
+                    os.killpg(os.getpgid(process.pid), signal.SIGTERM)
 
             t = threading.Thread(target=_terminate, args=[timeout])
             t.start()
 
+            assert process.stdout
             for line in iter(process.stdout.readline, ""):
                 output_lines.append(line)
 
             process.stdout.close()
             return_code = process.wait()
             took_t = time.time() - before_t
+            timeout_event.set()
 
             output_str = "\n".join(output_lines)
             counter_example: str | None = None
@@ -349,7 +353,7 @@ class CompleteVerifier(Verifier):
                     )
 
             return CompleteVerificationData(
-                result,
+                result,  # type: ignore
                 took_t,
                 counter_example,
                 "",  # TODO: Remove err field; we pipe it to stdout

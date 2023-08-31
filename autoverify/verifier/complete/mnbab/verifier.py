@@ -1,6 +1,5 @@
 """Nnenum verifier."""
 from pathlib import Path
-from subprocess import CompletedProcess
 from typing import ContextManager
 
 from ConfigSpace import Configuration, ConfigurationSpace
@@ -54,7 +53,7 @@ class MnBab(CompleteVerifier):
 
     def _parse_result(
         self,
-        sp_result: CompletedProcess[bytes] | None,
+        _: str,
         result_file: Path | None,
     ) -> tuple[VerificationResultString, str | None]:
         # TODO:

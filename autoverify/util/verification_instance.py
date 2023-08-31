@@ -30,6 +30,7 @@ class VerificationInstance:
         )
 
     def __str__(self):
+        """Short string representation of the `VerificationInstance`."""
         return f"{self.network.name} :: {self.property.name} :: {self.timeout}"
 
     def as_smac_instance(self) -> str:

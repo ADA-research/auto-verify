@@ -1,7 +1,6 @@
 """OvalBab verifier."""
 from collections.abc import Iterable
 from pathlib import Path
-from subprocess import CompletedProcess
 from typing import Any, ContextManager
 
 from ConfigSpace import Configuration, ConfigurationSpace
