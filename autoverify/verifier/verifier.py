@@ -1,6 +1,8 @@
 """TODO docstring."""
-import sched
+import os
+import signal
 import subprocess
+import threading
 import time
 from abc import ABC, abstractmethod
 from contextlib import ExitStack
@@ -295,6 +297,7 @@ class CompleteVerifier(Verifier):
         """_summary_."""
         contexts = self.contexts or []
         output_lines: list[str] = []
+        result: str = ""
 
         if self._cpu_gpu_allocation is not None:
             run_cmd = self._allocate_run_cmd(run_cmd, contexts)
@@ -310,24 +313,25 @@ class CompleteVerifier(Verifier):
                 stderr=subprocess.STDOUT,
                 shell=True,
                 universal_newlines=True,
+                preexec_fn=os.setsid,
             )
 
             assert process.stdout
             before_t = time.time()
 
             # TODO: Make result a TIMEOUT
-            def _terminate():
-                process.terminate()
+            # FIXME: This is never called
+            def _terminate(timeout_sec):
+                time.sleep(timeout_sec)
+                global result
+                result = "TIMEOUT"
+                os.killpg(os.getpgid(process.pid), signal.SIGTERM)
 
-            s = sched.scheduler(time.monotonic, time.sleep)
-            timeout_event = s.enter(timeout, 0, _terminate)
-            s.run(blocking=False)
+            t = threading.Thread(target=_terminate, args=[timeout])
+            t.start()
 
             for line in iter(process.stdout.readline, ""):
                 output_lines.append(line)
-
-            if timeout_event in s.queue:
-                s.cancel(timeout_event)
 
             process.stdout.close()
             return_code = process.wait()
@@ -336,12 +340,13 @@ class CompleteVerifier(Verifier):
             output_str = "\n".join(output_lines)
             counter_example: str | None = None
 
-            if return_code > 0:
-                result = "ERR"
-            else:
-                result, counter_example = self._parse_result(
-                    output_str, result_file
-                )
+            if result != "TIMEOUT":
+                if return_code > 0:
+                    result = "ERR"
+                else:
+                    result, counter_example = self._parse_result(
+                        output_str, result_file
+                    )
 
             return CompleteVerificationData(
                 result,

@@ -172,6 +172,6 @@ class PortfolioRunner:
         results: dict[_VI, VerificationDataResult] = {}
 
         for cv in self._portfolio:
-            print(cv)
+            print(cv.verifier, cv.resources)
 
         return results
