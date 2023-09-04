@@ -5,13 +5,16 @@ import csv
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Iterable, Literal, overload
+from typing import Any, Callable, Iterable, Literal, overload
 
 import pandas as pd
 
 from autoverify.util.dataclass import get_dataclass_field_names
 from autoverify.util.verification_instance import VerificationInstance
-from autoverify.verifier.verification_result import VerificationResultString
+from autoverify.verifier.verification_result import (
+    CompleteVerificationData,
+    VerificationResultString,
+)
 
 
 @dataclass
@@ -53,6 +56,27 @@ class VerificationDataResult:
             self.stderr or "",
             self.stdout or "",
         ]
+
+    @classmethod
+    def from_verification_result(
+        cls,
+        verif_res: CompleteVerificationData,
+        instance_data: dict[str, Any],
+    ):
+        # TODO: Unpack dict
+        return cls(
+            instance_data["network"],
+            instance_data["property"],
+            instance_data["timeout"],
+            instance_data["verifier"],
+            instance_data["config"],
+            instance_data["success"],
+            verif_res.result,
+            verif_res.took,
+            verif_res.counter_example,
+            verif_res.err,
+            verif_res.stdout,
+        )
 
 
 def init_verification_result_csv(csv_path: Path):
@@ -135,7 +159,7 @@ def read_vnncomp_instances(  # type: ignore
     *,
     predicate: _InstancePredicate | Iterable[_InstancePredicate] | None = None,
     as_smac: Literal[False] = False,
-    resolve_paths: bool = False,
+    resolve_paths: bool = True,
 ) -> list[VerificationInstance]:
     ...
 
@@ -147,7 +171,7 @@ def read_vnncomp_instances(
     *,
     predicate: _InstancePredicate | Iterable[_InstancePredicate] | None = None,
     as_smac: Literal[True] = True,
-    resolve_paths: bool = False,
+    resolve_paths: bool = True,
 ) -> list[str]:
     ...
 
@@ -158,7 +182,7 @@ def read_vnncomp_instances(
     *,
     predicate: _InstancePredicate | Iterable[_InstancePredicate] | None = None,
     as_smac: bool = False,
-    resolve_paths: bool = False,
+    resolve_paths: bool = True,
 ) -> list[VerificationInstance] | list[str]:
     """Read the instances of a VNNCOMP benchmark.
 

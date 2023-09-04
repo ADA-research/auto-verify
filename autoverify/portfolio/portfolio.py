@@ -149,6 +149,10 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
 
         return res
 
+    def get_set(self):
+        """Get the underlying set."""
+        return self._pf_set
+
     @property
     def configs(self) -> list[Configuration]:
         """_summary_."""

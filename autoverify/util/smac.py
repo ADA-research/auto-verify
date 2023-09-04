@@ -2,17 +2,14 @@
 import copy
 import csv
 import json
-import statistics
 from collections.abc import Sequence
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
-from ConfigSpace import Configuration
 from smac import RunHistory, Scenario
 from smac.runhistory.dataclasses import TrialKey, TrialValue
 
-from autoverify.types import CostDict
 from autoverify.util.dataclass import get_dataclass_field_names
 from autoverify.util.verification_instance import VerificationInstance
 

@@ -31,7 +31,7 @@ class Nnenum(CompleteVerifier):
         self,
         batch_size: int = 512,
         cpu_gpu_allocation: tuple[int, int, int] | None = None,
-        use_auto_settings: bool = False,
+        use_auto_settings: bool = True,
     ):
         """_summary_."""
         if cpu_gpu_allocation and cpu_gpu_allocation[2] >= 0:
@@ -81,7 +81,7 @@ class Nnenum(CompleteVerifier):
         source_cmd = get_conda_source_cmd(get_conda_path())
 
         # In nnenum, settings are normally passed as a one word string
-        # over the CLI. This word then selects from some pre-defined settings
+        # over the CLI. This word then selects from some pre-defined settings.
         # We want some more control however, so we also make an option to pass
         # a stringified dict of exact settings.
         # The "none" value for settings_str is used as a flag that makes

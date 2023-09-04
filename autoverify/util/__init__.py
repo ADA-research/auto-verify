@@ -1,6 +1,7 @@
 import json
 import string
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Any, TypeVar
 
@@ -60,10 +61,10 @@ def add_to_average(average: float, value: float, size: int) -> float:
     return (size * average + value) / (size + 1)
 
 
-T = TypeVar("T")
+_T = TypeVar("_T")
 
 
-def merge_lists(*lists: list[T]) -> list[T]:
+def merge_lists(*lists: list[_T]) -> list[_T]:
     """_summary_."""
     uniq = set()
 
@@ -71,3 +72,10 @@ def merge_lists(*lists: list[T]) -> list[T]:
         uniq.update(set(lst))
 
     return list(uniq)
+
+
+def set_iter_except(s: set[_T], e: _T) -> Iterator[_T]:
+    """Iterate the set, ignoring one element."""
+    for item in s:
+        if item != e:
+            yield item

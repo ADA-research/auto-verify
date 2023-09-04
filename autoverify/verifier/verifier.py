@@ -287,6 +287,11 @@ class CompleteVerifier(Verifier):
 
         return "\n".join(lines)
 
+    def set_timeout_event(self):
+        """_summary_."""
+        if self._timeout_event:
+            self._timeout_event.set()
+
     def _run_verification(
         self,
         run_cmd: str,
@@ -317,10 +322,11 @@ class CompleteVerifier(Verifier):
             )
 
             before_t = time.time()
-            timeout_event = threading.Event()
+            self._timeout_event = threading.Event()
 
             def _terminate(timeout_sec):
-                on_time = timeout_event.wait(timeout_sec)
+                assert self._timeout_event
+                on_time = self._timeout_event.wait(timeout_sec)
 
                 if not on_time:
                     global result
@@ -339,7 +345,7 @@ class CompleteVerifier(Verifier):
             process.stdout.close()
             return_code = process.wait()
             took_t = time.time() - before_t
-            timeout_event.set()
+            self._timeout_event.set()
 
             output_str = "\n".join(output_lines)
             counter_example: str | None = None
@@ -351,6 +357,8 @@ class CompleteVerifier(Verifier):
                     result, counter_example = self._parse_result(
                         output_str, result_file
                     )
+
+            self._timeout_event = None
 
             return CompleteVerificationData(
                 result,  # type: ignore
