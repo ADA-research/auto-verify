@@ -61,7 +61,7 @@ class VerificationDataResult:
     def from_verification_result(
         cls,
         verif_res: CompleteVerificationData,
-        instance_data: dict[str, Any],
+        instance_data: dict[str, Any],  # TODO: Narrow Any
     ):
         # TODO: Unpack dict
         return cls(

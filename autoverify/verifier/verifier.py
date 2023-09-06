@@ -289,8 +289,10 @@ class CompleteVerifier(Verifier):
 
     def set_timeout_event(self):
         """_summary_."""
-        if self._timeout_event:
-            self._timeout_event.set()
+        try:
+            self._timeout_event.set()  # type: ignore
+        except AttributeError:
+            pass
 
     def _run_verification(
         self,

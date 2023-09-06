@@ -31,7 +31,7 @@ class Nnenum(CompleteVerifier):
         self,
         batch_size: int = 512,
         cpu_gpu_allocation: tuple[int, int, int] | None = None,
-        use_auto_settings: bool = True,
+        use_auto_settings: bool = False,
     ):
         """_summary_."""
         if cpu_gpu_allocation and cpu_gpu_allocation[2] >= 0:

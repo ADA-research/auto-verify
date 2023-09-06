@@ -1,10 +1,14 @@
 """_summary_."""
 import concurrent.futures
 import logging
-from collections.abc import Callable
+import signal
+import sys
+from collections.abc import Iterable
 from concurrent.futures import Future
+from os import kill
 from pathlib import Path
-from typing import Any, Literal, TypeVar
+from types import FrameType
+from typing import Any
 
 from ConfigSpace import Configuration
 from result import Err, Ok
@@ -21,10 +25,7 @@ from autoverify.util.resources import to_allocation
 from autoverify.util.verification_instance import VerificationInstance
 from autoverify.util.verifiers import verifier_from_name
 from autoverify.util.vnncomp import inst_bench_to_verifier
-from autoverify.verifier.verification_result import (
-    CompleteVerificationData,
-    CompleteVerificationResult,
-)
+from autoverify.verifier.verification_result import CompleteVerificationResult
 from autoverify.verifier.verifier import CompleteVerifier
 
 logger = logging.getLogger(__name__)
@@ -67,6 +68,18 @@ class PortfolioRunner:
 
         if not self._vbs_mode:
             self._init_resources()
+
+        def _wrap_cleanup(sig: int, frame: FrameType | None):
+            if self._is_cleaning:
+                return
+
+            self._is_cleaning = True
+            self._cleanup()
+            self._is_cleaning = False
+
+        self._is_cleaning = False
+        signal.signal(signal.SIGINT, _wrap_cleanup)
+        signal.signal(signal.SIGTERM, _wrap_cleanup)
 
     def _init_resources(self):
         self._allocation: dict[ConfiguredVerifier, tuple[int, int, int]] = {}
@@ -128,7 +141,7 @@ class PortfolioRunner:
                 self._add_result(cv, instance, result, results)
 
                 if out_csv:
-                    self._csv_log_vbs_eval(
+                    self._csv_log_result(
                         out_csv,
                         result,
                         instance,
@@ -139,7 +152,7 @@ class PortfolioRunner:
         return self._vbs_from_cost_dict(results)
 
     @staticmethod
-    def _csv_log_vbs_eval(
+    def _csv_log_result(
         out_csv: Path,
         result: CompleteVerificationResult,
         instance: VerificationInstance,
@@ -206,80 +219,148 @@ class PortfolioRunner:
 
         results[cv][instance] = cost
 
-    def _get_verifiers(self):
+    def _get_verifiers(
+        self, instance, vnncompat, benchmark
+    ) -> dict[ConfiguredVerifier, CompleteVerifier]:
         verifiers: dict[ConfiguredVerifier, CompleteVerifier] = {}
 
         for cv in self._portfolio:
-            alloc = self._allocation[cv]
-            v = verifier_from_name(cv.verifier)(cpu_gpu_allocation=alloc)
+            v = _get_verifier(instance, cv, vnncompat, benchmark)
             assert isinstance(v, CompleteVerifier)
             verifiers[cv] = v
 
         return verifiers
 
-    # TODO: Narrow func type
-    @staticmethod
-    def _wrap_verify(
+    def _log_result(
+        self,
+        result: CompleteVerificationResult,
+        instance: VerificationInstance,
         cv: ConfiguredVerifier,
-        func: Callable[[Any], Any],
-        *args: Any,
-        **kwargs: Any,
+        out_csv: Path | None,
     ):
-        r = func(*args, **kwargs)
-        return r, cv
+        if out_csv:
+            self._csv_log_result(
+                out_csv,
+                result,
+                instance,
+                cv.verifier,
+                cv.configuration,
+            )
 
     def verify_instances(
-        self, instances: list[VerificationInstance]  # TODO: _VI
+        self,
+        instances: Iterable[VerificationInstance],
+        *,
+        out_csv: Path | None = None,
+        vnncompat: bool = False,
+        benchmark: str | None = None,
     ) -> dict[VerificationInstance, VerificationDataResult]:
-        """_summary_.
-        TODO:
-        - [x] launch all verifiers in parallel
-        - [x] as soon as one finds a result:
-          - [/] save result
-          - [x] stop all verifiers
-        - [x] go to next instance
-        """
         if self._vbs_mode:
             raise RuntimeError("Function not compatible with vbs_mode")
 
+        if out_csv:
+            out_csv = out_csv.expanduser().resolve()
+
         results: dict[VerificationInstance, VerificationDataResult] = {}
-        verifiers = self._get_verifiers()
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             for instance in instances:
+                logger.info(f"Running portfolio on {str(instance)}")
+
                 futures: dict[Future, ConfiguredVerifier] = {}
+                self._verifiers = self._get_verifiers(
+                    instance, vnncompat, benchmark
+                )
+                is_solved = False
 
                 for cv in self._portfolio:
                     future = executor.submit(
-                        verifiers[cv].verify_instance, instance
+                        self._verifiers[cv].verify_instance, instance
                     )
                     futures[future] = cv
 
-                # TODO: Use the `timeout` param of `as_completed`?
                 for future in concurrent.futures.as_completed(futures):
-                    cv = futures[future]
-                    result = future.result()
+                    fut_cv = futures[future]
+                    result: CompleteVerificationResult = future.result()
 
-                    if isinstance(result, Ok):
-                        # TODO: split recording result into a func
-                        verif_result = result.unwrap()
-                        inst_d = {
-                            "network": instance.network,
-                            "property": instance.property,
-                            "timeout": instance.timeout,
-                            "verifier": cv.verifier,
-                            "config": cv.configuration,
-                            "success": "OK",
-                        }
-                        vdr = VerificationDataResult.from_verification_result(
-                            verif_result, inst_d
+                    if not is_solved:
+                        got_solved = self._process_result(
+                            result, results, fut_cv, instance, self._verifiers
                         )
-                        print(vdr)
-                        others = set_iter_except(self._portfolio.get_set(), cv)
-                        for cv in others:
-                            verifiers[cv].set_timeout_event()
 
-                    elif isinstance(result, Err):
-                        print("Errrrrrrrrrrrrrrr")
+                        if got_solved and not is_solved:
+                            is_solved = True
 
         return results
+
+    def _process_result(
+        self,
+        result: CompleteVerificationResult,
+        results: dict[VerificationInstance, VerificationDataResult],
+        cv: ConfiguredVerifier,
+        instance: VerificationInstance,
+        verifiers: dict[ConfiguredVerifier, CompleteVerifier],
+    ) -> bool:
+        instance_data: dict[str, Any] = {
+            "network": instance.network,
+            "property": instance.property,
+            "timeout": instance.timeout,
+            "verifier": cv.verifier,
+            "config": cv.configuration,
+        }
+
+        if isinstance(result, Ok):
+            r = result.unwrap()
+
+            if r.result == "TIMEOUT":
+                log_string = f"{cv.verifier} timed out"
+            else:
+                self._cancel_running(cv, verifiers)
+                log_string = (
+                    f"Verified by {cv.verifier} in {r.took:.2f} sec, "
+                    f"result = {r.result}"
+                )
+
+            instance_data["success"] = "OK"
+            results[instance] = VerificationDataResult.from_verification_result(
+                r, instance_data
+            )
+
+            # Signal that the instance was solved
+            if r.result in ["SAT", "UNSAT"]:
+                logger.info(log_string)
+                return True
+        elif isinstance(result, Err):
+            log_string = f"{cv.verifier} errored."
+            r = result.unwrap_err()
+
+            instance_data["success"] = "ERR"
+            results[instance] = VerificationDataResult.from_verification_result(
+                r, instance_data
+            )
+
+        logger.info(log_string)
+        # Instance was not solved
+        return False
+
+    def _cancel_running(
+        self,
+        first_cv: ConfiguredVerifier,
+        verifiers: dict[ConfiguredVerifier, CompleteVerifier],
+    ):
+        others = set_iter_except(self._portfolio.get_set(), first_cv)
+        for other_cv in others:
+            verifiers[other_cv].set_timeout_event()
+
+    def _cleanup(self):
+        """Kill all running verifiers processes."""
+        if not self._verifiers:
+            sys.exit(0)
+
+        for verifier_inst in self._verifiers.values():
+            try:
+                verifier_inst.set_timeout_event()
+            finally:
+                pass
+
+        sys.exit(0)
