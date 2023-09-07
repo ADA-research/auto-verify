@@ -42,6 +42,9 @@ def cpu_count() -> int:
 
 def nvidia_gpu_count() -> int:
     """Get the number of available NVIDIA GPUs."""
+    if not is_nvidia_gpu_available():
+        return 0
+
     cmd = "nvidia-smi --query-gpu=name --format=csv,noheader"
     cmd2 = "wc -l"
 
@@ -53,6 +56,15 @@ def nvidia_gpu_count() -> int:
     )
 
     return int(count)
+
+
+def is_nvidia_gpu_available() -> bool:
+    """Check if any NVIDIA GPU is available."""
+    try:
+        subprocess.check_output("nvidia-smi")
+        return True
+    except Exception:
+        return False
 
 
 def taskset_cpu_range(cpus: Iterable[int] | tuple[int, int]):
