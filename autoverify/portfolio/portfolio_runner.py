@@ -69,7 +69,7 @@ class PortfolioRunner:
         if not self._vbs_mode:
             self._init_resources()
 
-        def _wrap_cleanup(sig: int, frame: FrameType | None):
+        def _wrap_cleanup(*_):
             if self._is_cleaning:
                 return
 
@@ -290,6 +290,15 @@ class PortfolioRunner:
 
                         if got_solved and not is_solved:
                             is_solved = True
+
+                        if out_csv:
+                            self._csv_log_result(
+                                out_csv,
+                                result,
+                                instance,
+                                fut_cv.verifier,
+                                fut_cv.configuration,
+                            )
 
         return results
 
