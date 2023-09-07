@@ -1,6 +1,8 @@
 """TODO summary."""
 import logging
+import shlex
 import shutil
+import subprocess
 from subprocess import CalledProcessError
 
 from result import Err, Ok, Result
@@ -11,8 +13,9 @@ from autoverify.util.conda import (
     get_av_conda_envs,
     get_verifier_conda_env_name,
 )
+from autoverify.util.env import cwd
 
-from .installers import installers
+from .installers import installers, repo_infos
 
 AV_HOME = xdg_data_home() / "autoverify"
 VERIFIER_DIR = AV_HOME / "verifiers"
@@ -107,3 +110,35 @@ def try_uninstall_verifiers(verifiers: list[str]):
             print(f"Succesfully uninstalled {verifier}")
         elif isinstance(uninstall_result, Err):
             print(f"Error uninstalling {verifier}: {uninstall_result.err()}")
+
+
+def check_commit_hashes():
+    """Check if all commit hashes are up to date."""
+    all_up_to_date = True
+
+    for file in VERIFIER_DIR.iterdir():
+        if not file.is_dir():
+            continue
+
+        repo_info = repo_infos[file.name]
+        cmd = f"git rev-parse {repo_info.branch}"
+
+        with cwd(file / "tool"):
+            commit_hash = subprocess.run(
+                shlex.split(cmd), capture_output=True
+            ).stdout.decode()
+
+            # Currently have short hashes in install files
+            # Switching to long ones might be good
+            commit_hash = commit_hash[:7]
+
+            if commit_hash != repo_info.commit_hash:
+                all_up_to_date = False
+                print(
+                    f"Verifier {file.name} has commit_hash {commit_hash}, "
+                    f"but commit hash in installation file "
+                    f"is {repo_info.commit_hash}"
+                )
+
+    if all_up_to_date:
+        print("Everything up to date.")
