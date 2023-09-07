@@ -63,6 +63,7 @@ class VerificationDataResult:
         verif_res: CompleteVerificationData,
         instance_data: dict[str, Any],  # TODO: Narrow Any
     ):
+        """Create from a `CompleteVerificationData`."""
         # TODO: Unpack dict
         return cls(
             instance_data["network"],

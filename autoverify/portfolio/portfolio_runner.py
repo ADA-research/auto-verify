@@ -5,9 +5,7 @@ import signal
 import sys
 from collections.abc import Iterable
 from concurrent.futures import Future
-from os import kill
 from pathlib import Path
-from types import FrameType
 from typing import Any
 
 from ConfigSpace import Configuration
@@ -69,6 +67,8 @@ class PortfolioRunner:
         if not self._vbs_mode:
             self._init_resources()
 
+        self._is_cleaning = False
+
         def _wrap_cleanup(*_):
             if self._is_cleaning:
                 return
@@ -77,7 +77,6 @@ class PortfolioRunner:
             self._cleanup()
             self._is_cleaning = False
 
-        self._is_cleaning = False
         signal.signal(signal.SIGINT, _wrap_cleanup)
         signal.signal(signal.SIGTERM, _wrap_cleanup)
 
@@ -255,6 +254,7 @@ class PortfolioRunner:
         vnncompat: bool = False,
         benchmark: str | None = None,
     ) -> dict[VerificationInstance, VerificationDataResult]:
+        """_summary_."""
         if self._vbs_mode:
             raise RuntimeError("Function not compatible with vbs_mode")
 
@@ -267,7 +267,9 @@ class PortfolioRunner:
             for instance in instances:
                 logger.info(f"Running portfolio on {str(instance)}")
 
-                futures: dict[Future, ConfiguredVerifier] = {}
+                futures: dict[
+                    Future[CompleteVerificationResult], ConfiguredVerifier
+                ] = {}
                 self._verifiers = self._get_verifiers(
                     instance, vnncompat, benchmark
                 )
@@ -281,7 +283,7 @@ class PortfolioRunner:
 
                 for future in concurrent.futures.as_completed(futures):
                     fut_cv = futures[future]
-                    result: CompleteVerificationResult = future.result()
+                    result = future.result()
 
                     if not is_solved:
                         got_solved = self._process_result(

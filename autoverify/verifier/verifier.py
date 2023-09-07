@@ -324,7 +324,7 @@ class CompleteVerifier(Verifier):
             )
 
             before_t = time.time()
-            self._timeout_event = threading.Event()
+            self._timeout_event: threading.Event | None = threading.Event()
 
             def _terminate(timeout_sec):
                 assert self._timeout_event

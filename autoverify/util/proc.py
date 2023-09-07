@@ -6,7 +6,8 @@ from typing import Iterable
 
 
 # Credits: @jfs
-def pid_exists(pid):
+def pid_exists(pid: int) -> bool:
+    """Returns if the given PID exists."""
     if pid < 0:
         return False  # NOTE: pid == 0 returns True
     try:
