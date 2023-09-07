@@ -22,7 +22,7 @@ if __name__ == "__main__":
     df["instance"] = (
         df["network"] + "," + df["property"] + "," + df["timeout"].astype(str)
     )
-    df = df[["verifier", "took", "instance"]]
+    df = df[["verifier", "took", "instance", "result"]]
     df_vbs = make_vbs_df(df)
 
     gb_verifier = df.groupby("verifier")
@@ -42,6 +42,11 @@ if __name__ == "__main__":
     print(gb_verifier["took"].sum())
     print()
 
+    print("Verification results:")
+    res_counts = gb_verifier["result"].value_counts()
+    print(res_counts)
+    print()
+
     print("=" * len(h), "\n")
 
     h = "=" * 10 + " VBS Stats " + "=" * 10
@@ -58,5 +63,9 @@ if __name__ == "__main__":
     print("Total time:")
     print(df_vbs["took"].sum())
     print()
+
+    print("Verification results:")
+    res_counts = df_vbs["result"].value_counts()
+    print(res_counts)
 
     print("=" * len(h), "\n")
