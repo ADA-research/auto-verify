@@ -161,6 +161,7 @@ def read_vnncomp_instances(  # type: ignore
     predicate: _InstancePredicate | Iterable[_InstancePredicate] | None = None,
     as_smac: Literal[False] = False,
     resolve_paths: bool = True,
+    instance_file_name: str = "instances.csv",
 ) -> list[VerificationInstance]:
     ...
 
@@ -173,6 +174,7 @@ def read_vnncomp_instances(
     predicate: _InstancePredicate | Iterable[_InstancePredicate] | None = None,
     as_smac: Literal[True] = True,
     resolve_paths: bool = True,
+    instance_file_name: str = "instances.csv",
 ) -> list[str]:
     ...
 
@@ -184,6 +186,7 @@ def read_vnncomp_instances(
     predicate: _InstancePredicate | Iterable[_InstancePredicate] | None = None,
     as_smac: bool = False,
     resolve_paths: bool = True,
+    instance_file_name: str = "instances.csv",
 ) -> list[VerificationInstance] | list[str]:
     """Read the instances of a VNNCOMP benchmark.
 
@@ -213,8 +216,7 @@ def read_vnncomp_instances(
             f"{benchmark} is not a valid benchmark in {str(vnncomp_path)}"
         )
 
-    instances = benchmark_dir / "instances.csv"
-
+    instances = benchmark_dir / instance_file_name
     verification_instances = []
 
     if predicate and not isinstance(predicate, Iterable):

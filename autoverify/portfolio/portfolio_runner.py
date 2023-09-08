@@ -230,22 +230,6 @@ class PortfolioRunner:
 
         return verifiers
 
-    def _log_result(
-        self,
-        result: CompleteVerificationResult,
-        instance: VerificationInstance,
-        cv: ConfiguredVerifier,
-        out_csv: Path | None,
-    ):
-        if out_csv:
-            self._csv_log_result(
-                out_csv,
-                result,
-                instance,
-                cv.verifier,
-                cv.configuration,
-            )
-
     def verify_instances(
         self,
         instances: Iterable[VerificationInstance],
