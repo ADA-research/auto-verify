@@ -5,6 +5,7 @@ from typing import Literal
 
 from result import Result
 
+# TODO: Enum?
 VerificationResultString = Literal["SAT", "UNSAT", "TIMEOUT", "ERR"]
 
 

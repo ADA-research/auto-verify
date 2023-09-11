@@ -2,6 +2,8 @@
 import logging
 import random
 import sys
+from collections.abc import Iterable
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -78,20 +80,45 @@ def _remap_rh_keys(
 def _get_init_kwargs(
     verifier: str, scenario: PortfolioScenario, instance: VerificationInstance
 ) -> dict[str, Any]:
-    init_kwargs: dict[str, Any] = {}  # TODO: Type
+    init_kwargs: dict[str, Any] = {}
 
     if scenario.vnn_compat_mode:
         assert scenario.benchmark is not None
         init_kwargs = inst_bench_to_kwargs(
             scenario.benchmark, verifier, instance
         )
+    elif scenario.verifier_kwargs:
+        return scenario.verifier_kwargs.get(verifier, {})
 
     return init_kwargs
+
+
+# HACK:
+def _get_simplified_network(network: Path) -> Path:
+    _SIMPLIFIED_FOLDER_NAME = "onnx_simplified"
+    simplified_nets_dir = network.parent.parent / _SIMPLIFIED_FOLDER_NAME
+    return simplified_nets_dir / network.name
+
+
+def _prep_instance(
+    instance: str, verifier: str, uses_simplified_network: Iterable[str] | None
+) -> str:
+    if not uses_simplified_network or verifier not in uses_simplified_network:
+        return instance
+
+    verif_inst = VerificationInstance.from_str(instance)
+    simple_net = _get_simplified_network(verif_inst.network)
+    verif_inst = VerificationInstance(
+        simple_net, verif_inst.property, verif_inst.timeout
+    )
+
+    return verif_inst.as_smac_instance()
 
 
 # TODO: Refactor this to use a more Strategy-like pattern
 # Should be able to pass different strategies for components
 # such as the configurator and updater
+# Maybe capture this under a more general
 class Hydra:
     """_summary_."""
 
@@ -124,19 +151,19 @@ class Hydra:
         logger.info(
             f"Total cost after iteration {self._iter}"
             f" = {pf.get_total_cost():.2f}, mean cost = "
-            f"{pf.get_mean_cost():.2f}"
+            f"{pf.get_mean_cost():.2f}, median cost = "
             f"{pf.get_median_cost():.2f}"
         )
         logger.info(f"Current portfolio:\n{pf.str_compact()}")
 
         # TODO: Who in the PF does this best cost belong to?
-        logger.info("Cost per instance:")
+        logger.debug("Cost per instance:")
         for inst, cost in pf.get_all_costs().items():
             s = inst.split(",")
             inst = s[0].split("/")[-1] + "::" + s[1].split("/")[-1]
-            logger.info(f"{inst} = {cost}")
+            logger.debug(f"{inst} = {cost}")
 
-        logger.info(">" * 80)
+        logger.debug(">" * 80)
 
     def tune_portfolio(self) -> Portfolio:
         """_summary_."""
@@ -164,7 +191,7 @@ class Hydra:
         new_configs: list[tuple[Configuration, RunHistory]] = []
 
         for i in range(self._scenario.configs_per_iter):
-            logger.info(f"Configuration iteration {i}")
+            logger.info(f"Configurator iteration {i}")
 
             run_name = f"pick_{self._iter}_{i}"
             logger.info("Picking verifier")
@@ -192,6 +219,14 @@ class Hydra:
             seed += 1  # silence warning
             verifier = verifiers[config["index"]]
             assert isinstance(verifier, str)
+
+            print("<" * 40)
+            print(verifier)
+            print(instance)
+            instance = _prep_instance(
+                instance, verifier, self._scenario.uses_simplified_network
+            )
+            print("<" * 40)
 
             verifier_class = verifier_from_name(verifier)
             init_kwargs = _get_init_kwargs(
@@ -292,6 +327,10 @@ class Hydra:
 
         def hydra_tf(config: Configuration, instance: str, seed: int) -> float:
             seed += 1  # silence warning
+
+            instance = _prep_instance(
+                instance, verifier, self._scenario.uses_simplified_network
+            )
 
             init_kwargs = _get_init_kwargs(
                 name, self._scenario, VerificationInstance.from_str(instance)

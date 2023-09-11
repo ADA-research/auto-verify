@@ -33,9 +33,10 @@ class PortfolioScenario:
     """_summary_."""
 
     verifiers: Sequence[str]
+    # NOTE: Should `resources` be optional?
     resources: list[tuple[str, int, int]]
     instances: Sequence[VerificationInstance]
-    length: int
+    length: int  # TODO: Rename to max_length?
     seconds_per_iter: float
 
     # Optional
@@ -47,6 +48,8 @@ class PortfolioScenario:
     output_dir: Path | None = None
     vnn_compat_mode: bool = False
     benchmark: str | None = None
+    verifier_kwargs: dict[str, dict[str, Any]] | None = None
+    uses_simplified_network: Iterable[str] | None = None
 
     def __post_init__(self):
         """_summary_."""
@@ -73,6 +76,12 @@ class PortfolioScenario:
             if not self.benchmark:
                 raise ValueError("Use a benchmark name if vnn_compat_mode=True")
 
+        if self.vnn_compat_mode and self.verifier_kwargs:
+            raise ValueError(
+                "Cannot use vnn_compat_mode and "
+                "verifier_kwargs at the same time."
+            )
+
         self.n_iters = math.ceil(self.length / self.added_per_iter)
         self._verify_resources()
 
@@ -87,6 +96,12 @@ class PortfolioScenario:
                 raise ValueError(f"{r[0]} in resources but not in verifiers.")
 
             seen.add(r[0])
+
+        for v in self.verifiers:
+            if v not in seen:
+                raise ValueError(
+                    f"Verifier '{v}' in verifiers but not in resources."
+                )
 
         if self.resource_strategy == ResourceStrategy.Auto:
             for r in self.resources:
