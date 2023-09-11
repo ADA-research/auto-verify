@@ -112,7 +112,8 @@ def _prep_instance(
         simple_net, verif_inst.property, verif_inst.timeout
     )
 
-    return verif_inst.as_smac_instance()
+    # str() becauase mypy thinks its Any (?????)
+    return str(verif_inst.as_smac_instance())
 
 
 # TODO: Refactor this to use a more Strategy-like pattern

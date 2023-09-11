@@ -22,7 +22,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--check_versions",
         action="store_true",
-        help="""Check if the commit hash for each installed verifier 
+        help="""Check if the commit hash for each installed verifier
         is the latest commit hash.""",
     )
 
