@@ -279,7 +279,7 @@ class CompleteVerifier(Verifier):
             if len(line) == 0 or line.isspace():
                 continue
 
-            # TODO: Why does taskset not work with `source` and `conda`?
+            # HACK: Why does taskset not work with `source` and `conda`?
             if line.startswith("source") or line.startswith("conda"):
                 lines.append(line)
             else:
@@ -366,7 +366,7 @@ class CompleteVerifier(Verifier):
                 result,  # type: ignore
                 took_t,
                 counter_example,
-                "",  # TODO: Remove err field; we pipe it to stdout
+                "",  # TODO: Remove err field; its piped it to stdout
                 output_str,
             )
 

@@ -13,6 +13,7 @@ import numpy as np
 from ConfigSpace import Configuration, ConfigurationSpace
 
 from autoverify.util.instances import verification_instances_to_smac_instances
+from autoverify.util.proc import cpu_count
 from autoverify.util.resource_strategy import ResourceStrategy
 from autoverify.util.smac import index_features
 from autoverify.util.verification_instance import VerificationInstance
@@ -230,6 +231,36 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
             raise ValueError(f"{cv} is not in the portfolio")
 
         self._pf_set.discard(cv)
+
+    def reallocate_resources(self, strategy: ResourceStrategy):
+        """Realloacte based on current contents and given strategy."""
+        if strategy != ResourceStrategy.Auto:
+            raise NotImplementedError(
+                "Given `ResourceStrategy` is not supported yet."
+            )
+
+        # NOTE: Should put this alloc stuff in a function
+        # its also used somewhere in resources.py iirc
+        n_cores = cpu_count()
+        cores_per = n_cores // len(self)
+        cores_remainder = n_cores % len(self)
+
+        for cv in self:
+            verifier = cv.verifier
+            resources = cv.resources
+            config = cv.configuration
+
+            extra_core = 0
+            if cores_remainder > 0:
+                extra_core = 1
+                cores_remainder -= 1
+
+            new_resources = (
+                (cores_per + extra_core, resources[1]) if resources else None
+            )
+
+            self.discard(cv)
+            self.add(ConfiguredVerifier(verifier, config, new_resources))
 
     def to_json(self, out_json_path: Path):
         """Write the portfolio in JSON format to the specified path."""

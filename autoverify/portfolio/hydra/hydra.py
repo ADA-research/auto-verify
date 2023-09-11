@@ -109,7 +109,7 @@ def _prep_instance(
     verif_inst = VerificationInstance.from_str(instance)
     simple_net = _get_simplified_network(verif_inst.network)
     verif_inst = VerificationInstance(
-        simple_net, verif_inst.property, verif_inst.timeout
+        simple_net, verif_inst.property, 10  # , verif_inst.timeout
     )
 
     # str() becauase mypy thinks its Any (?????)
@@ -183,6 +183,11 @@ class Hydra:
                 logging.info(f"Stopping in iteration {self._iter}")
                 break
 
+        # If the length doesnt match the expected length, the cores are
+        # re-allocated to match the available resources. This is a little
+        # dodgy since they were not specifically evaluated/tuned on this
+        # amount of cores but its the simplest solution for now.
+        portfolio.reallocate_resources(self._scenario.resource_strategy)
         return portfolio
 
     def _configurator(
