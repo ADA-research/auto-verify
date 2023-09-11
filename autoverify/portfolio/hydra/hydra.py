@@ -221,13 +221,9 @@ class Hydra:
             verifier = verifiers[config["index"]]
             assert isinstance(verifier, str)
 
-            print("<" * 40)
-            print(verifier)
-            print(instance)
             instance = _prep_instance(
                 instance, verifier, self._scenario.uses_simplified_network
             )
-            print("<" * 40)
 
             verifier_class = verifier_from_name(verifier)
             init_kwargs = _get_init_kwargs(
