@@ -1,4 +1,6 @@
 """_summary_."""
+from __future__ import annotations
+
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -65,3 +67,12 @@ class VerificationInstance:
         )
 
         return [net, prop, str(self.timeout)]
+
+    # HACK: Assuming some names and layouts here...
+    def as_simplified_network(self) -> VerificationInstance:
+        """_summary_."""
+        simplified_nets_dir = self.network.parent.parent / "onnx_simplified"
+
+        return VerificationInstance(
+            simplified_nets_dir / self.network.name, self.property, self.timeout
+        )

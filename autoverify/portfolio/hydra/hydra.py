@@ -109,7 +109,7 @@ def _prep_instance(
     verif_inst = VerificationInstance.from_str(instance)
     simple_net = _get_simplified_network(verif_inst.network)
     verif_inst = VerificationInstance(
-        simple_net, verif_inst.property, 10  # , verif_inst.timeout
+        simple_net, verif_inst.property, verif_inst.timeout
     )
 
     # str() becauase mypy thinks its Any (?????)
@@ -157,14 +157,13 @@ class Hydra:
         )
         logger.info(f"Current portfolio:\n{pf.str_compact()}")
 
-        # TODO: Who in the PF does this best cost belong to?
-        logger.debug("Cost per instance:")
+        logger.info("Cost per instance:")
         for inst, cost in pf.get_all_costs().items():
             s = inst.split(",")
             inst = s[0].split("/")[-1] + "::" + s[1].split("/")[-1]
-            logger.debug(f"{inst} = {cost}")
+            logger.info(f"{inst} = {cost}")
 
-        logger.debug(">" * 80)
+        logger.info(">" * 80)
 
     def tune_portfolio(self) -> Portfolio:
         """_summary_."""
@@ -177,6 +176,7 @@ class Hydra:
             new_configs = self._configurator(portfolio)
             self._updater(portfolio, new_configs)
 
+            print("lalal log die iter siu")
             self._log_iter(portfolio)
 
             if self._scenario.stop_early and self._stop:
@@ -220,6 +220,11 @@ class Hydra:
             return random.choice(self._scenario.verifiers)
 
         verifiers: list[str] = self._ResourceTracker.get_possible()
+
+        # NOTE: What if len == 0?
+        if len(verifiers) == 1:
+            logging.info(f"Only 1 possible verifier left ({verifiers[0]})")
+            return verifiers[0]
 
         def hydra_tf(config: Configuration, instance: str, seed: int) -> float:
             seed += 1  # silence warning
@@ -368,7 +373,9 @@ class Hydra:
         for _, rh in new_configs:
             self._cost_matrix.update_matrix(rh)
 
+        # TODO: Select the best performing configuration
         cfg = new_configs[0][0]
+
         # ConfigSpace name is optional, but we require it to
         # make a distinction between the different verifiers
         name = cfg.config_space.name

@@ -41,7 +41,7 @@ class PortfolioScenario:
     seconds_per_iter: float
 
     # Optional
-    configs_per_iter: int = 2
+    configs_per_iter: int = 1
     alpha: float = 0.5  # tune/pick split
     added_per_iter: int = 1
     stop_early: bool = True
@@ -54,7 +54,7 @@ class PortfolioScenario:
 
     def __post_init__(self):
         """_summary_."""
-        if self.added_per_iter > 1:
+        if self.added_per_iter > 1 or self.configs_per_iter > 1:
             raise ValueError(
                 "Adding more than 1 config per iter not supported yet."
             )
@@ -285,7 +285,7 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
         config_space_map: Mapping[str, ConfigurationSpace] | None = None,
     ) -> Portfolio:
         """Instantiate a new Portfolio class from a JSON file."""
-        with open(json_file) as f:
+        with open(json_file.expanduser().resolve()) as f:
             pf_json = json.load(f)
 
         pf = Portfolio()
@@ -321,3 +321,7 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
             )
 
         return "\n".join(cvs)
+
+    def dump_costs(self):
+        for instance, cost in self._costs.items():
+            print(instance, cost)

@@ -38,6 +38,8 @@ def _get_verifier(
     cv: ConfiguredVerifier,
     vnncompat: bool,
     benchmark: str | None,
+    verifier_kwargs: dict[str, dict[str, Any]] | None = None,
+    uses_simplified_networ: Iterable[str] | None = None,
 ) -> CompleteVerifier:
     if vnncompat:
         assert benchmark and cv.resources
@@ -45,13 +47,10 @@ def _get_verifier(
             benchmark, instance, cv.verifier, to_allocation(cv.resources)
         )
     else:
-        if cv.resources:
-            v = verifier_from_name(cv.verifier)(
-                cpu_gpu_allocation=to_allocation(cv.resources)
-            )
-        else:
-            v = verifier_from_name(cv.verifier)()
-
+        alloc = to_allocation(cv.resources) if cv.resources else None
+        kwargs = verifier_kwargs or {}
+        kwargs = kwargs.get(cv.verifier, {})
+        v = verifier_from_name(cv.verifier)(cpu_gpu_allocation=alloc, **kwargs)
         assert isinstance(v, CompleteVerifier)
         return v
 
@@ -218,13 +217,26 @@ class PortfolioRunner:
 
         results[cv][instance] = cost
 
+    # TODO: Arg types
     def _get_verifiers(
-        self, instance, vnncompat, benchmark
+        self,
+        instance,
+        vnncompat,
+        benchmark,
+        verifier_kwargs,
+        uses_simplified_network,
     ) -> dict[ConfiguredVerifier, CompleteVerifier]:
         verifiers: dict[ConfiguredVerifier, CompleteVerifier] = {}
 
         for cv in self._portfolio:
-            v = _get_verifier(instance, cv, vnncompat, benchmark)
+            v = _get_verifier(
+                instance,
+                cv,
+                vnncompat,
+                benchmark,
+                verifier_kwargs,
+                uses_simplified_network,
+            )
             assert isinstance(v, CompleteVerifier)
             verifiers[cv] = v
 
@@ -237,6 +249,8 @@ class PortfolioRunner:
         out_csv: Path | None = None,
         vnncompat: bool = False,
         benchmark: str | None = None,
+        verifier_kwargs: dict[str, dict[str, Any]] | None = None,
+        uses_simplified_network: Iterable[str] | None = None,
     ) -> dict[VerificationInstance, VerificationDataResult]:
         """_summary_."""
         if self._vbs_mode:
@@ -255,11 +269,21 @@ class PortfolioRunner:
                     Future[CompleteVerificationResult], ConfiguredVerifier
                 ] = {}
                 self._verifiers = self._get_verifiers(
-                    instance, vnncompat, benchmark
+                    instance,
+                    vnncompat,
+                    benchmark,
+                    verifier_kwargs,
+                    uses_simplified_network,
                 )
                 is_solved = False
 
                 for cv in self._portfolio:
+                    if (
+                        uses_simplified_network
+                        and cv.verifier in uses_simplified_network
+                    ):
+                        instance = instance.as_simplified_network()
+
                     future = executor.submit(
                         self._verifiers[cv].verify_instance, instance
                     )
