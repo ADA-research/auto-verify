@@ -48,6 +48,7 @@ class AbCrown(CompleteVerifier):
     def contexts(self) -> list[ContextManager[None]]:
         # TODO: Narrow the pkill_match_list patterns further. People may be
         # running scripts called 'abcrown.py'
+        # Ideally just keep track of PIDs rather than pkill name matching
         return [
             cwd(self.tool_path / "complete_verifier"),
             pkill_matches(["python abcrown.py"]),

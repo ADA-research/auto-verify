@@ -341,6 +341,7 @@ class CompleteVerifier(Verifier):
             t.start()
 
             assert process.stdout
+
             for line in iter(process.stdout.readline, ""):
                 output_lines.append(line)
 

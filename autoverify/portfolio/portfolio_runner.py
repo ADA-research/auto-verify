@@ -39,7 +39,7 @@ def _get_verifier(
     vnncompat: bool,
     benchmark: str | None,
     verifier_kwargs: dict[str, dict[str, Any]] | None = None,
-    uses_simplified_networ: Iterable[str] | None = None,
+    cv_alloc: dict[ConfiguredVerifier, tuple[int, int, int]] | None = None,
 ) -> CompleteVerifier:
     if vnncompat:
         assert benchmark and cv.resources
@@ -47,11 +47,17 @@ def _get_verifier(
             benchmark, instance, cv.verifier, to_allocation(cv.resources)
         )
     else:
-        alloc = to_allocation(cv.resources) if cv.resources else None
+        if cv_alloc:
+            alloc = cv_alloc[cv]
+        else:
+            alloc = to_allocation(cv.resources) if cv.resources else None
+
         kwargs = verifier_kwargs or {}
         kwargs = kwargs.get(cv.verifier, {})
+
         v = verifier_from_name(cv.verifier)(cpu_gpu_allocation=alloc, **kwargs)
         assert isinstance(v, CompleteVerifier)
+
         return v
 
 
@@ -224,7 +230,6 @@ class PortfolioRunner:
         vnncompat,
         benchmark,
         verifier_kwargs,
-        uses_simplified_network,
     ) -> dict[ConfiguredVerifier, CompleteVerifier]:
         verifiers: dict[ConfiguredVerifier, CompleteVerifier] = {}
 
@@ -235,7 +240,7 @@ class PortfolioRunner:
                 vnncompat,
                 benchmark,
                 verifier_kwargs,
-                uses_simplified_network,
+                self._allocation,
             )
             assert isinstance(v, CompleteVerifier)
             verifiers[cv] = v
@@ -273,7 +278,6 @@ class PortfolioRunner:
                     vnncompat,
                     benchmark,
                     verifier_kwargs,
-                    uses_simplified_network,
                 )
                 is_solved = False
 
