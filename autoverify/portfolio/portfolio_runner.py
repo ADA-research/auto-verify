@@ -286,10 +286,12 @@ class PortfolioRunner:
                         uses_simplified_network
                         and cv.verifier in uses_simplified_network
                     ):
-                        instance = instance.as_simplified_network()
+                        target_instance = instance.as_simplified_network()
+                    else:
+                        target_instance = instance
 
                     future = executor.submit(
-                        self._verifiers[cv].verify_instance, instance
+                        self._verifiers[cv].verify_instance, target_instance
                     )
                     futures[future] = cv
 
