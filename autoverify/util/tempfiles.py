@@ -2,10 +2,10 @@
 import atexit
 import json
 import tempfile
+from pathlib import Path
 from typing import IO, Any
 
 import yaml
-from pandas.io.common import Path
 
 _tempfiles_to_clean: list[str] = []
 

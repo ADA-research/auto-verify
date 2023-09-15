@@ -350,7 +350,7 @@ class CompleteVerifier(Verifier):
             took_t = time.time() - before_t
             self._timeout_event.set()
 
-            output_str = "\n".join(output_lines)
+            output_str = "".join(output_lines)
             counter_example: str | None = None
 
             if result != "TIMEOUT":

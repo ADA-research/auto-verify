@@ -232,7 +232,9 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
 
         self._pf_set.discard(cv)
 
-    def reallocate_resources(self, strategy: ResourceStrategy):
+    def reallocate_resources(
+        self, strategy: ResourceStrategy = ResourceStrategy.Auto
+    ):
         """Realloacte based on current contents and given strategy."""
         if strategy != ResourceStrategy.Auto:
             raise NotImplementedError(
@@ -240,7 +242,6 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
             )
 
         # NOTE: Should put this alloc stuff in a function
-        # its also used somewhere in resources.py iirc
         n_cores = cpu_count()
         cores_per = n_cores // len(self)
         cores_remainder = n_cores % len(self)
