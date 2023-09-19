@@ -261,3 +261,18 @@ def read_all_vnncomp_instances(
         instances[path.name] = read_vnncomp_instances(path.name, vnncomp_path)
 
     return instances
+
+
+def unique_networks(
+    instances: Iterable[VerificationInstance],
+) -> list[VerificationInstance]:
+    """Utility function to keep only unique networks."""
+    unique = []
+    seen: set[str] = set()
+
+    for instance in instances:
+        if instance.network.name not in seen:
+            unique.append(instance)
+        seen.add(instance.network.name)
+
+    return unique

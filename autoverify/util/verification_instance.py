@@ -16,9 +16,9 @@ class VerificationInstance:
     timeout: int
 
     @classmethod
-    def from_str(cls, smac_instance: str):
+    def from_str(cls, str_instance: str):
         """_summary_."""
-        network, property, timeout = smac_instance.split(",")
+        network, property, timeout = str_instance.split(",")
         return cls(Path(network), Path(property), int(timeout))
 
     def __hash__(self):
