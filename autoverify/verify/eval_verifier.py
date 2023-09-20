@@ -149,6 +149,7 @@ def eval_verifier(
     config: Configuration | Path | None,
     *,
     warmup: bool = True,
+    use_simplified_network: bool = False,
     output_csv_path: Path | None = None,
 ) -> dict[VerificationInstance, VerificationDataResult]:
     """_summary_."""
@@ -156,6 +157,10 @@ def eval_verifier(
 
     if output_csv_path is not None:
         init_verification_result_csv(output_csv_path)
+
+    if use_simplified_network:
+        for i, instance in enumerate(instances):
+            instances[i] = instance.as_simplified_network()
 
     if warmup:
         _warmup(verifier, instances[0], config)
