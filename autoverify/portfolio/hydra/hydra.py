@@ -176,7 +176,6 @@ class Hydra:
             new_configs = self._configurator(portfolio)
             self._updater(portfolio, new_configs)
 
-            print("lalal log die iter siu")
             self._log_iter(portfolio)
 
             if self._scenario.stop_early and self._stop:
