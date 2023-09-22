@@ -3,6 +3,7 @@ import logging
 import shlex
 import shutil
 import subprocess
+from collections.abc import Iterable
 from subprocess import CalledProcessError
 
 from result import Err, Ok, Result
@@ -84,7 +85,7 @@ def _install_verifier(verifier: str) -> Result[None, str]:
         return Err("Exception during installation")
 
 
-def try_install_verifiers(verifiers: list[str]):
+def try_install_verifiers(verifiers: Iterable[str]):
     """_summary_."""
     _create_base_dirs()
 
@@ -99,7 +100,7 @@ def try_install_verifiers(verifiers: list[str]):
             print(f"Error installing {verifier}: {install_result.err()}")
 
 
-def try_uninstall_verifiers(verifiers: list[str]):
+def try_uninstall_verifiers(verifiers: Iterable[str]):
     """_summary_."""
     for verifier in verifiers:
         print(f"\nUninstalling {verifier}...")

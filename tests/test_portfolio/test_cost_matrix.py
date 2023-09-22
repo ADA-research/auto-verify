@@ -1,6 +1,7 @@
 import pytest
 from ConfigSpace import ConfigurationSpace
 from smac import RunHistory
+from smac.runhistory.enumerations import StatusType
 
 from autoverify.portfolio.hydra.cost_matrix import CostMatrix, InstanceCost
 
@@ -49,10 +50,11 @@ def test_update_cost_matrix(simple_configspace: ConfigurationSpace):
     rh.add(cfg1, 105.0, instance="foo")
     rh.add(cfg2, 200.0, instance="bar")
     rh.add(cfg2, 200.0, instance="foo")
+    rh.add(cfg2, 1000.0, instance="foo_timeout", status=StatusType.TIMEOUT)
     cm.update_matrix(rh)
 
     assert cm[cfg1] == {"foo": 40.0, "bar": 20.0}
-    assert cm[cfg2] == {"foo": 200.0, "bar": 110.0}
+    assert cm[cfg2] == {"foo": 200.0, "bar": 110.0, "foo_timeout": 10000.0}
 
 
 @pytest.fixture
@@ -83,7 +85,7 @@ def test_vbs_cost(small_cost_matrix: CostMatrix):
 
 
 def test_vbs_cost2(simple_configspace: ConfigurationSpace):
-    cfg1, cfg2, cfg3 = simple_configspace.sample_configuration(3)
+    cfg1, cfg2, cfg3, cfg4 = simple_configspace.sample_configuration(4)
 
     rh = RunHistory()
     rh.add(cfg1, 10.0, instance="foo", seed=0)
@@ -96,3 +98,33 @@ def test_vbs_cost2(simple_configspace: ConfigurationSpace):
     assert cm.vbs_cost([cfg1, cfg2, cfg3], ["foo"]) == {"foo": 5.0}
     assert cm.vbs_cost([cfg1, cfg2], ["foo"]) == {"foo": 5.0}
     assert cm.vbs_cost([cfg1, cfg3], ["foo"]) == {"foo": 10.0}
+
+    with pytest.raises(RuntimeError):
+        # This config should not be in the cost matrix
+        cm.vbs_cost([cfg4], ["foo"])
+
+
+def test_cost_matrix_dunders(
+    small_cost_matrix: CostMatrix, simple_configspace: ConfigurationSpace
+):
+    new_config = simple_configspace.sample_configuration()
+    small_cost_matrix[new_config] = {"foo": 1000, "bar": 1000}
+    assert small_cost_matrix[new_config] == {"foo": 1000, "bar": 1000}
+
+    del small_cost_matrix[new_config]
+    assert new_config not in small_cost_matrix
+
+    assert len(small_cost_matrix) == 2
+    assert repr(small_cost_matrix) == str(small_cost_matrix)
+
+
+def test_instance_cost_dunders():
+    ic = InstanceCost()
+    ic["foo"] = 20.0
+
+    assert ic["foo"] == 20.0
+    assert len(ic) == 1
+    assert repr(ic) == str(ic)
+
+    del ic["foo"]
+    assert "foo" not in ic

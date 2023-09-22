@@ -3,6 +3,23 @@ from pathlib import Path
 
 import pandas as pd
 
+
+def transform_df(df: pd.DataFrame) -> pd.DataFrame:
+    df["instance"] = (
+        df["network"] + "," + df["property"] + "," + df["timeout"].astype(str)
+    )
+    df = df[["verifier", "took", "instance", "result", "timeout"]]
+    err_mask = df["result"] == "ERR"
+    df.loc[err_mask, "took"] = df.loc[err_mask, "timeout"]
+
+    return df
+
+
+def setup_pf_df(df: pd.DataFrame) -> pd.DataFrame:
+    result_df = df.loc[df.groupby("instance", sort=False)["took"].idxmin()]
+    return result_df
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -12,6 +29,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     csv_path = args.csv_path
     df: pd.DataFrame = pd.read_csv(csv_path)
+    df = transform_df(df)
+    df = setup_pf_df(df)
 
     header = f"========== Stats for {csv_path.name} ==========\n"
     print(header)
@@ -39,13 +58,13 @@ if __name__ == "__main__":
 
     print("=" * len(header))
 
-    for _, row in df.iterrows():
-        net = Path(row["network"]).name  # type: ignore
-        prop = Path(row["property"]).name  # type: ignore
-        to = row["timeout"]
-
-        print(
-            f"[[{net} :: {prop} :: {to}]] "
-            f"by {row['verifier']} in {row['took']:.2f} "
-            f"result = {row['result']}"
-        )
+    # for _, row in df.iterrows():
+    #     net = Path(row["network"]).name  # type: ignore
+    #     prop = Path(row["property"]).name  # type: ignore
+    #     to = row["timeout"]
+    #
+    # print(
+    #     f"[[{net} :: {prop} :: {to}]] "
+    #     f"by {row['verifier']} in {row['took']:.2f} "
+    #     f"result = {row['result']}"
+    # )

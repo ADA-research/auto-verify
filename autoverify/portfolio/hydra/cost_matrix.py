@@ -111,7 +111,6 @@ class CostMatrix(MutableMapping[Configuration, InstanceCost]):
         vbs_cost: dict[str, float] = {inst: np.inf for inst in instances}
 
         for config in configs:
-            # TODO: Remove; this is for debugging
             if config not in self.matrix:
                 raise RuntimeError(f"Config {config} not in matrix")
 

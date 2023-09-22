@@ -33,9 +33,9 @@ def get_all_complete_verifier_names() -> list[str]:
     return [
         Nnenum.name,
         AbCrown.name,
-        MnBab.name,
         OvalBab.name,
         Verinet.name,
+        # MnBab.name,
     ]
 
 
