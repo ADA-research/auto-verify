@@ -83,6 +83,137 @@ if __name__ == "__main__":
             print(result.unwrap_err().stdout)
 ```
 
-## Parallel Portfolios
+## Algorithm Configuration
 
-TODO.
+Each of the verification tools comes equipped with a [`ConfigurationSpace`](https://github.com/automl/ConfigSpace), which can be used to sample Configuration for a verification tool. For example:
+
+```py
+from autoverify.verifier import Nnenum
+
+if __name__ == "__main__":
+    verifier = Nnenum()
+    config = verifier.config_space.sample_configuration()
+    print(config)
+```
+
+### SMAC Example
+
+We can apply algorithm configuration techniques (or hyperparameter optimization) using [SMAC](https://github.com/automl/SMAC3). In the example below, we try to find a configuration for AB-CROWN on the first 10 instances of the `mnist_fc` benchmark from VNNCOMP2022.
+
+```py
+import sys
+from pathlib import Path
+
+from ConfigSpace import Configuration
+from result import Err, Ok
+from smac import AlgorithmConfigurationFacade, Scenario
+
+from autoverify.util.instances import (
+    read_vnncomp_instances,
+    verification_instances_to_smac_instances,
+)
+from autoverify.util.smac import index_features
+from autoverify.util.verification_instance import VerificationInstance
+from autoverify.verifier import AbCrown
+
+mnist = read_vnncomp_instances("mnist_fc", vnncomp_path=Path("../benchmark/vnncomp2022"))[:10]
+verifier = AbCrown()
+
+
+def target_function(config: Configuration, instance: str, seed: int):
+    seed += 1  # Mute unused var warnings; (cant rename to _)
+    verif_inst = VerificationInstance.from_str(instance)
+    result = verifier.verify_instance(verif_inst, config=config)
+
+    if isinstance(result, Ok):
+        return result.unwrap().took  # Cost is the time verification took
+    elif isinstance(result, Err):
+        raise Exception  # SMAC handles exception by setting cost to `inf`
+
+
+if __name__ == "__main__":
+    cfg_space = verifier.config_space
+    name = verifier.name
+    instances = verification_instances_to_smac_instances(mnist)
+
+    scenario = Scenario(
+        cfg_space,
+        name="ab_tune",
+        instances=instances,
+        instance_features=index_features(instances),
+        walltime_limit=600,
+        output_directory=Path("ab_tune_out"),
+        n_trials=sys.maxsize,  # Using walltime limit instead
+    )
+
+    smac = AlgorithmConfigurationFacade(
+        scenario, target_function, overwrite=True
+    )
+
+    inc = smac.optimize()
+    print(inc)
+```
+
+For more examples on how to use SMAC, please refer to the [SMAC documentation](https://automl.github.io/SMAC3/main/).
+
+### Parallel Portfolios
+
+!!! note
+
+    Custom verification tools are not yet supported for parallel portfolios.
+
+#### Constructiong a Portfolio
+
+Portfolios can be constructed as shown below. In this example, we try construct a portfolio using the `Hydra` algorithm on the `mnist_fc` benchmark from VNNCOMP2022. We include four verification tools that are able to be included and give the procedure a walltime limit of 24 hours.
+
+```py
+from pathlib import Path
+
+from autoverify.portfolio import Hydra, PortfolioScenario
+from autoverify.util.instances import read_vnncomp_instances
+
+benchmark = read_vnncomp_instances("mnist_fc", vnncomp_path=Path("../benchmark/vnncomp2022"))
+
+if __name__ == "__main__":
+    pf_scenario = PortfolioScenario(
+        ["nnenum", "abcrown", "ovalbab", "verinet"],
+        [
+            ("nnenum", 0, 0),
+            ("verinet", 0, 1),
+            ("abcrown", 0, 1),
+            ("ovalbab", 0, 1),
+        ],
+        benchmark,
+        4,
+        (60 * 60 * 24) / 4,
+        alpha=0.9,
+        output_dir=Path("PF_mnist_fc"),
+    )
+
+    hydra = Hydra(pf_scenario)
+    pf = hydra.tune_portfolio()
+    pf.to_json(Path("mnist_fc_portfolio.json"))
+```
+
+#### Running a Portfolio
+
+Portfolios can be read from a `json` or by specifying the verification tools in Python code. Below is an example of how to run a portfolio in parallel on some instances. Lets take the portfolio we created in the previous example and run it on the same benchmark.
+
+```py
+from pathlib import Path
+
+from autoverify.portfolio import Portfolio, PortfolioRunner
+from autoverify.util.instances import read_vnncomp_instances
+
+
+benchmark = read_vnncomp_instances("mnist_fc", vnncomp_path=Path("../benchmark/vnncomp2022"))
+
+if __name__ == "__main__":
+    mnist_pf = Portfolio.from_json(Path("mnist_fc_portfolio.json"))
+    pf_runner = PortfolioRunner(mnist_pf)
+
+    pf_runner.verify_instances(
+        benchmark,
+        out_csv=Path("PF_mnist_fc_results.csv"),
+    )
+```

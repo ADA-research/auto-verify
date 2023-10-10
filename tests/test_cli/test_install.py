@@ -2,13 +2,8 @@ from pathlib import Path
 
 import pytest
 from pytest import CaptureFixture, MonkeyPatch
-from result import Ok
 
-from autoverify.cli.install.install import (
-    VERIFIER_DIR,
-    _install_verifier,
-    try_install_verifiers,
-)
+from autoverify.cli.install.install import try_install_verifiers
 
 
 @pytest.fixture
