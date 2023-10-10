@@ -36,7 +36,7 @@ OvalBabConfigspace.add_hyperparameters(
             [False],
             default=False,
         ),
-        Categorical(  # TODO: Values
+        Categorical(
             "bounding__nets1__type",
             ["alpha-crown", "beta-crown"],
             default="beta-crown",
@@ -61,17 +61,17 @@ OvalBabConfigspace.add_hyperparameters(
             "bounding__nets2__bounding_algorithm",
             "dual-anderson",
         ),
-        Categorical(  # TODO: Values
+        Categorical(
             "bounding__nets2__params__bigm",
             ["init"],
             default="init",
         ),
-        Categorical(  # TODO: Values
+        Categorical(
             "bounding__nets2__params__cut",
             ["only"],
             default="only",
         ),
-        Categorical(  # TODO: Values
+        Categorical(
             "bounding__nets2__params__bigm_algorithm",
             ["adam"],
             default="adam",
@@ -168,7 +168,7 @@ OvalBabConfigspace.add_hyperparameters(
             [True],
             default=True,
         ),
-        Categorical(  # TODO:  other values
+        Categorical(
             "ibs__tight_ib",
             ["null"],
             default="null",
@@ -184,7 +184,7 @@ OvalBabConfigspace.add_hyperparameters(
             default=False,
         ),
         # upper_bounding #######################################################
-        Categorical(  # TODO: other values
+        Categorical(
             "upper_bounding__ub_method",
             ["mi_fgsm"],
             default="mi_fgsm",
@@ -204,7 +204,7 @@ OvalBabConfigspace.add_hyperparameters(
             (50, 150),
             default=100,
         ),
-        Integer(  # TODO: Values
+        Integer(
             "upper_bounding__adv_params__check_adv",
             (1, 3),
             default=2,
@@ -220,7 +220,7 @@ OvalBabConfigspace.add_hyperparameters(
             default=True,
         ),
         # branching ############################################################
-        Categorical(  # TODO: values
+        Categorical(
             "branching__heuristic_type",
             ["FSB", "SR"],
             default="FSB",
@@ -235,13 +235,13 @@ OvalBabConfigspace.add_hyperparameters(
             ["propagation"],
             default="propagation",
         ),
-        Categorical(  # TODO: params
+        Categorical(
             "branching__bounding__params__best_among",
             ["KW__crown"],
             default="KW__crown",
         ),
         Categorical(
-            "branching__bounding__type",  # TODO: values
+            "branching__bounding__type",
             ["best_prop"],
             default="best_prop",
         ),

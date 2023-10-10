@@ -155,7 +155,7 @@ class Hydra:
             f"{pf.get_mean_cost():.2f}, median cost = "
             f"{pf.get_median_cost():.2f}"
         )
-        logger.info(f"Current portfolio:\n{pf.str_compact()}")
+        logger.info(f"Current portfolio:\n{str(pf)}")
 
         logger.info("Cost per instance:")
         for inst, cost in pf.get_all_costs().items():

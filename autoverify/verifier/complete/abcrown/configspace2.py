@@ -413,28 +413,28 @@ AbCrownConfigspaceAlt.add_conditions(
             AbCrownConfigspaceAlt["attack__pgd_order"],
             "skip",
         ),
-        # EqualsCondition(
-        #     AbCrownConfigspaceAlt["bab__cut__enabled"],
-        #     AbCrownConfigspaceAlt["general__enable_incomplete_verification"],
-        #     True,
-        # ),
-        # InCondition(
-        #     AbCrownConfigspaceAlt[
-        #         "solver__beta-crown__enable_opt_interm_bounds"
-        #     ],
-        #     AbCrownConfigspaceAlt["general__complete_verifier"],
-        #     ["mip", "bab-refine"],
-        # ),
-        # EqualsCondition(
-        #     AbCrownConfigspaceAlt["bab__pruning_in_iteration_ratio"],
-        #     AbCrownConfigspaceAlt["bab__pruning_in_iteration"],
-        #     True,
-        # ),
-        # InCondition(
-        #     AbCrownConfigspaceAlt["bab__branching__candidates"],
-        #     AbCrownConfigspaceAlt["bab__branching__method"],
-        #     ["kfsb"],
-        # ),
+        EqualsCondition(
+            AbCrownConfigspaceAlt["bab__cut__enabled"],
+            AbCrownConfigspaceAlt["general__enable_incomplete_verification"],
+            True,
+        ),
+        InCondition(
+            AbCrownConfigspaceAlt[
+                "solver__beta-crown__enable_opt_interm_bounds"
+            ],
+            AbCrownConfigspaceAlt["general__complete_verifier"],
+            ["mip", "bab-refine"],
+        ),
+        EqualsCondition(
+            AbCrownConfigspaceAlt["bab__pruning_in_iteration_ratio"],
+            AbCrownConfigspaceAlt["bab__pruning_in_iteration"],
+            True,
+        ),
+        InCondition(
+            AbCrownConfigspaceAlt["bab__branching__candidates"],
+            AbCrownConfigspaceAlt["bab__branching__method"],
+            ["kfsb"],
+        ),
     ]
 )
 
@@ -477,31 +477,31 @@ AbCrownConfigspaceAlt.add_forbidden_clauses(
         #         False,
         #     ),
         # ),
-        # ForbiddenAndConjunction(
-        #     ForbiddenEqualsClause(
-        #         AbCrownConfigspaceAlt[
-        #             "general__enable_incomplete_verification"
-        #         ],
-        #         True,
-        #     ),
-        #     ForbiddenEqualsClause(
-        #         AbCrownConfigspaceAlt["bab__branching__input_split__enable"],
-        #         True,
-        #     ),
-        # ),
-        # ForbiddenAndConjunction(
-        #     ForbiddenEqualsClause(
-        #         AbCrownConfigspaceAlt["general__complete_verifier"], "skip"
-        #     ),
-        #     ForbiddenEqualsClause(
-        #         AbCrownConfigspaceAlt[
-        #             "general__enable_incomplete_verification"
-        #         ],
-        #         False,
-        #     ),
-        #     ForbiddenEqualsClause(
-        #         AbCrownConfigspaceAlt["attack__pgd_order"], "skip"
-        #     ),
-        # ),
+        ForbiddenAndConjunction(
+            ForbiddenEqualsClause(
+                AbCrownConfigspaceAlt[
+                    "general__enable_incomplete_verification"
+                ],
+                True,
+            ),
+            ForbiddenEqualsClause(
+                AbCrownConfigspaceAlt["bab__branching__input_split__enable"],
+                True,
+            ),
+        ),
+        ForbiddenAndConjunction(
+            ForbiddenEqualsClause(
+                AbCrownConfigspaceAlt["general__complete_verifier"], "skip"
+            ),
+            ForbiddenEqualsClause(
+                AbCrownConfigspaceAlt[
+                    "general__enable_incomplete_verification"
+                ],
+                False,
+            ),
+            ForbiddenEqualsClause(
+                AbCrownConfigspaceAlt["attack__pgd_order"], "skip"
+            ),
+        ),
     ]
 )

@@ -10,12 +10,13 @@
 
 !!! UNDER CONSTRUCTION !!!
 
-
 !!! warning
 
     Auto-Verify has only been tested for Linux and will not work on MacOS and Windows.
 
 ## Getting Started
+
+### Installing Auto-Verify
 
 First of all, make install [Miniconda](TODO LINK). Miniconda is used to manage the environments of different verification tools, other environment managers will _not_ work.
 
@@ -37,8 +38,7 @@ To check if the installation was succesful, run:
 > auto-verify --version
 ```
 
-
-## Installing Verifiers
+### Installing Verification Tools
 
 Currently, Auto-Verify supports the following verifiers:
 
@@ -61,33 +61,3 @@ To uninstall a verifier, run:
 ```
 > auto-verify uninstall [verifier]
 ```
-
-
-## Verifying Properties
-
-After installing one or more verifiers, here is how to use them to verify a property. Networks should be in the [ONNX](https://github.com/onnx/onnx) format, properties in the [VNNLIB](https://www.vnnlib.org/) format.
-
-```py
-from pathlib import Path
-from result import Err, Ok
-from autoverify.verifier import AbCrown
-
-if __name__ == "__main__":
-    verifier = AbCrown()
-
-    network = Path("my_network.onnx")
-    prop = Path("my_property.vnnlib")
-
-    result = verifier.verify_property(network, prop)
-
-    if isinstance(result, Ok):
-        outcome = result.unwrap().result
-        print("Verification finished, result:", outcome)
-    elif isinstance(result, Err):
-        print("Error during verification:")
-        print(result.unwrap_err().stdout)
-```
-
-### Running VNNCOMP Benchmarks
-
-TODO.
