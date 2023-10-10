@@ -1,4 +1,4 @@
-"""_summary_."""
+"""Filters VNNCOMP style instances."""
 from typing import Callable
 
 from autoverify.util.verification_instance import VerificationInstance

@@ -10,17 +10,22 @@ from autoverify.util import add_to_average
 
 
 class InstanceCost(MutableMapping[str, float]):
-    """_summary_."""
+    """Mapping from instance to cost."""
 
     def __init__(self):
-        """_summary_."""
+        """Creates a new. empty `InstanceCost`."""
         self.store: dict[str, float] = {}
         # Map that stores the amount of values in the average cost
         # Needed for updating the average
         self._val_counts: dict[str, int] = {}
 
-    def update_cost(self, key: str, val: float, *, size: int = 1):
-        """Update the average."""
+    def update_cost(self, key: str, val: float):
+        """Update the cost of the key and value.
+
+        Arguments:
+            key: The instance.
+            val: The cost.
+        """
         if key not in self.store:
             self.store[key] = val
             self._val_counts[key] = 1
@@ -32,41 +37,40 @@ class InstanceCost(MutableMapping[str, float]):
         self._val_counts[key] += 1
 
     def __getitem__(self, key) -> float:
-        """_summary_."""
+        """Get the value at the key."""
         return self.store[key]
 
     def __setitem__(self, key, value):
-        """_summary_."""
+        """Set the value at the key."""
         self.store[key] = value
 
     def __delitem__(self, key):
-        """_summary_."""
+        """Delete the value at the key."""
         del self.store[key]
 
     def __iter__(self):
-        """_summary_."""
+        """Iterate over all costs."""
         return iter(self.store)
 
     def __len__(self):
-        """_summary_."""
+        """Get the number of instances."""
         return len(self.store)
 
     def __repr__(self):
-        """_summary_."""
+        """Repr."""
         return repr(self.store)
 
 
-# TODO: Type annotations for class functions
 class CostMatrix(MutableMapping[Configuration, InstanceCost]):
-    """_summary_."""
+    """Cost matrix of average cost per instance per configuration."""
 
     def __init__(self, *, par: int = 10):
-        """_summary_."""
+        """Create a new, empty `CostMatrix`."""
         self.matrix: dict[Configuration, InstanceCost] = {}
         self._par = par
 
     def update_matrix(self, runhistory: RunHistory):
-        """_summary_."""
+        """Update the matrix with a `RunHistory`."""
         config_instance_costs: dict[Configuration, dict[str, list[float]]] = {}
 
         for trial_key, trial_value in runhistory.items():
@@ -84,9 +88,6 @@ class CostMatrix(MutableMapping[Configuration, InstanceCost]):
             cost = trial_value.cost
             if trial_value.status == StatusType.TIMEOUT:
                 cost *= self._par
-            # # NOTE: Is this fair?
-            # elif trial_value.status == StatusType.CRASHED:
-            #     cost *= self._par
 
             if instance not in config_instance_costs[config]:
                 config_instance_costs[config][instance] = [cost]
@@ -98,16 +99,22 @@ class CostMatrix(MutableMapping[Configuration, InstanceCost]):
 
         for config, instance_costs in config_instance_costs.items():
             for instance, costs in instance_costs.items():
-                self.matrix[config].update_cost(
-                    instance, float(np.mean(costs)), size=len(costs)
-                )
+                self.matrix[config].update_cost(instance, float(np.mean(costs)))
 
     def vbs_cost(
         self,
         configs: Iterable[Configuration],
         instances: list[str],
     ) -> dict[str, float]:
-        """_summary_."""
+        """Get the virtual best solver cost.
+
+        Arguments:
+            configs: The configurations that will be considered.
+            instances: The instances that will be considered.
+
+        Returns:
+            dict[str, float]: The vbs cost for each instance.
+        """
         vbs_cost: dict[str, float] = {inst: np.inf for inst in instances}
 
         for config in configs:
@@ -123,25 +130,25 @@ class CostMatrix(MutableMapping[Configuration, InstanceCost]):
         return vbs_cost
 
     def __getitem__(self, key) -> InstanceCost:
-        """_summary_."""
+        """Get the value at the key."""
         return self.matrix[key]
 
     def __setitem__(self, key, value):
-        """_summary_."""
+        """Set the value at the key."""
         self.matrix[key] = value
 
     def __delitem__(self, key):
-        """_summary_."""
+        """Delete the value at the key."""
         del self.matrix[key]
 
     def __iter__(self):
-        """_summary_."""
+        """Iterate over the cost matrix."""
         return iter(self.matrix)
 
     def __len__(self):
-        """_summary_."""
+        """Get the number of elements in the cost matrix."""
         return len(self.matrix)
 
     def __repr__(self):
-        """_summary_."""
+        """Repr."""
         return repr(self.matrix)

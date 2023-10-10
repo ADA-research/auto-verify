@@ -251,7 +251,7 @@ def read_vnncomp_instances(
 def read_all_vnncomp_instances(
     vnncomp_path: Path,
 ) -> dict[str, list[VerificationInstance]]:
-    """_summary_."""
+    """Reads all benchmarks, see the `read_vnncomp_instances` docstring."""
     instances: dict[str, list[VerificationInstance]] = {}
 
     for path in vnncomp_path.iterdir():

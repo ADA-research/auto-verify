@@ -1,4 +1,4 @@
-"""_summary_."""
+"""VerificationInstance."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -9,7 +9,13 @@ from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 
 @dataclass(frozen=True, eq=True)
 class VerificationInstance:
-    """_summary_."""
+    """VerificationInstance class.
+
+    Attributes:
+        network: The `Path` to the network.
+        property: The `Path` to the property.
+        timeout: Maximum wallclock time.
+    """
 
     network: Path
     property: Path
@@ -17,12 +23,12 @@ class VerificationInstance:
 
     @classmethod
     def from_str(cls, str_instance: str):
-        """_summary_."""
+        """Create from a comma seperated string."""
         network, property, timeout = str_instance.split(",")
         return cls(Path(network), Path(property), int(timeout))
 
     def __hash__(self):
-        """_summary_."""
+        """Hash the VI."""
         return hash(
             (
                 self.network.expanduser().resolve(),
@@ -70,7 +76,10 @@ class VerificationInstance:
 
     # HACK: Assuming some names and layouts here...
     def as_simplified_network(self) -> VerificationInstance:
-        """_summary_."""
+        """changes the network path.
+
+        Assumes a "onnx_simplified" dir is present at the same level.
+        """
         simplified_nets_dir = self.network.parent.parent / "onnx_simplified"
 
         return VerificationInstance(

@@ -11,7 +11,7 @@ def to_allocation(resources: tuple[int, int]) -> tuple[int, int, int]:
 
 
 class ResourceTracker:
-    """_summary_."""
+    """Class to track available resources."""
 
     def __init__(
         self,
@@ -19,7 +19,12 @@ class ResourceTracker:
         *,
         strategy: ResourceStrategy | str = ResourceStrategy.Auto,
     ):
-        """_summary_."""
+        """Create a new resource tracker.
+
+        Arguments:
+            pf_scen: The PF scenario being used.
+            strategy: The resource strategy to use during alloc.
+        """
         self._verifiers = pf_scen.verifiers
         self._verifier_resources = pf_scen.resources
         self._pf_len = pf_scen.length
@@ -42,7 +47,7 @@ class ResourceTracker:
         return self._resources
 
     def get_possible(self) -> list[str]:
-        """_summary_."""
+        """Get the verifiers that still fit in the PF."""
         possible: list[str] = []
 
         if self._strategy == ResourceStrategy.Auto:
@@ -54,7 +59,7 @@ class ResourceTracker:
         return possible
 
     def deduct(self, resources: tuple[int, int]):
-        """_summary_."""
+        """Deduct resources after adding to the PF."""
         self._resources = (
             self._resources[0] - resources[0],
             self._resources[1] - resources[1],
@@ -67,7 +72,7 @@ class ResourceTracker:
         *,
         mock: bool = False,
     ) -> tuple[int, int]:
-        """_summary_."""
+        """Deduct based on the name, mock to see what would be left."""
         to_deduct: tuple[int, int] = (0, 0)
 
         for vr in self._verifier_resources:

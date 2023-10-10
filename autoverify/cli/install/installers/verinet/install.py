@@ -13,7 +13,11 @@ VerinetRepoInfo = GitRepoInfo(
 
 
 def install(install_dir: Path):
-    """_summary_."""
+    """Installs verinet.
+
+    Args:
+        install_dir: Path where ab-crown is installed.
+    """
     clone_checkout_verifier(VerinetRepoInfo, install_dir)
     copy_env_file_to(Path(__file__), install_dir)
     create_env_from_file(install_dir / "environment.yml")

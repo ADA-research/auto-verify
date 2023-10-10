@@ -23,7 +23,7 @@ def get_input_shape(onnx_file: Path) -> list[int]:
 
 
 def get_input_ouput_names(onnx_path: Path) -> tuple[list[str], list[str]]:
-    """_summary_."""
+    """Get the input and output layer node names."""
     model = onnx.load(str(onnx_path))
     output = [node.name for node in model.graph.output]
 

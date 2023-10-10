@@ -1,4 +1,4 @@
-"""_summary_."""
+"""Class to run parallel portfolio."""
 import concurrent.futures
 import logging
 import signal
@@ -65,10 +65,15 @@ def _get_verifier(
 
 
 class PortfolioRunner:
-    """_summary_."""
+    """Class to run a portfolio in parallel."""
 
     def __init__(self, portfolio: Portfolio, vbs_mode: bool = False):
-        """_summary_."""
+        """Initialize a new portfolio runner.
+
+        Arguments:
+            portfolio: The portfolio that will be run.
+            vbs_mode: If the PF will be run in VBS mode.
+        """
         self._portfolio = portfolio
         self._vbs_mode = vbs_mode
 
@@ -130,7 +135,14 @@ class PortfolioRunner:
         vnncompat: bool = False,
         benchmark: str | None = None,
     ) -> _VbsResult:
-        """_summary_."""
+        """Evaluate the PF in vbs mode.
+
+        Arguments:
+            instances: Instances to evaluate.
+            out_csv: File where the results are written to.
+            vnncompat: Use some compat kwargs.
+            benchmark: Only if vnncompat, benchmark name.
+        """
         results: _CostDict = {}
 
         if vnncompat and benchmark is None:
@@ -260,7 +272,16 @@ class PortfolioRunner:
         verifier_kwargs: dict[str, dict[str, Any]] | None = None,
         uses_simplified_network: Iterable[str] | None = None,
     ) -> dict[VerificationInstance, VerificationDataResult]:
-        """_summary_."""
+        """Run the PF in parallel.
+
+        Arguments:
+            instances: Instances to evaluate.
+            out_csv: File where the results are written to.
+            vnncompat: Use some compat kwargs.
+            benchmark: Only if vnncompat, benchmark name.
+            verifier_kwargs: Kwargs passed to verifiers.
+            uses_simplified_network: Have some verifiers use simplified nets.
+        """
         if self._vbs_mode:
             raise RuntimeError("Function not compatible with vbs_mode")
 

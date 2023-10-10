@@ -1,4 +1,4 @@
-"""_summary_."""
+"""Parallel portfolio."""
 from __future__ import annotations
 
 import datetime
@@ -22,7 +22,13 @@ from autoverify.util.verifiers import get_verifier_configspace
 
 @dataclass(frozen=True, eq=True, repr=True)
 class ConfiguredVerifier:
-    """_summary_."""
+    """Class representing an interal configured verifier.
+
+    Attributes:
+        verifier: Name of the verifier.
+        configuration: Its configuration.
+        resources: Number of cores and GPUs.
+    """
 
     verifier: str
     configuration: Configuration
@@ -31,10 +37,27 @@ class ConfiguredVerifier:
 
 @dataclass
 class PortfolioScenario:
-    """_summary_."""
+    """Scenario for constructing a parallel portfolio.
+
+    Attributes:
+        verifiers: The name of the verifiers to consider.
+        resources: How many cores and GPUs the verifiers need.
+        instances: The instances on which the PF is constructed.
+        length: The max length of the PF.
+        seconds_per_iter: Number of seconds for each Hydra iteration.
+        configs_per_iter: Number of configs each iteration.
+        alpha: Tune/Pick time split.
+        added_per_iter: Entries added to the PF per iter.
+        stop_early: Stop procedure if some early stop conditions are met.
+        resource_strategy: Strat to divide the resources.
+        output_dir: Dir where logs are stored.
+        vnn_compat_mode: Use vnn compatability for some verifiers.
+        benchmark: VNNCOMP benchmark if vnn_compat_mode is `True`.
+        verifier_kwargs: Kwargs passed to verifiers.
+        uses_simplified_network: If the network uses the dnnv simplified nets.
+    """
 
     verifiers: Sequence[str]
-    # NOTE: Should `resources` be optional?
     resources: list[tuple[str, int, int]]
     instances: Sequence[VerificationInstance]
     length: int  # TODO: Rename to max_length?
@@ -53,7 +76,7 @@ class PortfolioScenario:
     uses_simplified_network: Iterable[str] | None = None
 
     def __post_init__(self):
-        """_summary_."""
+        """Validate the PF scenario."""
         if self.added_per_iter > 1 or self.configs_per_iter > 1:
             raise ValueError(
                 "Adding more than 1 config per iter not supported yet."
@@ -117,7 +140,11 @@ class PortfolioScenario:
             )
 
     def get_smac_scenario_kwargs(self) -> dict[str, Any]:
-        """_summary_."""
+        """Return the SMAC scenario kwargs as a dict.
+
+        Returns:
+            dict[str, Any]: The SMAC scenario as a dict.
+        """
         assert self.output_dir is not None  # This is set in `__post_init__`
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -130,34 +157,38 @@ class PortfolioScenario:
         }
 
     def get_smac_instances(self) -> list[str]:
-        """Get the instances of the scenario as SMAC instances."""
+        """Get the instances of the scenario as SMAC instances.
+
+        Returns:
+            list[str]: The SMAC instances.
+        """
         return verification_instances_to_smac_instances(self.instances)
 
 
 class Portfolio(MutableSet[ConfiguredVerifier]):
-    """_summary_."""
+    """Portfolio of ConfiguredVerifiers."""
 
     def __init__(self, *cvs: ConfiguredVerifier):
-        """_summary_."""
+        """Initialize a new PF with the passed verifiers."""
         self._pf_set: set[ConfiguredVerifier] = set(cvs)
         self._costs: dict[str, float] = {}
 
     def __contains__(self, cv: object):
-        """_summary_."""
+        """Check if a CV is in the PF."""
         # cant type annotate the func arg or mypy gets mad
         assert isinstance(cv, ConfiguredVerifier)
         return cv in self._pf_set
 
     def __iter__(self):
-        """_summary_."""
+        """Iterate the contents of the PF."""
         return iter(self._pf_set)
 
     def __len__(self):
-        """_summary_."""
+        """Number of CVs in the PF."""
         return len(self._pf_set)
 
     def __str__(self):
-        """_summary_."""
+        """String representation of the PF."""
         res = ""
 
         for cv in self:
@@ -171,7 +202,7 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
 
     @property
     def configs(self) -> list[Configuration]:
-        """_summary_."""
+        """All the configurations in the PF."""
         configs = []
 
         for cv in self._pf_set:
@@ -180,11 +211,11 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
         return configs
 
     def get_cost(self, instance: str):
-        """_summary_."""
+        """Get the currently known costs of an instance."""
         return self._costs[instance]
 
     def get_costs(self, instances: Iterable[str]) -> dict[str, float]:
-        """_summary_."""
+        """Get costs of more than one instance."""
         costs: dict[str, float] = {}
 
         for inst in instances:
@@ -198,19 +229,19 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
         return self._costs
 
     def get_mean_cost(self) -> float:
-        """_summary_."""
+        """Get the mean cost."""
         return float(np.mean(list(self._costs.values())))
 
     def get_median_cost(self) -> float:
-        """_summary_."""
+        """Get the median cost."""
         return float(np.median(list(self._costs.values())))
 
     def get_total_cost(self) -> float:
-        """_summary_."""
+        """Get the total cost."""
         return float(np.sum(list(self._costs.values())))
 
     def update_costs(self, costs: Mapping[str, float]):
-        """_summary_."""
+        """Upate the costs based on the new costs mapping."""
         for instance, cost in costs.items():
             if instance not in self._costs:
                 self._costs[instance] = cost
@@ -219,14 +250,14 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
             self._costs[instance] = min(self._costs[instance], cost)
 
     def add(self, cv: ConfiguredVerifier):
-        """_summary_."""
+        """Add a CV to the PF, no duplicates allowed."""
         if cv in self._pf_set:
             raise ValueError(f"{cv} is already in the portfolio")
 
         self._pf_set.add(cv)
 
     def discard(self, cv: ConfiguredVerifier):
-        """_summary_."""
+        """Remove a CV from the PF."""
         if cv not in self._pf_set:
             raise ValueError(f"{cv} is not in the portfolio")
 

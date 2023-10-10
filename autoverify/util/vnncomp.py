@@ -20,7 +20,7 @@ def inst_bench_to_kwargs(
     verifier: str,
     instance: VerificationInstance,
 ) -> dict[str, Any]:
-    """_summary_."""
+    """Get the kwargs for a benchmark."""
     if verifier == "nnenum":
         return {"use_auto_settings": True}
     elif verifier == "abcrown":  # TODO: All benchmarks
@@ -57,7 +57,7 @@ def inst_bench_to_verifier(
     verifier: str,
     allocation: tuple[int, int, int] | None = None,
 ) -> CompleteVerifier:
-    """_summary_."""
+    """Get an instantiated verifier."""
     verifier_inst = verifier_from_name(verifier)(
         **inst_bench_to_kwargs(benchmark, verifier, instance),
         cpu_gpu_allocation=allocation,

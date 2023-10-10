@@ -6,7 +6,7 @@ from autoverify.types import CostDict, Instance
 
 
 def merge_cost_dicts(*cost_dicts: CostDict) -> CostDict:
-    """_summary_."""
+    """Merge multiple cost dicts into one."""
     res_cd: CostDict = {}
 
     for cd in cost_dicts:
@@ -26,7 +26,7 @@ def merge_cost_dicts(*cost_dicts: CostDict) -> CostDict:
 def get_best_config_per_instance(
     cost_dict: CostDict,
 ) -> dict[Instance, Configuration]:
-    """_summary_."""
+    """Gets the best configuration for reach instance."""
     best_configs: dict[Instance, Configuration] = {}
 
     for instance, config_costs in cost_dict.items():

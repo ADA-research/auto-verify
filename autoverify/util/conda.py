@@ -101,7 +101,7 @@ def get_conda_path2() -> Path:
 
 
 def get_conda_pkg_path(name: str, version: str, build: str) -> Path | None:
-    """_summary_."""
+    """Get the Path to a conda pkg."""
     conda_path = get_conda_path()
     pkgs_dir = conda_path / "pkgs"
 
@@ -143,7 +143,7 @@ def get_conda_info() -> str:
 
 # TODO: Support for the multi line fields
 def get_field_from_conda_info(field: str) -> str | list[str] | None:
-    """_summary_."""
+    """Get the field from `conda info`."""
     conda_info = get_conda_info()
 
     for line in conda_info.splitlines():
@@ -162,7 +162,10 @@ def get_field_from_conda_info(field: str) -> str | list[str] | None:
 
 
 def get_conda_source_cmd(conda_path: Path | None = None) -> list[str]:
-    """_summary_."""
+    """Command to set conda source.
+
+    Used when you need to use conda in a subprocess call.
+    """
     if conda_path is None:
         conda_path = get_conda_path()
 

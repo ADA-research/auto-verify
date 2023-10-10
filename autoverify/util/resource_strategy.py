@@ -8,7 +8,7 @@ from autoverify.util.verifiers import uses_gpu
 # HACK: Can't put this in `resources.py` because
 # it results in a circular import
 class ResourceStrategy(Enum):
-    """_summary_."""
+    """Strategy to allocate the resources."""
 
     Auto = "auto"
     Exact = "exact"
@@ -17,7 +17,7 @@ class ResourceStrategy(Enum):
 def resources_from_strategy(
     rs: ResourceStrategy, verifiers: list[str]
 ) -> ResourceList:
-    """_summary_."""
+    """Get the resources for each verifier given the strat."""
     resources: ResourceList = []
 
     if rs == ResourceStrategy.Auto:

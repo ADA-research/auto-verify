@@ -119,12 +119,15 @@ def _prep_instance(
 # TODO: Refactor this to use a more Strategy-like pattern
 # Should be able to pass different strategies for components
 # such as the configurator and updater
-# Maybe capture this under a more general
 class Hydra:
-    """_summary_."""
+    """Class to use the `Hydra` algorithm for portfolio construction."""
 
     def __init__(self, pf_scenario: PortfolioScenario):
-        """_summary_."""
+        """Initialize a new Hydra instance.
+
+        Arguments:
+            pf_scenario: A `PortfolioScenario` with parameters for Hydra.
+        """
         self._scenario = pf_scenario
         self._cost_matrix = CostMatrix()
         self._stop = False
@@ -166,7 +169,7 @@ class Hydra:
         logger.info(">" * 80)
 
     def tune_portfolio(self) -> Portfolio:
-        """_summary_."""
+        """Construct a new portfolio."""
         portfolio = Portfolio()
         self._iter = 0
 
@@ -367,12 +370,11 @@ class Hydra:
     ):
         logger.info("Updating portfolio")
 
-        # TODO: Actually use the cost matrix for determining
+        # TODO: Use the cost matrix for determining
         # the initial config in the SMAC process
         for _, rh in new_configs:
             self._cost_matrix.update_matrix(rh)
 
-        # TODO: Select the best performing configuration
         cfg = new_configs[0][0]
 
         # ConfigSpace name is optional, but we require it to

@@ -65,7 +65,7 @@ _T = TypeVar("_T")
 
 
 def merge_lists(*lists: list[_T]) -> list[_T]:
-    """_summary_."""
+    """Merge multiple lists."""
     uniq = set()
 
     for lst in lists:

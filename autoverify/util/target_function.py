@@ -23,12 +23,12 @@ def _run_verification_instance(
     """Run an instance and report the result and time taken.
 
     Args:
-        verifier: TODO.
-        config: TODO.
-        instance: TODO.
+        verifier: CompleteVerifier to run.
+        config: Config to use during verification.
+        instance: Instance to run.
 
     Returns:
-        tuple[CompleteVerificationResult, float]: TODO.
+        CompleteVerificationResult: Outcome of the verification.
     """
     if isinstance(instance, VerificationInstance):
         instance = instance.as_smac_instance()
@@ -54,11 +54,11 @@ def _process_target_function_result(
     """Process the verification result, TODO.
 
     Args:
-        result: TODO.
-        timeout_penalty: TODO.
+        result: Result of the veriication.
+        timeout_penalty: PAR score.
 
     Returns:
-        float: TODO.
+        float: Walltime cost.
     """
     # If the result is an err, we raise an exception. SMAC automatically
     # sets the cost to infinite if an exception is raised in the target_function
@@ -76,7 +76,7 @@ def get_vnn_verifier_tf(
     *,
     timeout_penalty: int = _DEFAULT_PAR,
 ) -> TargetFunction:
-    """_summary_."""
+    """Get a tf for a vnncomp benchmark from a name."""
 
     def target_function(
         config: Configuration, instance: Instance, seed: Seed
@@ -97,7 +97,7 @@ def get_vnn_verifier_tf(
 def get_verifier_tf(
     verifier: Verifier, *, timeout_penalty: int = _DEFAULT_PAR
 ) -> TargetFunction:
-    """_summary_."""
+    """Get a target function to use in SMAC for a verifier."""
 
     def target_function(
         config: Configuration, instance: Instance, seed: Seed
@@ -110,35 +110,6 @@ def get_verifier_tf(
         assert isinstance(verifier, CompleteVerifier)
 
         result = _run_verification_instance(verifier, config, instance)
-        return _process_target_function_result(result, timeout_penalty)
-
-    return target_function
-
-
-def get_pick_tf(
-    verifiers: list[str], benchmark: str, *, timeout_penalty: int = _DEFAULT_PAR
-) -> TargetFunction:
-    """_summary_."""
-
-    def target_function(
-        config: Configuration, instance: Instance, seed: Seed
-    ) -> Cost:
-        """_summary_."""
-        seed += 1  # silence warning, cant rename the param to _ or smac errors
-
-        verifier = verifiers[config["index"]]
-        verifier_inst = verifier_from_name(verifier)
-
-        result = _run_verification_instance(
-            verifier_inst(  # type: ignore
-                **inst_bench_to_kwargs(
-                    benchmark, verifier, VerificationInstance.from_str(instance)
-                )
-            ),
-            None,
-            instance,
-        )
-
         return _process_target_function_result(result, timeout_penalty)
 
     return target_function

@@ -15,7 +15,7 @@ from autoverify.util.verification_instance import VerificationInstance
 
 
 def get_smac_run_data(run_folder: Path) -> dict[str, Any]:
-    """_summary_."""
+    """Get some data about from the SMAC logs."""
     data: dict[str, Any] = {}
 
     with open(run_folder / "runhistory.json", "r") as f:
@@ -64,7 +64,7 @@ def index_features(
 
 
 def get_scenario_dict(scenario: Scenario) -> dict[str, Any]:
-    """TODO Docstring."""
+    """Get a SMAC scneario as a dict."""
     config_space = copy.deepcopy(scenario.configspace)
 
     # Need to edit the output directory, but scenario dataclass is frozen

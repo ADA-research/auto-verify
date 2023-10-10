@@ -86,7 +86,13 @@ def _install_verifier(verifier: str) -> Result[None, str]:
 
 
 def try_install_verifiers(verifiers: Iterable[str]):
-    """_summary_."""
+    """Tries to install the specified verifiers.
+
+    Will print the result of each attempt to stdout.
+
+    Args:
+        verifiers: Names of the verifiers to install.
+    """
     _create_base_dirs()
 
     for verifier in verifiers:
@@ -101,7 +107,13 @@ def try_install_verifiers(verifiers: Iterable[str]):
 
 
 def try_uninstall_verifiers(verifiers: Iterable[str]):
-    """_summary_."""
+    """Tries to uninstall the specified verifiers.
+
+    Will print the result of each attempt to stdout.
+
+    Args:
+        verifiers: Names of the verifiers to uninstall.
+    """
     for verifier in verifiers:
         print(f"\nUninstalling {verifier}...")
 
