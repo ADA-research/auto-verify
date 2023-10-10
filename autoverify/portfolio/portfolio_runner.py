@@ -47,15 +47,18 @@ def _get_verifier(
             benchmark, instance, cv.verifier, to_allocation(cv.resources)
         )
     else:
+        alloc: tuple[int, int, int] | None
         if cv_alloc:
             alloc = cv_alloc[cv]
         else:
             alloc = to_allocation(cv.resources) if cv.resources else None
 
         kwargs = verifier_kwargs or {}
-        kwargs = kwargs.get(cv.verifier, {})
+        kwargs = kwargs.get(cv.verifier, {})  # type: ignore
 
-        v = verifier_from_name(cv.verifier)(cpu_gpu_allocation=alloc, **kwargs)
+        v = verifier_from_name(cv.verifier)(
+            cpu_gpu_allocation=alloc, **kwargs  # type: ignore
+        )
         assert isinstance(v, CompleteVerifier)
 
         return v

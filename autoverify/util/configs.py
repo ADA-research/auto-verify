@@ -1,12 +1,10 @@
 """_summary_."""
 import ast
-import json
 import re
 from pathlib import Path
 from typing import Any
 
 from ConfigSpace import Configuration, ConfigurationSpace
-from ConfigSpace.read_and_write import json as cs_json
 
 
 def config_dict_from_config_str(cfg: str) -> dict[str, Any]:

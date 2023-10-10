@@ -3,13 +3,10 @@
 from ConfigSpace import (
     Categorical,
     ConfigurationSpace,
-    Constant,
     EqualsCondition,
     Float,
     ForbiddenAndConjunction,
     ForbiddenEqualsClause,
-    InCondition,
-    Integer,
     NotEqualsCondition,
 )
 

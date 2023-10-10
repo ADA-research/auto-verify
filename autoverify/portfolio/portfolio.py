@@ -324,5 +324,6 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
         return "\n".join(cvs)
 
     def dump_costs(self):
+        """Print the costs for each instance."""
         for instance, cost in self._costs.items():
             print(instance, cost)
