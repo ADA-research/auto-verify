@@ -13,7 +13,7 @@ class AbcrownYamlConfig:
     """Class for ab-crown YAML configs."""
 
     def __init__(self, yaml_file: IO[str]):
-        """_summary_."""
+        """New instance."""
         self._yaml_file = yaml_file
 
     @classmethod
@@ -26,7 +26,7 @@ class AbcrownYamlConfig:
         batch_size: int = 64,
         yaml_override: dict[str, Any] | None = None,
     ):
-        """_summary_."""
+        """Create new instance from a YAML file."""
         abcrown_dict = yaml.safe_load(yaml_file.read_text())
 
         nested_set(abcrown_dict, ["model", "onnx_path"], str(network))

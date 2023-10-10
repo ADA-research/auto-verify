@@ -1,4 +1,4 @@
-"""_summary_."""
+"""Intermediate representation of ovalbab json configs."""
 import json
 from pathlib import Path
 from typing import IO, Any
@@ -13,12 +13,12 @@ class OvalbabJsonConfig:
     """Class for Oval-BaB JSON configs."""
 
     def __init__(self, json_file: IO[str]):
-        """_summary_."""
+        """New instance."""
         self._json_file = json_file
 
     @classmethod
     def from_json(cls, json_file: Path):
-        """_summary."""
+        """New instance from a JSON file."""
         ovalbab_dict: dict[str, Any]
 
         with open(str(json_file)) as f:
@@ -28,7 +28,7 @@ class OvalbabJsonConfig:
 
     @classmethod
     def from_config(cls, config: Configuration):
-        """_summary."""
+        """New instance from a Configuration."""
         dict_config: dict[str, Any] = dict(config)
         ovalbab_dict: dict[str, Any] = {
             "bounding": {
@@ -67,9 +67,9 @@ class OvalbabJsonConfig:
         return cls(tmp_json_file_from_dict(ovalbab_dict))
 
     def get_json_file(self) -> IO[str]:
-        """_summary_."""
+        """Return the json file."""
         return self._json_file
 
     def get_json_file_path(self) -> Path:
-        """_summary_."""
+        """The path to the json file."""
         return Path(self._json_file.name)

@@ -20,7 +20,7 @@ from .configspace import NnenumConfigspace
 
 
 class Nnenum(CompleteVerifier):
-    """_summary_."""
+    """Nnenum."""
 
     name: str = "nnenum"
     config_space: ConfigurationSpace = NnenumConfigspace
@@ -33,7 +33,7 @@ class Nnenum(CompleteVerifier):
         cpu_gpu_allocation: tuple[int, int, int] | None = None,
         use_auto_settings: bool = True,
     ):
-        """_summary_."""
+        """New instance."""
         if cpu_gpu_allocation and cpu_gpu_allocation[2] >= 0:
             raise ValueError("Nnenum does not use a GPU, please set it to -1.")
 
@@ -143,7 +143,7 @@ class Nnenum(CompleteVerifier):
     def is_same_config(
         config1: Configuration | str, config2: Configuration | str
     ) -> bool:
-        """_summary_."""
+        """Return if two configs are equivalent."""
         if isinstance(config1, Configuration):
             config1 = str(config1["settings_mode"])  # type: ignore
         if isinstance(config2, Configuration):

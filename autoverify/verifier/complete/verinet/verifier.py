@@ -1,4 +1,4 @@
-"""_summary_."""
+"""VerInet."""
 import shlex
 from pathlib import Path
 from typing import Any, ContextManager, Iterable
@@ -25,7 +25,7 @@ from .configspace import VerinetConfigspace
 
 # TODO: Warn user that `batch_size` init param is not used by Verinet atm
 class Verinet(CompleteVerifier):
-    """_summary_."""
+    """VeriNet."""
 
     name: str = "verinet"
     config_space: ConfigurationSpace = VerinetConfigspace
@@ -42,7 +42,7 @@ class Verinet(CompleteVerifier):
         dnnv_simplify: bool = False,
         transpose_matmul_weights: bool = False,
     ):
-        """_summary_."""
+        """New instance."""
         if cpu_gpu_allocation and cpu_gpu_allocation[2] < 0:
             raise ValueError("VeriNet CPU only mode not yet supported")
 

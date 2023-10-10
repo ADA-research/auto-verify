@@ -76,7 +76,7 @@ class VerificationInstance:
 
     # HACK: Assuming some names and layouts here...
     def as_simplified_network(self) -> VerificationInstance:
-        """changes the network path.
+        """Changes the network path.
 
         Assumes a "onnx_simplified" dir is present at the same level.
         """

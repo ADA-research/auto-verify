@@ -26,7 +26,7 @@ from autoverify.verifier.verifier import CompleteVerifier
 
 
 class AbCrown(CompleteVerifier):
-    """_summary_."""
+    """AB-Crown."""
 
     name: str = "abcrown"
     config_space: ConfigurationSpace = AbCrownConfigspace
@@ -37,7 +37,7 @@ class AbCrown(CompleteVerifier):
         cpu_gpu_allocation: tuple[int, int, int] | None = None,
         yaml_override: dict[str, Any] | None = None,
     ):
-        """_summary_."""
+        """New instance."""
         if cpu_gpu_allocation and cpu_gpu_allocation[2] < 0:
             raise ValueError("AB-Crown CPU only mode not yet supported")
 

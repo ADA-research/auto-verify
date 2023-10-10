@@ -1,4 +1,4 @@
-"""TODO docstring."""
+"""Base verifier class."""
 import os
 import signal
 import subprocess
@@ -39,7 +39,7 @@ class Verifier(ABC):
         batch_size: int = 512,
         cpu_gpu_allocation: tuple[int, int, int] | None = None,
     ):
-        """_summary_."""
+        """New instance. This is used with super calls."""
         self._batch_size = batch_size
         self._cpu_gpu_allocation = cpu_gpu_allocation
 
@@ -102,7 +102,7 @@ class Verifier(ABC):
         config: Any,
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> tuple[str, Path | None]:
-        """_summary_."""
+        """Get the cli command to run the verification."""
         raise NotImplementedError
 
     @abstractmethod
@@ -111,7 +111,7 @@ class Verifier(ABC):
         output: str,
         result_file: Path | None,
     ) -> tuple[VerificationResultString, str | None]:
-        """_summary."""
+        """Parse the output to get the result."""
         raise NotImplementedError
 
     def _init_config(
@@ -153,7 +153,7 @@ class Verifier(ABC):
 
 
 class CompleteVerifier(Verifier):
-    """_summary_."""
+    """Abstract class for complete verifiers."""
 
     def verify_property(
         self,
@@ -216,7 +216,7 @@ class CompleteVerifier(Verifier):
         *,
         config: Configuration | Path | None = None,
     ) -> CompleteVerificationResult:
-        """_summary_."""
+        """See the `verify_property` docstring."""
         return self.verify_property(
             instance.network,
             instance.property,
@@ -230,7 +230,7 @@ class CompleteVerifier(Verifier):
         *,
         config: Configuration | Path | None,
     ) -> list[CompleteVerificationResult]:
-        """_summary_."""
+        """Verify a batch. Not yet implemented."""
         for instance in instances:
             self._check_instance(instance.network, instance.property)
 
@@ -288,7 +288,7 @@ class CompleteVerifier(Verifier):
         return "\n".join(lines)
 
     def set_timeout_event(self):
-        """_summary_."""
+        """Signal that the process has timed out."""
         try:
             self._timeout_event.set()  # type: ignore
         except AttributeError:
@@ -301,7 +301,6 @@ class CompleteVerifier(Verifier):
         result_file: Path | None = None,
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> CompleteVerificationData:
-        """_summary_."""
         contexts = self.contexts or []
         output_lines: list[str] = []
         result: str = ""

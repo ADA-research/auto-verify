@@ -27,7 +27,7 @@ from .configspace import OvalBabConfigspace
 
 
 class OvalBab(CompleteVerifier):
-    """_summary_."""
+    """Oval-BaB."""
 
     name: str = "ovalbab"
     config_space: ConfigurationSpace = OvalBabConfigspace
@@ -37,7 +37,7 @@ class OvalBab(CompleteVerifier):
         batch_size: int = 512,
         cpu_gpu_allocation: tuple[int, int, int] | None = None,
     ):
-        """_summary_."""
+        """New instance."""
         if cpu_gpu_allocation and cpu_gpu_allocation[2] < 0:
             raise ValueError("Oval-BaB CPU only mode not yet supported")
         super().__init__(batch_size, cpu_gpu_allocation)

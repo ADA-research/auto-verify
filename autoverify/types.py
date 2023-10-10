@@ -1,4 +1,4 @@
-"""_summary_."""
+"""Shared types."""
 # from dataclasses import dataclass, field
 from typing import Callable
 
