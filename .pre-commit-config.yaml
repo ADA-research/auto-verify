@@ -22,10 +22,20 @@ repos:
         name: flake8 src and tests
         files: "autoverify|tests"
 
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        name: pydocstyle src
+        additional_dependencies: ["tomli"] # for passing .toml config
+        args: [--config=pyproject.toml]
+        files: autoverify
+
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.1.1
     hooks:
       - id: mypy
         name: mypy src
         args: [--config-file=pyproject.toml]
+        additional_dependencies: ["types-PyYAML"]
         files: autoverify
