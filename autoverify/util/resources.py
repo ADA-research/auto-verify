@@ -25,6 +25,7 @@ class ResourceTracker:
         Arguments:
             pf_scen: The PF scenario being used.
             strategy: The resource strategy to use during alloc.
+            cpu_gpu_count: Override the number of CPU/GPUs.
         """
         self._verifiers = pf_scen.verifiers
         self._verifier_resources = pf_scen.resources

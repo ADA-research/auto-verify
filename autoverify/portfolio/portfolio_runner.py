@@ -80,6 +80,8 @@ class PortfolioRunner:
         Arguments:
             portfolio: The portfolio that will be run.
             vbs_mode: If the PF will be run in VBS mode.
+            n_cpu: Override number of CPUs
+            n_gpu: Override number of GPUs.
         """
         self._portfolio = portfolio
         self._vbs_mode = vbs_mode
