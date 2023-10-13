@@ -18,6 +18,7 @@ class ResourceTracker:
         pf_scen: PortfolioScenario,
         *,
         strategy: ResourceStrategy | str = ResourceStrategy.Auto,
+        cpu_gpu_count: tuple[int, int] | None = None,
     ):
         """Create a new resource tracker.
 
@@ -28,6 +29,7 @@ class ResourceTracker:
         self._verifiers = pf_scen.verifiers
         self._verifier_resources = pf_scen.resources
         self._pf_len = pf_scen.length
+        self._cpu_gpu_count = cpu_gpu_count
 
         if isinstance(strategy, str):
             strategy = ResourceStrategy(strategy)
@@ -36,7 +38,10 @@ class ResourceTracker:
 
     def _init_strat(self):
         if self._strategy == ResourceStrategy.Auto:
-            self._resources = (cpu_count(), nvidia_gpu_count())
+            if self._cpu_gpu_count is None:
+                self._resources = (cpu_count(), nvidia_gpu_count())
+            else:
+                self._resources = self._cpu_gpu_count
             self._cpus_per = self._resources[0] // self._pf_len
             self._cpus_remainder = self._resources[0] % self._pf_len
         else:

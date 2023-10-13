@@ -67,7 +67,14 @@ def _get_verifier(
 class PortfolioRunner:
     """Class to run a portfolio in parallel."""
 
-    def __init__(self, portfolio: Portfolio, vbs_mode: bool = False):
+    def __init__(
+        self,
+        portfolio: Portfolio,
+        vbs_mode: bool = False,
+        *,
+        n_cpu: int | None = None,
+        n_gpu: int | None = None,
+    ):
         """Initialize a new portfolio runner.
 
         Arguments:
@@ -76,6 +83,8 @@ class PortfolioRunner:
         """
         self._portfolio = portfolio
         self._vbs_mode = vbs_mode
+        self._n_cpu = n_cpu
+        self._n_gpu = n_gpu
 
         if not self._vbs_mode:
             self._init_resources()
@@ -95,7 +104,14 @@ class PortfolioRunner:
 
     def _init_resources(self):
         self._allocation: dict[ConfiguredVerifier, tuple[int, int, int]] = {}
-        cpu_left, gpu_left = cpu_count(), nvidia_gpu_count()
+        if self._n_cpu:
+            cpu_left = self._n_cpu
+        else:
+            cpu_left = cpu_count()
+        if self._n_gpu:
+            gpu_left = self._n_gpu
+        else:
+            gpu_left = nvidia_gpu_count()
 
         for cv in self._portfolio:
             if cv.resources is None:

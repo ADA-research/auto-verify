@@ -36,11 +36,13 @@ def pkill_match(pattern: str):
 
 
 def cpu_count() -> int:
+    print("====> reg cpu count call")
     """Return the number of available CPUs."""
     return len(os.sched_getaffinity(0))
 
 
 def nvidia_gpu_count() -> int:
+    print("====> Regular gpu count call")
     """Get the number of available NVIDIA GPUs."""
     if not is_nvidia_gpu_available():
         return 0
