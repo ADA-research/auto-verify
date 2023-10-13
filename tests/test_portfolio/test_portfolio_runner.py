@@ -20,9 +20,9 @@ def faulty_pf(pf_cfg: Configuration, pf_cfg2: Configuration) -> Portfolio:
 
 def test_init_runner(portfolio: Portfolio, faulty_pf: Portfolio):
     with pytest.raises(RuntimeError):
-        _ = PortfolioRunner(faulty_pf)
+        _ = PortfolioRunner(faulty_pf, n_cpu=16, n_gpu=1)
 
-    runner = PortfolioRunner(portfolio)
+    runner = PortfolioRunner(portfolio, n_cpu=16, n_gpu=1)
     allocs = [(8, 15, -1), (0, 7, 0)]
     allocs2 = [(8, 15, 0), (0, 7, -1)]
 
