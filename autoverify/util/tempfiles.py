@@ -1,20 +1,40 @@
 """YAML file utils."""
+import atexit
 import json
 import tempfile
+from pathlib import Path
 from typing import IO, Any
 
 import yaml
 
+_tempfiles_to_clean: list[str] = []
+
+
+def _reg_for_clean(f: str | Path):
+    _tempfiles_to_clean.append(str(f))
+
+
+@atexit.register
+def _cleanup_tempfiles():
+    for f in _tempfiles_to_clean:
+        p = Path(f)
+        if p.exists() and p.is_file():
+            p.unlink()
+
 
 def tmp_file(extension: str) -> IO[str]:
-    """Return a new tempfile with the given extension"""
-    return tempfile.NamedTemporaryFile("w", suffix=extension, delete=False)
+    """Return a new tempfile with the given extension."""
+    f = tempfile.NamedTemporaryFile("w", suffix=extension, delete=False)
+    _reg_for_clean(f.name)
+    return f
 
 
-# TODO: Just make a functin that returns a tempfile with extension as param
+# TODO: Just make a function that returns a tempfile with extension as param
 def tmp_json_file() -> IO[str]:
     """Returns a new temporary named empty yaml file."""
-    return tempfile.NamedTemporaryFile("w", suffix=".json")
+    f = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+    _reg_for_clean(f.name)
+    return f
 
 
 def tmp_json_file_from_dict(a_dict: dict[Any, Any]) -> IO[str]:
@@ -29,7 +49,9 @@ def tmp_json_file_from_dict(a_dict: dict[Any, Any]) -> IO[str]:
 
 def tmp_yaml_file() -> IO[str]:
     """Returns a new temporary named empty yaml file."""
-    return tempfile.NamedTemporaryFile("w", suffix=".yaml")
+    f = tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False)
+    _reg_for_clean(f.name)
+    return f
 
 
 def tmp_yaml_file_from_dict(a_dict: dict[Any, Any]) -> IO[str]:

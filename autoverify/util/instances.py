@@ -1,44 +1,20 @@
 """_summary_."""
+from __future__ import annotations
+
 import csv
-import inspect
-from dataclasses import dataclass, fields, is_dataclass
+from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Callable, Iterable, Literal, overload
 
 import pandas as pd
 
-from autoverify import ROOT_DIR
-
-
-@dataclass
-class VerificationInstance:
-    """_summary_."""
-
-    network: Path
-    property: Path
-    timeout: int | None = None
-
-    def as_smac_instance(self) -> str:
-        """Return the instance in a `f"{network},{property}"` format.
-
-        A SMAC instance has to be passed as a single string to the
-        target_function, in which we split the instance string on the comma
-        again to obtain the network and property.
-        """
-        return f"{str(self.network)},{str(self.property)}"
-
-
-# TODO: Move this function to another file, it doesn't really belong here
-# NOTE: There is no type annotation for dataclasses
-def get_dataclass_field_names(data_cls: Any) -> list[str]:
-    """Returns the fields of a dataclass as a list of strings."""
-    if not inspect.isclass(data_cls):
-        raise ValueError(f"Argument data_cls should be a class, got {data_cls}")
-
-    if not is_dataclass(data_cls):
-        raise ValueError(f"'{data_cls.__class__.__name__}' is not a dataclass")
-
-    return [field.name for field in fields(data_cls)]
+from autoverify.util.dataclass import get_dataclass_field_names
+from autoverify.util.verification_instance import VerificationInstance
+from autoverify.verifier.verification_result import (
+    CompleteVerificationData,
+    VerificationResultString,
+)
 
 
 @dataclass
@@ -47,13 +23,20 @@ class VerificationDataResult:
 
     network: str
     property: str
+    timeout: int | None
     verifier: str
     config: str
-    success: Literal["OK", "ERR"]  # TODO: Why not just a boolean?
-    result: Literal["SAT", "UNSAT", "TIMEOUT"] | None
+    success: Literal["OK", "ERR"]
+    result: VerificationResultString
     took: float
     counter_example: str | tuple[str, str] | None
-    error_string: str | None
+    stderr: str | None
+    stdout: str | None
+
+    def __post_init__(self):
+        """_summary_."""
+        if self.config == "None":
+            self.config = "default"
 
     def as_csv_row(self) -> list[str]:
         """Convert data to a csv row writeable."""
@@ -63,28 +46,52 @@ class VerificationDataResult:
         return [
             self.network,
             self.property,
+            str(self.timeout),
             self.verifier,
             self.config,
             self.success,
-            self.result or "",
+            self.result,
             str(self.took),
             self.counter_example or "",
-            self.error_string or "",
+            self.stderr or "",
+            self.stdout or "",
         ]
+
+    @classmethod
+    def from_verification_result(
+        cls,
+        verif_res: CompleteVerificationData,
+        instance_data: dict[str, Any],  # TODO: Narrow Any
+    ):
+        """Create from a `CompleteVerificationData`."""
+        # TODO: Unpack dict
+        return cls(
+            instance_data["network"],
+            instance_data["property"],
+            instance_data["timeout"],
+            instance_data["verifier"],
+            instance_data["config"],
+            instance_data["success"],
+            verif_res.result,
+            verif_res.took,
+            verif_res.counter_example,
+            verif_res.err,
+            verif_res.stdout,
+        )
 
 
 def init_verification_result_csv(csv_path: Path):
     """_summary_."""
-    with open(str(csv_path), "w") as csv_file:
+    with open(str(csv_path.expanduser()), "w") as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(get_dataclass_field_names(VerificationDataResult))
 
 
-def append_verification_result_to_csv(
+def csv_append_verification_result(
     verification_result: VerificationDataResult, csv_path: Path
 ):
     """_summary_."""
-    with open(str(csv_path), "a") as csv_file:
+    with open(str(csv_path.expanduser()), "a") as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(verification_result.as_csv_row())
 
@@ -109,13 +116,78 @@ def write_verification_results_to_csv(results: pd.DataFrame, csv_path: Path):
 
 
 def verification_instances_to_smac_instances(
-    instances: list[VerificationInstance],
+    instances: Sequence[VerificationInstance],
 ) -> list[str]:
-    """_summary_."""
+    """Convert a list of `VerificationInstace` objects to SMAC instances.
+
+    See the `as_smac_instance` docstring of the `VerificationInstance` class for
+    more details.
+
+    Args:
+        instances: The list of `VerificationInstance` objects to convert.
+
+    Returns:
+        list[str]: The SMAC instance strings.
+    """
     return [inst.as_smac_instance() for inst in instances]
 
 
-def read_vnncomp_instances(benchmark: str) -> list[VerificationInstance]:
+_InstancePredicate = Callable[[VerificationInstance], bool]
+
+
+def _passes_at_least_1(
+    predicates: Iterable[_InstancePredicate], instance: VerificationInstance
+) -> bool:
+    for pred in predicates:
+        if pred(instance):
+            return True
+    return False
+
+
+def _passes_all(
+    predicates: Iterable[_InstancePredicate], instance: VerificationInstance
+) -> bool:
+    for pred in predicates:
+        if not pred(instance):
+            return False
+    return True
+
+
+@overload
+def read_vnncomp_instances(  # type: ignore
+    benchmark: str,
+    vnncomp_path: Path,
+    *,
+    predicate: _InstancePredicate | Iterable[_InstancePredicate] | None = None,
+    as_smac: Literal[False] = False,
+    resolve_paths: bool = True,
+    instance_file_name: str = "instances.csv",
+) -> list[VerificationInstance]:
+    ...
+
+
+@overload
+def read_vnncomp_instances(
+    benchmark: str,
+    vnncomp_path: Path,
+    *,
+    predicate: _InstancePredicate | Iterable[_InstancePredicate] | None = None,
+    as_smac: Literal[True] = True,
+    resolve_paths: bool = True,
+    instance_file_name: str = "instances.csv",
+) -> list[str]:
+    ...
+
+
+def read_vnncomp_instances(
+    benchmark: str,
+    vnncomp_path: Path,
+    *,
+    predicate: _InstancePredicate | Iterable[_InstancePredicate] | None = None,
+    as_smac: bool = False,
+    resolve_paths: bool = True,
+    instance_file_name: str = "instances.csv",
+) -> list[VerificationInstance] | list[str]:
     """Read the instances of a VNNCOMP benchmark.
 
     Reads the CSV file of a VNNCOMP benchmark, parsing the network, property and
@@ -123,31 +195,84 @@ def read_vnncomp_instances(benchmark: str) -> list[VerificationInstance]:
 
     Args:
         benchmark: The name of the benchmark directory.
+        vnncomp_path: The path to the VNNCOMP benchmark directory
+        predicate: A function that, given a `VerificationInstance` returns
+            either True or False. If False is returned, the
+            `VerificationInstance` is dropped from the returned instances.
+        as_smac: Return the instances as smac instance strings.
 
     Returns:
-        list[VerificationInstance]: A list of `VerificationInstance` objects
+        list[VerificationInstance] | list[str]: A list of
+            `VerificationInstance` or string objects
             that hold the network, property and timeout.
     """
-    vnncomp2022 = ROOT_DIR.parent / "benchmarks" / "vnncomp2022"
-    benchmark_dir = vnncomp2022 / benchmark
-    instances = benchmark_dir / "instances.csv"
+    if not vnncomp_path.is_dir():
+        raise ValueError("Could not find VNNCOMP directory")
 
+    benchmark_dir = vnncomp_path / benchmark
+
+    if not benchmark_dir.is_dir():
+        raise ValueError(
+            f"{benchmark} is not a valid benchmark in {str(vnncomp_path)}"
+        )
+
+    instances = benchmark_dir / instance_file_name
     verification_instances = []
+
+    if predicate and not isinstance(predicate, Iterable):
+        predicate = [predicate]
 
     with open(str(instances)) as csv_file:
         reader = csv.reader(csv_file)
 
         for row in reader:
             network, property, timeout = row
-            abs_network = str(benchmark_dir / network)
-            abs_property = str(benchmark_dir / property)
 
-            verification_instances.append(
-                VerificationInstance(
-                    Path(abs_network),
-                    Path(abs_property),
-                    int(timeout),  # TODO: Is that always an integer?
-                )
+            net_path = Path(str(benchmark_dir / network))
+            prop_path = Path(str(benchmark_dir / property))
+
+            instance = VerificationInstance(
+                net_path if not resolve_paths else net_path.resolve(),
+                prop_path if not resolve_paths else prop_path.resolve(),
+                int(float(timeout)),  # FIXME: Timeouts can be floats
             )
 
+            if predicate and not _passes_at_least_1(predicate, instance):
+                continue
+
+            if as_smac:
+                instance = instance.as_smac_instance()  # type: ignore
+
+            verification_instances.append(instance)
+
     return verification_instances
+
+
+def read_all_vnncomp_instances(
+    vnncomp_path: Path,
+) -> dict[str, list[VerificationInstance]]:
+    """Reads all benchmarks, see the `read_vnncomp_instances` docstring."""
+    instances: dict[str, list[VerificationInstance]] = {}
+
+    for path in vnncomp_path.iterdir():
+        if not path.is_dir():
+            continue
+
+        instances[path.name] = read_vnncomp_instances(path.name, vnncomp_path)
+
+    return instances
+
+
+def unique_networks(
+    instances: Iterable[VerificationInstance],
+) -> list[VerificationInstance]:
+    """Utility function to keep only unique networks."""
+    unique = []
+    seen: set[str] = set()
+
+    for instance in instances:
+        if instance.network.name not in seen:
+            unique.append(instance)
+        seen.add(instance.network.name)
+
+    return unique

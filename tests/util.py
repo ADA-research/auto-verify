@@ -1,4 +1,5 @@
 import subprocess
+from pathlib import Path
 
 
 def run_av_cli(args: list[str]) -> str:
@@ -7,3 +8,8 @@ def run_av_cli(args: list[str]) -> str:
 
     result = subprocess.run(base_cmd, stdout=subprocess.PIPE)
     return str(result.stdout)
+
+
+def read_csv_contents(csv_path: Path) -> str:
+    with open(str(csv_path), "r") as csv_file:
+        return csv_file.read()

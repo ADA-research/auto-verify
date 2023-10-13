@@ -1,4 +1,4 @@
-"""Git and repo utilities."""
+"""Git and git repo utilities."""
 import os
 import shlex
 import subprocess
@@ -11,9 +11,15 @@ from autoverify.util.loggers import install_logger
 
 @dataclass
 class GitRepoInfo:
-    """Template for a tool's git repo info."""
+    """Template for a tool's git repo info.
 
-    main_branch: str
+    Attributes:
+        branch: The target branch.
+        commit_hash: The target commit hash.
+        clone_url: The URL the repo will be cloned from.
+    """
+
+    branch: str
     commit_hash: str
     clone_url: str
 
@@ -28,8 +34,7 @@ class GitRepoInfo:
     @property
     def clone(self) -> list[str]:
         clone_cmd = (
-            f"git clone {self.clone_url} --depth=1 "
-            f"--branch {self.main_branch}"
+            f"git clone {self.clone_url} --depth=1 --branch {self.branch}"
         )
 
         return shlex.split(clone_cmd)
@@ -47,7 +52,13 @@ def clone_checkout_verifier(
     *,
     init_submodules=False,
 ):
-    """_summary_."""
+    """Clones a verifier and checks out the branch.
+
+    Arguments:
+        repo_info: A `GitRepoInfo` object.
+        install_dir: Where the repo will be cloned to.
+        init_submodules: If submodules in the repository should be initialized.
+    """
     with cwd(install_dir):
         install_logger.info(f"Cloning into repository: {repo_info.clone_url}")
         subprocess.run(repo_info.clone, check=True, capture_output=True)

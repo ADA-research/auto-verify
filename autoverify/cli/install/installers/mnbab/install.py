@@ -1,5 +1,4 @@
 """mnbab installer."""
-import os
 import shlex
 import subprocess
 from pathlib import Path
@@ -14,14 +13,18 @@ from autoverify.util.conda import (
 from autoverify.util.env import copy_env_file_to, cwd, environment
 
 MnBabRepoInfo = GitRepoInfo(
-    main_branch="public",
-    commit_hash="3b6fd05",
-    clone_url="https://github.com/mnmueller/mn_bab_vnn_2022.git",
+    branch="SABR_ready",
+    commit_hash="70751b8",
+    clone_url="https://github.com/eth-sri/mn-bab",
 )
 
 
 def install(install_dir: Path):
-    """_summary_."""
+    """Installs mnbab.
+
+    Args:
+        install_dir: Path where ab-crown is installed.
+    """
     clone_checkout_verifier(MnBabRepoInfo, install_dir, init_submodules=True)
     copy_env_file_to(Path(__file__), install_dir)
     create_env_from_file(install_dir / "environment.yml")
@@ -54,8 +57,4 @@ def install(install_dir: Path):
     with cwd(install_dir / "tool"), environment(
         MPFR_PREFIX=mpfr_path, CDD_PREFIX=cddlib_path
     ):
-        subprocess.run(
-            elina_cmd,
-            executable="/bin/bash",
-            shell=True,
-        )
+        subprocess.run(elina_cmd, shell=True)

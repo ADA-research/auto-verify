@@ -2,10 +2,16 @@
 import os
 import shutil
 import sys
+from collections.abc import Iterable
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Any, Callable
+
+from autoverify.util.proc import pkill_match
 
 
+# NOTE: Why not just `Path(...).resolve().parent`?
+# TODO: Implement above note
 def get_file_path(file: Path) -> Path:
     """Returns the absolute path to the file.
 
@@ -25,7 +31,7 @@ def copy_env_file_to(installer_py_file: Path, install_dir: Path):
 
     Args:
         installer_py_file: The path to the installer directory (e.g. nnenum),
-            this is used to find the `conda_env.yml` file.
+            this is used to find the `environment.yml` file.
         install_dir: The directory the file is copied to.
     """
     file_path = get_file_path(installer_py_file)
@@ -75,3 +81,23 @@ def sys_path(path: Path):
         yield
     finally:
         sys.path.remove(fs_path)
+
+
+@contextmanager
+def pkill_matches(matches: Iterable[str]):
+    """Kill a list of process name patterns when exiting context."""
+    try:
+        yield
+    finally:
+        for match in matches:
+            pkill_match(match)
+
+
+@contextmanager
+def exit_functions(functions: Iterable[Callable[[], Any]]):
+    """Functions to run on context exit."""
+    try:
+        yield
+    finally:
+        for f in functions:
+            f()

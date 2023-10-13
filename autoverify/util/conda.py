@@ -1,5 +1,6 @@
 """Conda utility functions."""
 
+import os
 import shlex
 import subprocess
 from pathlib import Path
@@ -45,7 +46,7 @@ def create_env_from_file(file: Path):
     install_logger.info(f"Creating conda environment from file {file}")
     cmd = shlex.split(f"conda env create -f {str(file)}")
 
-    subprocess.run(cmd, check=True, capture_output=False)
+    subprocess.run(cmd, check=True, capture_output=True)
 
 
 def get_av_conda_envs() -> list[str]:
@@ -89,8 +90,18 @@ def get_conda_path() -> Path:
     raise Exception(f"Could not fetch conda base environment info: {base_env}")
 
 
+def get_conda_path2() -> Path:
+    """Alternative way to get the conda path, only works if an env is active."""
+    if "CONDA_PREFIX" not in os.environ:
+        raise RuntimeError(
+            "This function only works if a Conda environment is active."
+        )
+
+    return Path(os.environ["CONDA_PREFIX"]).parent.parent
+
+
 def get_conda_pkg_path(name: str, version: str, build: str) -> Path | None:
-    """_summary_."""
+    """Get the Path to a conda pkg."""
     conda_path = get_conda_path()
     pkgs_dir = conda_path / "pkgs"
 
@@ -100,6 +111,26 @@ def get_conda_pkg_path(name: str, version: str, build: str) -> Path | None:
         return None
 
     return pkg_path
+
+
+def find_conda_lib(env: str, lib: str) -> Path:
+    """Tries to find where a library is in the given conda env."""
+    env_path = get_conda_path() / "envs" / env
+    cmd = f"find {env_path} -name '{lib}'"
+    result = subprocess.run(shlex.split(cmd), check=True, capture_output=True)
+
+    lib_paths = result.stdout.decode().splitlines()
+
+    if len(lib_paths) >= 1:
+        return Path(lib_paths[0]).parent
+    else:
+        raise ValueError(f"Lib {lib} could not be found in env {env}.")
+
+
+def get_conda_env_lib_path(env: str) -> Path:
+    """Return the path to the `lib` folder of an env."""
+    conda_path = get_conda_path2()
+    return conda_path / "envs" / env / "lib"
 
 
 def get_conda_info() -> str:
@@ -112,7 +143,7 @@ def get_conda_info() -> str:
 
 # TODO: Support for the multi line fields
 def get_field_from_conda_info(field: str) -> str | list[str] | None:
-    """_summary_."""
+    """Get the field from `conda info`."""
     conda_info = get_conda_info()
 
     for line in conda_info.splitlines():
@@ -130,8 +161,14 @@ def get_field_from_conda_info(field: str) -> str | list[str] | None:
     return None
 
 
-def get_conda_source_cmd(conda_path: Path) -> list[str]:
-    """_summary_."""
+def get_conda_source_cmd(conda_path: Path | None = None) -> list[str]:
+    """Command to set conda source.
+
+    Used when you need to use conda in a subprocess call.
+    """
+    if conda_path is None:
+        conda_path = get_conda_path()
+
     return shlex.split(
         f"source {str(conda_path / 'etc' / 'profile.d' / 'conda.sh')}"
     )
