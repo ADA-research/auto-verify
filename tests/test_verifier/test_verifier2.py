@@ -1,6 +1,10 @@
+import pytest
+
 from autoverify.verifier import AbCrown, Nnenum
 
 
+@pytest.mark.verifier
+@pytest.mark.gpu
 def test_allocate_run_cmd():
     verifier = Nnenum(cpu_gpu_allocation=(0, 1, -1))
     contexts = verifier.contexts or []
