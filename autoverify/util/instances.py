@@ -154,7 +154,7 @@ def _passes_all(
 
 
 @overload
-def read_vnncomp_instances(  # type: ignore pragma: no cover
+def read_vnncomp_instances(  # type: ignore
     benchmark: str,
     vnncomp_path: Path,
     *,
@@ -162,12 +162,12 @@ def read_vnncomp_instances(  # type: ignore pragma: no cover
     as_smac: Literal[False] = False,
     resolve_paths: bool = True,
     instance_file_name: str = "instances.csv",
-) -> list[VerificationInstance]:
+) -> list[VerificationInstance]:  # pragma: no cover
     ...
 
 
 @overload
-def read_vnncomp_instances(  # pragma: no cover
+def read_vnncomp_instances(
     benchmark: str,
     vnncomp_path: Path,
     *,
@@ -175,7 +175,7 @@ def read_vnncomp_instances(  # pragma: no cover
     as_smac: Literal[True] = True,
     resolve_paths: bool = True,
     instance_file_name: str = "instances.csv",
-) -> list[str]:
+) -> list[str]:  # pragma: no cover
     ...
 
 

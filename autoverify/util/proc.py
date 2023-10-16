@@ -3,7 +3,6 @@ import os
 import shlex
 import subprocess
 from collections.abc import Collection
-from typing import Iterable
 
 
 # Credits: @jfs
