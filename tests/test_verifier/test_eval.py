@@ -21,7 +21,7 @@ def test_eval_verifier(
         nnenum,
         trivial_instances,
         None,
-        warmup=False,
+        warmup=True,
         output_csv_path=tmp_csv,
     )
 

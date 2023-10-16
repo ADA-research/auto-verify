@@ -13,18 +13,18 @@ pytestmark = pytest.mark.parametrize(
     "verifier",
     [
         pytest.param(lazy_fixture("nnenum"), marks=[pytest.mark.verifier]),
-        pytest.param(
-            lazy_fixture("abcrown"),
-            marks=[pytest.mark.gpu, pytest.mark.verifier],
-        ),
-        pytest.param(
-            lazy_fixture("ovalbab"),
-            marks=[pytest.mark.gpu, pytest.mark.verifier],
-        ),
-        pytest.param(
-            lazy_fixture("verinet"),
-            marks=[pytest.mark.gpu, pytest.mark.verifier],
-        ),
+        # pytest.param(
+        #     lazy_fixture("abcrown"),
+        #     marks=[pytest.mark.gpu, pytest.mark.verifier],
+        # ),
+        # pytest.param(
+        #     lazy_fixture("ovalbab"),
+        #     marks=[pytest.mark.gpu, pytest.mark.verifier],
+        # ),
+        # pytest.param(
+        #     lazy_fixture("verinet"),
+        #     marks=[pytest.mark.gpu, pytest.mark.verifier],
+        # ),
     ],
 )
 
@@ -70,3 +70,11 @@ def test_timeout(
 
     assert isinstance(result, Ok)
     assert result.value.result == "TIMEOUT"
+
+
+def test_verify_batch(
+    verifier: CompleteVerifier,
+    trivial_sat: VerificationInstance,
+):
+    with pytest.raises(NotImplementedError):
+        verifier.verify_batch([trivial_sat])

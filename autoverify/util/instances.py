@@ -154,7 +154,7 @@ def _passes_all(
 
 
 @overload
-def read_vnncomp_instances(  # type: ignore
+def read_vnncomp_instances(  # type: ignore pragma: no cover
     benchmark: str,
     vnncomp_path: Path,
     *,
@@ -167,7 +167,7 @@ def read_vnncomp_instances(  # type: ignore
 
 
 @overload
-def read_vnncomp_instances(
+def read_vnncomp_instances(  # pragma: no cover
     benchmark: str,
     vnncomp_path: Path,
     *,

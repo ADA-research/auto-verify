@@ -7,14 +7,19 @@ import pytest
 from autoverify.util.instances import (
     VerificationDataResult,
     VerificationInstance,
+    _passes_all,
+    _passes_at_least_1,
     csv_append_verification_result,
     get_dataclass_field_names,
     init_verification_result_csv,
+    read_all_vnncomp_instances,
     read_verification_result_from_csv,
     read_vnncomp_instances,
+    unique_networks,
     verification_instances_to_smac_instances,
     write_verification_results_to_csv,
 )
+from autoverify.verifier.verification_result import CompleteVerificationData
 
 
 def read_csv_contents(csv_path: Path) -> str:
@@ -98,8 +103,22 @@ def test_vdr_csv_row(vdr: VerificationDataResult):
     ]
 
 
-# TODO: Fixtures for verification instances
-# TODO: Add test cases when supporting commas in names? rn that will fail
+def test_vdr_from_verif_res(complete_verif_data: CompleteVerificationData):
+    v = VerificationDataResult.from_verification_result(
+        complete_verif_data,
+        {
+            "network": "hello",
+            "property": "world",
+            "timeout": 42,
+            "verifier": "nnenum",
+            "config": None,
+            "success": "OK",
+        },
+    )
+
+    assert v
+
+
 @pytest.mark.parametrize(
     "vis",
     [
@@ -245,3 +264,36 @@ def test_read_vnncomp_instances():
         bench_name, vnncomp_path, predicate=[_nano_filter, _sat_filter]
     )
     assert len(instances) == 4
+
+    with pytest.raises(ValueError):
+        read_vnncomp_instances(bench_name, Path("this_is_not_a_dir.txt"))
+
+
+def test_read_all_vnncomp_instances():
+    vnncomp_path = Path(__file__).parent.parent / "fake_vnncomp"
+    instances = read_all_vnncomp_instances(vnncomp_path)
+
+    assert "trivial" in instances.keys()
+    assert "trivial_clone" in instances.keys()
+
+
+def test_unique_networks():
+    vnncomp_path = Path(__file__).parent.parent / "fake_vnncomp"
+    instances = read_all_vnncomp_instances(vnncomp_path)["trivial"]
+    assert len(instances) == 6
+
+    instances = unique_networks(instances)
+    assert len(instances) == 3
+
+
+def test_passes(trivial_sat: VerificationInstance):
+    def _predicate_false(*_):
+        return False
+
+    def _predicate_true(*_):
+        return True
+
+    assert _passes_all([_predicate_true], trivial_sat)
+    assert not _passes_all([_predicate_false], trivial_sat)
+    assert _passes_at_least_1([_predicate_true], trivial_sat)
+    assert not _passes_at_least_1([_predicate_false], trivial_sat)
