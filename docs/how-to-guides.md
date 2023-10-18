@@ -119,17 +119,14 @@ from autoverify.verifier import AbCrown
 mnist = read_vnncomp_instances("mnist_fc", vnncomp_path=Path("../benchmark/vnncomp2022"))[:10]
 verifier = AbCrown()
 
-
 def target_function(config: Configuration, instance: str, seed: int):
     seed += 1  # Mute unused var warnings; (cant rename to _)
     verif_inst = VerificationInstance.from_str(instance)
     result = verifier.verify_instance(verif_inst, config=config)
 
-    if isinstance(result, Ok):
-        return result.unwrap().took  # Cost is the time verification took
-    elif isinstance(result, Err):
-        raise Exception  # SMAC handles exception by setting cost to `inf`
-
+    # SMAC handles exception by setting cost to `inf`
+    verification_result = result.unwrap_or_raise(Exception)
+    return float(verification_result.took)
 
 if __name__ == "__main__":
     cfg_space = verifier.config_space
