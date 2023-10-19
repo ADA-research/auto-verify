@@ -33,12 +33,12 @@ OvalBabConfigspace.add_hyperparameters(
         ),
         Categorical(
             "bounding__nets1__params__joint_ib",
-            [False],
+            [True, False],
             default=False,
         ),
         Categorical(
             "bounding__nets1__type",
-            ["alpha-crown", "beta-crown"],
+            ["alpha-crown", "beta-crown", "gamma-crown"],
             default="beta-crown",
         ),
         Categorical(
@@ -46,35 +46,32 @@ OvalBabConfigspace.add_hyperparameters(
             [True, False],
             default=True,
         ),
-        Integer(
-            "bounding__nets1__batch_size",
-            (25000, 75000),
-            default=50000,
-        ),
-        Integer(
-            "bounding__nets1__max_solver_batch",
-            (250000, 750000),
-            default=500000,
-        ),
+        # Integer(
+        #     "bounding__nets1__batch_size",
+        #     (25000, 75000),
+        #     default=50000,
+        # ),
+        # Integer(
+        #     "bounding__nets1__max_solver_batch",
+        #     (250000, 750000),
+        #     default=500000,
+        # ),
         # bounding net2 ########################################################
         Constant(
             "bounding__nets2__bounding_algorithm",
             "dual-anderson",
         ),
-        Categorical(
+        Constant(
             "bounding__nets2__params__bigm",
-            ["init"],
-            default="init",
+            "init",
         ),
-        Categorical(
+        Constant(
             "bounding__nets2__params__cut",
-            ["only"],
-            default="only",
+            "only",
         ),
-        Categorical(
+        Constant(
             "bounding__nets2__params__bigm_algorithm",
-            ["adam"],
-            default="adam",
+            "adam",
         ),
         Integer(
             "bounding__nets2__params__nb_iter",
@@ -136,11 +133,11 @@ OvalBabConfigspace.add_hyperparameters(
             [True, False],
             default=True,
         ),
-        Integer(
-            "bounding__nets2__batch_size",
-            (500, 1500),
-            default=1000,
-        ),
+        # Integer(
+        #     "bounding__nets2__batch_size",
+        #     (500, 1500),
+        #     default=1000,
+        # ),
         Integer(
             "bounding__nets2__hard_overhead",
             (1, 20),
@@ -152,11 +149,11 @@ OvalBabConfigspace.add_hyperparameters(
             [True, False],
             default=False,
         ),
-        Integer(
-            "bounding__batch_size",
-            (1, 2000),
-            default=1000,
-        ),
+        # Integer(
+        #     "bounding__batch_size",
+        #     (1, 2000),
+        #     default=1000,
+        # ),
         Categorical(
             "bounding__parent_init",
             [True, False],
@@ -168,10 +165,9 @@ OvalBabConfigspace.add_hyperparameters(
             [True],
             default=True,
         ),
-        Categorical(
+        Constant(
             "ibs__tight_ib",
-            ["null"],
-            default="null",
+            "null",
         ),
         Categorical(
             "ibs__fixed_ib",
@@ -180,14 +176,13 @@ OvalBabConfigspace.add_hyperparameters(
         ),
         Categorical(  # No bool constants...
             "ibs__joint_ib",
-            [False],
+            [True, False],
             default=False,
         ),
         # upper_bounding #######################################################
-        Categorical(
+        Constant(
             "upper_bounding__ub_method",
-            ["mi_fgsm"],
-            default="mi_fgsm",
+            "mi_fgsm",
         ),
         Integer(
             "upper_bounding__adv_params__iters",
@@ -227,28 +222,26 @@ OvalBabConfigspace.add_hyperparameters(
         ),
         Integer(
             "branching__max_domains",
-            (25000, 750000),
+            (25000, 75000),
             default=50000,
         ),
-        Categorical(
+        Constant(
             "branching__bounding__bounding_algorithm",
-            ["propagation"],
-            default="propagation",
+            "propagation",
         ),
-        Categorical(
+        Constant(
             "branching__bounding__params__best_among",
-            ["KW__crown"],
-            default="KW__crown",
+            "KW__crown",
         ),
         Categorical(
             "branching__bounding__type",
-            ["best_prop"],
+            ["best_prop", "crown"],
             default="best_prop",
         ),
-        Integer(
-            "branching__bounding__max_solver_batch",
-            (250000, 750000),
-            default=500000,
-        ),
+        # Integer(
+        #     "branching__bounding__max_solver_batch",
+        #     (250000, 750000),
+        #     default=500000,
+        # ),
     ]
 )
