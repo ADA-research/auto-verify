@@ -46,16 +46,16 @@ OvalBabConfigspace.add_hyperparameters(
             [True, False],
             default=True,
         ),
-        # Integer(
-        #     "bounding__nets1__batch_size",
-        #     (25000, 75000),
-        #     default=50000,
-        # ),
-        # Integer(
-        #     "bounding__nets1__max_solver_batch",
-        #     (250000, 750000),
-        #     default=500000,
-        # ),
+        Integer(
+            "bounding__nets1__batch_size",
+            (25000, 75000),
+            default=50000,
+        ),
+        Integer(
+            "bounding__nets1__max_solver_batch",
+            (250000, 750000),
+            default=500000,
+        ),
         # bounding net2 ########################################################
         Constant(
             "bounding__nets2__bounding_algorithm",
@@ -133,11 +133,11 @@ OvalBabConfigspace.add_hyperparameters(
             [True, False],
             default=True,
         ),
-        # Integer(
-        #     "bounding__nets2__batch_size",
-        #     (500, 1500),
-        #     default=1000,
-        # ),
+        Integer(
+            "bounding__nets2__batch_size",
+            (500, 1500),
+            default=1000,
+        ),
         Integer(
             "bounding__nets2__hard_overhead",
             (1, 20),
@@ -149,11 +149,11 @@ OvalBabConfigspace.add_hyperparameters(
             [True, False],
             default=False,
         ),
-        # Integer(
-        #     "bounding__batch_size",
-        #     (1, 2000),
-        #     default=1000,
-        # ),
+        Integer(
+            "bounding__batch_size",
+            (1, 2000),
+            default=1000,
+        ),
         Categorical(
             "bounding__parent_init",
             [True, False],
@@ -238,10 +238,10 @@ OvalBabConfigspace.add_hyperparameters(
             ["best_prop", "crown"],
             default="best_prop",
         ),
-        # Integer(
-        #     "branching__bounding__max_solver_batch",
-        #     (250000, 750000),
-        #     default=500000,
-        # ),
+        Integer(
+            "branching__bounding__max_solver_batch",
+            (250000, 750000),
+            default=500000,
+        ),
     ]
 )
