@@ -228,7 +228,7 @@ class CompleteVerifier(Verifier):
         self,
         instances: Iterable[VerificationInstance],
         *,
-        config: Configuration | Path | None,
+        config: Configuration | Path | None = None,
     ) -> list[CompleteVerificationResult]:
         """Verify a batch. Not yet implemented."""
         for instance in instances:

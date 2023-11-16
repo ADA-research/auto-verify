@@ -2,11 +2,11 @@
 import os
 import shlex
 import subprocess
-from typing import Iterable
+from collections.abc import Collection
 
 
 # Credits: @jfs
-def pid_exists(pid: int) -> bool:
+def pid_exists(pid: int) -> bool:  # pragma: no cover
     """Returns if the given PID exists."""
     if pid < 0:
         return False  # NOTE: pid == 0 returns True
@@ -20,7 +20,7 @@ def pid_exists(pid: int) -> bool:
         return True  # no error, we can send a signal to the process
 
 
-def pkill_match(pattern: str):
+def pkill_match(pattern: str):  # pragma: no cover
     """Kill processes matching the pattern."""
     cmd = f'pkill -f "{pattern}"'
 
@@ -35,12 +35,12 @@ def pkill_match(pattern: str):
         raise Exception(result.stderr)
 
 
-def cpu_count() -> int:
+def cpu_count() -> int:  # pragma: no cover
     """Return the number of available CPUs."""
     return len(os.sched_getaffinity(0))
 
 
-def nvidia_gpu_count() -> int:
+def nvidia_gpu_count() -> int:  # pragma: no cover
     """Get the number of available NVIDIA GPUs."""
     if not is_nvidia_gpu_available():
         return 0
@@ -58,7 +58,7 @@ def nvidia_gpu_count() -> int:
     return int(count)
 
 
-def is_nvidia_gpu_available() -> bool:
+def is_nvidia_gpu_available() -> bool:  # pragma: no cover
     """Check if any NVIDIA GPU is available."""
     try:
         subprocess.check_output("nvidia-smi")
@@ -67,8 +67,11 @@ def is_nvidia_gpu_available() -> bool:
         return False
 
 
-def taskset_cpu_range(cpus: Iterable[int] | tuple[int, int]):
+def taskset_cpu_range(cpus: Collection[int] | tuple[int, int]) -> str:
     """Make a taskset command with the specified CPUs."""
+    if len(cpus) == 0:
+        raise ValueError("Length of arg cpus is 0")
+
     template = "taskset --cpu-list {}"
 
     if isinstance(cpus, tuple):

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "auto-verify"
-version = "0.1.0"
+version = "0.1.1"
 description = "Efficient portfolio-based verification of neural network properties"
 readme = "README.md"
 authors = [{ name = "Corné Spek" }]
@@ -80,7 +80,7 @@ warn_unused_configs = true
 no_implicit_reexport = true
 
 [tool.bumpver]
-current_version = "0.1.0"
+current_version = "0.1.1"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "bump version {old_version} -> {new_version}"
 commit = true
@@ -91,3 +91,18 @@ push = false
 "pyproject.toml" = ['version = "{version}"']
 "README.md" = ["{version}"]
 "autoverify/__init__.py" = ['__version__ = "{version}"']
+
+[tool.coverage.run]
+omit = [
+    # The installation tests are done during gh-actions (see Dockerfile)
+    "autoverify/cli/install/install.py",
+    "autoverify/cli/install/installers/*",
+
+    "autoverify/util/conda.py",
+    "autoverify/util/vnncomp.py",
+    "autoverify/util/verifiers.py",
+
+    "autoverify/verifier/complete/mnbab/*",
+
+    "tests/*",
+]

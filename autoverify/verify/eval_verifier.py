@@ -120,7 +120,7 @@ def eval_verifier_vnncompat(
     *,
     warmup: bool = True,
     output_csv_path: Path | None = None,
-) -> dict[VerificationInstance, VerificationDataResult]:
+) -> dict[VerificationInstance, VerificationDataResult]:  # pragma: no cover
     """_summary_."""
     results: dict[VerificationInstance, VerificationDataResult] = {}
 
@@ -184,7 +184,7 @@ def eval_vnn_default(
     output_csv_path: Path,
     *,
     warmup: bool = True,
-) -> dict[VerificationInstance, VerificationDataResult]:
+) -> dict[VerificationInstance, VerificationDataResult]:  # pragma: no cover
     """_summary_."""
     results: dict[VerificationInstance, VerificationDataResult] = {}
     instances = read_vnncomp_instances(benchmark, vnncomp_path)
@@ -217,7 +217,7 @@ def eval_vnn_verifier(
     configs_dir: Path,
     *,
     warmup: bool = True,
-) -> dict[VerificationInstance, VerificationDataResult]:
+) -> dict[VerificationInstance, VerificationDataResult]:  # pragma: no cover
     """_summary_."""
     results: dict[VerificationInstance, VerificationDataResult] = {}
     instances = read_vnncomp_instances(benchmark, vnncomp_path)

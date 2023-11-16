@@ -29,19 +29,19 @@ def _create_base_dirs():
 
 
 def _remove_verifier_dir(verifier: str):
-    """_summary_."""
+    """Removes the directory associated with the verifier."""
     print(f"Removing {verifier} directory")
     shutil.rmtree(VERIFIER_DIR / verifier)
 
 
 def _init_new_verifier_dir(dir_name: str):
-    """_summary_."""
+    """Creates a new directory in `VERIFIER_DIR` with specified name."""
     dir_path = VERIFIER_DIR / dir_name
     dir_path.mkdir()
 
 
 def _uninstall_verifier(verifier: str) -> Result[None, str]:
-    """_summary_."""
+    """Tries to uninstall the specified verifier."""
     try:
         _remove_verifier_dir(verifier)
     except Exception as err:
@@ -61,7 +61,7 @@ def _uninstall_verifier(verifier: str) -> Result[None, str]:
 
 
 def _install_verifier(verifier: str) -> Result[None, str]:
-    """_summary_."""
+    """Tries to install the specified verifier."""
     if verifier not in installers:
         return Err(f"No installer found for verifier {verifier}")
 

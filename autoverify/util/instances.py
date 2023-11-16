@@ -162,7 +162,7 @@ def read_vnncomp_instances(  # type: ignore
     as_smac: Literal[False] = False,
     resolve_paths: bool = True,
     instance_file_name: str = "instances.csv",
-) -> list[VerificationInstance]:
+) -> list[VerificationInstance]:  # pragma: no cover
     ...
 
 
@@ -175,7 +175,7 @@ def read_vnncomp_instances(
     as_smac: Literal[True] = True,
     resolve_paths: bool = True,
     instance_file_name: str = "instances.csv",
-) -> list[str]:
+) -> list[str]:  # pragma: no cover
     ...
 
 

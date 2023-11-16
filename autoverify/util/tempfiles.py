@@ -15,7 +15,7 @@ def _reg_for_clean(f: str | Path):
 
 
 @atexit.register
-def _cleanup_tempfiles():
+def _cleanup_tempfiles():  # pragma: no cover
     for f in _tempfiles_to_clean:
         p = Path(f)
         if p.exists() and p.is_file():

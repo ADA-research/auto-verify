@@ -5,6 +5,8 @@ from autoverify.util import (
     get_python_path,
     is_list_of_strings,
     is_serializable,
+    merge_lists,
+    set_iter_except,
 )
 
 
@@ -47,3 +49,40 @@ def test_is_list_of_strings():
 )
 def test_is_serializable(var, expected):
     assert is_serializable(var) == expected
+
+
+def test_merge_lists():
+    assert merge_lists() == []
+
+    list1 = [1, 2, 3]
+    list2 = [2, 3, 4]
+    list3 = [3, 4, 5]
+    result = merge_lists(list1, list2, list3)
+    assert sorted(result) == [1, 2, 3, 4, 5]
+
+    result = merge_lists([], [], [])
+    assert result == []
+
+    single_list = [1, 2, 3]
+    assert merge_lists(single_list) == single_list
+
+    result = merge_lists(single_list, single_list)
+    assert result == single_list
+
+
+def test_set_iter_except():
+    s = set()
+    e = 1
+    assert list(set_iter_except(s, e)) == []
+
+    s = {1, 2, 3, 4}
+    e = 2
+    assert list(set_iter_except(s, e)) == [1, 3, 4]
+
+    s = {1, 2, 3, 4}
+    e = 5
+    assert list(set_iter_except(s, e)) == [1, 2, 3, 4]
+
+    s = {1, 2, 3, 4}
+    e = 1
+    assert list(set_iter_except(s, e)) == [2, 3, 4]
