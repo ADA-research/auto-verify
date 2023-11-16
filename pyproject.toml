@@ -91,3 +91,18 @@ push = false
 "pyproject.toml" = ['version = "{version}"']
 "README.md" = ["{version}"]
 "autoverify/__init__.py" = ['__version__ = "{version}"']
+
+[tool.coverage.run]
+omit = [
+    # The installation tests are done during gh-actions (see Dockerfile)
+    "autoverify/cli/install/install.py",
+    "autoverify/cli/install/installers/*",
+
+    "autoverify/util/conda.py",
+    "autoverify/util/vnncomp.py",
+    "autoverify/util/verifiers.py",
+
+    "autoverify/verifier/complete/mnbab/*",
+
+    "tests/*",
+]
