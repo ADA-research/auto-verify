@@ -1,4 +1,4 @@
-# Auto-Verify 0.1.0
+# Auto-Verify 0.1.1
 
 Auto-Verify is a framework for neural network verification, that allows you to install, configure and run verification tools in parallel portfolios.
 
