@@ -65,7 +65,6 @@ def test_clone_command(dummy_repo_info: GitRepoInfo):
         "git",
         "clone",
         DUMMY_CLONE_URL,
-        "--depth=1",
         "--branch",
         DUMMY_BRANCH,
     ]
