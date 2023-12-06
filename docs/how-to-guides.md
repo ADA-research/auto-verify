@@ -192,6 +192,29 @@ if __name__ == "__main__":
     pf.to_json(Path("mnist_fc_portfolio.json"))
 ```
 
+Portfolios can be manually created as shown below. This example creates a portfolio of 2 verifiers (nnenum and AB-Crown), where nnenum is given 4 CPU cores and 0 GPUs and AB-Crown is given 4 cores and 1 GPU.
+
+```py
+from autoverify.portfolio.portfolio import ConfiguredVerifier, Portfolio
+from autoverify.util.verifiers import get_verifier_configspace
+
+if __name__ == "__main__":
+    pf = Portfolio(
+        ConfiguredVerifier(
+            "nnenum",
+            get_verifier_configspace("nnenum").sample_configuration(),
+            (4, 0),
+        ),
+        ConfiguredVerifier(
+            "abcrown",
+            get_verifier_configspace("abcrown").get_default_configuration(),
+            (4, 1),
+        ),
+    )
+
+    print(pf)
+```
+
 #### Running a Portfolio
 
 Portfolios can be read from a `json` or by specifying the verification tools in Python code. Below is an example of how to run a portfolio in parallel on some instances. Lets take the portfolio we created in the previous example and run it on the same benchmark.
