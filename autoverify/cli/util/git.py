@@ -33,9 +33,7 @@ class GitRepoInfo:
 
     @property
     def clone(self) -> list[str]:
-        clone_cmd = (
-            f"git clone {self.clone_url} --depth=1 --branch {self.branch}"
-        )
+        clone_cmd = f"git clone {self.clone_url} --branch {self.branch}"
 
         return shlex.split(clone_cmd)
 
