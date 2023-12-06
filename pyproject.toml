@@ -21,7 +21,7 @@ dependencies = [
     "xdg-base-dirs==6.0.0",
     "onnxruntime==1.14.1",
     "pandas==2.0.1",
-    "numpy==1.24.3",
+    "numpy==1.26.2",
     "onnx==1.14.0",
 ]
 
