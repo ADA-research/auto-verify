@@ -19,7 +19,7 @@ First, install [Miniconda](https://docs.conda.io/projects/miniconda/en/latest/).
 After Miniconda is installed, setup Auto-Verify by running the following commands:
 
 ```
-> conda create -n python=3.10 auto-verify
+> conda create -n auto-verify python=3.10
 > conda activate auto-verify
 > pip install auto-verify
 ```
