@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "auto-verify"
-version = "0.1.1"
+version = "0.1.2"
 description = "Efficient portfolio-based verification of neural network properties"
 readme = "README.md"
 authors = [{ name = "Corné Spek" }]
@@ -81,7 +81,7 @@ warn_unused_configs = true
 no_implicit_reexport = true
 
 [tool.bumpver]
-current_version = "0.1.1"
+current_version = "0.1.2"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "bump version {old_version} -> {new_version}"
 commit = true
