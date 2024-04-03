@@ -1,4 +1,5 @@
 """VerInet."""
+
 import shlex
 from pathlib import Path
 from typing import Any, ContextManager, Iterable

@@ -1,4 +1,5 @@
 """_summary_."""
+
 from enum import Enum
 
 from autoverify.types import ResourceList

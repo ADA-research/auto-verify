@@ -1,4 +1,5 @@
 """YAML file utils."""
+
 import atexit
 import json
 import tempfile

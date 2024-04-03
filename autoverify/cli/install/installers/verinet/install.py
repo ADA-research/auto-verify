@@ -1,4 +1,5 @@
 """verinet installer."""
+
 from pathlib import Path
 
 from autoverify.cli.util.git import GitRepoInfo, clone_checkout_verifier

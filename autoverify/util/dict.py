@@ -1,4 +1,5 @@
 """Dictionary utilities."""
+
 from typing import Any
 
 

@@ -3,6 +3,7 @@
 Return verifier instances that should be compatible with the given
 benchmark + instance.
 """
+
 from pathlib import Path
 from typing import Any
 

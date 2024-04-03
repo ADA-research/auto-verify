@@ -1,4 +1,5 @@
 """CLI utility."""
+
 import ast
 from argparse import ArgumentTypeError
 from typing import Any

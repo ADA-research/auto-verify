@@ -1,4 +1,5 @@
 """Onnx utility functions."""
+
 from pathlib import Path
 
 import onnx

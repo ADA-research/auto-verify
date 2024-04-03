@@ -1,4 +1,5 @@
 """_summary_."""
+
 import numpy as np
 from ConfigSpace import Configuration
 
