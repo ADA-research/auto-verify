@@ -31,7 +31,7 @@ dev = [
     "black",
     "isort",
     "tox",
-    "pytest",
+    "pytest==7.3.2",
     "pre-commit",
     "flake8",
     "mypy",
