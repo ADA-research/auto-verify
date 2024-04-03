@@ -1,4 +1,5 @@
 """mnbab installer."""
+
 import shlex
 import subprocess
 from pathlib import Path
@@ -54,7 +55,8 @@ def install(install_dir: Path):
     mpfr_path = str(get_conda_pkg_path("mpfr", "4.0.2", "hb69a4c5_1"))
     cddlib_path = str(get_conda_pkg_path("cddlib", "1!0.94j", "he80fd80_1001"))
 
-    with cwd(install_dir / "tool"), environment(
-        MPFR_PREFIX=mpfr_path, CDD_PREFIX=cddlib_path
+    with (
+        cwd(install_dir / "tool"),
+        environment(MPFR_PREFIX=mpfr_path, CDD_PREFIX=cddlib_path),
     ):
         subprocess.run(elina_cmd, shell=True)

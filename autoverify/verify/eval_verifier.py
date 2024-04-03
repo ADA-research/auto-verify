@@ -3,6 +3,7 @@
 This file is meant for functions that benchmark the performance of a verifier,
 collecting detailed results about the verification run.
 """
+
 import copy
 import logging
 from pathlib import Path

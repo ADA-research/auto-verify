@@ -1,4 +1,5 @@
 """_summary_."""
+
 from collections.abc import Iterable, MutableMapping
 
 import numpy as np

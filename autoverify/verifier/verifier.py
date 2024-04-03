@@ -1,4 +1,5 @@
 """Base verifier class."""
+
 import os
 import signal
 import subprocess

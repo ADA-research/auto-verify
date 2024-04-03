@@ -1,4 +1,5 @@
 """Intermediate representation of ovalbab json configs."""
+
 import json
 from pathlib import Path
 from typing import IO, Any

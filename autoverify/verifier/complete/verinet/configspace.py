@@ -1,4 +1,5 @@
 """_summary_."""
+
 from ConfigSpace import Categorical, ConfigurationSpace, Float, Integer
 
 VerinetConfigspace = ConfigurationSpace(name="verinet")
