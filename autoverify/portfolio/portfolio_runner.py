@@ -1,4 +1,5 @@
 """Class to run parallel portfolio."""
+
 import concurrent.futures
 import logging
 import signal

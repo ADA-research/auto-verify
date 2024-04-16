@@ -1,4 +1,5 @@
 """CLI entry point module."""
+
 import argparse
 import sys
 

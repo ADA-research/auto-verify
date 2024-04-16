@@ -1,4 +1,5 @@
 """Hardcoded verifier utility."""
+
 from ConfigSpace import ConfigurationSpace
 
 from autoverify.verifier import AbCrown, MnBab, Nnenum, OvalBab, Verinet

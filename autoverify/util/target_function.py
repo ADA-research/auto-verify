@@ -1,4 +1,5 @@
 """_summary_."""
+
 from pathlib import Path
 
 from ConfigSpace import Configuration

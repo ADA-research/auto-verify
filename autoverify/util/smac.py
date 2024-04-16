@@ -1,4 +1,5 @@
 """SMAC util."""
+
 import copy
 import csv
 import json
