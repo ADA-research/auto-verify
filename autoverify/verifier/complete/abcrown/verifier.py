@@ -53,11 +53,6 @@ class AbCrown(CompleteVerifier):
         return [
             cwd(self.tool_path / "complete_verifier"),
             pkill_matches(["python abcrown.py"]),
-            environment(
-                LD_LIBRARY_PATH=str(
-                    find_conda_lib(self.conda_env_name, "libcudart.so.11.0")
-                )
-            ),
         ]
 
     def _parse_result(
@@ -95,6 +90,8 @@ class AbCrown(CompleteVerifier):
         --results_file {str(result_file)} \
         --timeout {str(timeout)}
         """
+
+        print(f"cmd: {run_cmd}")
 
         return run_cmd, result_file
 
