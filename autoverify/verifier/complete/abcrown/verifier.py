@@ -91,8 +91,6 @@ class AbCrown(CompleteVerifier):
         --timeout {str(timeout)}
         """
 
-        print(f"cmd: {run_cmd}")
-
         return run_cmd, result_file
 
     def _verify_batch(
