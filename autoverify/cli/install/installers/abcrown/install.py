@@ -8,7 +8,7 @@ from autoverify.util.env import copy_env_file_to
 
 AbCrownRepoInfo = GitRepoInfo(
     branch="main",
-    commit_hash="7b3d507",
+    commit_hash="877afa32d9d314fcb416436a616e6a5878fdab78",
     clone_url="https://github.com/Verified-Intelligence/alpha-beta-CROWN",
 )
 
