@@ -8,12 +8,8 @@ from ConfigSpace import Configuration, ConfigurationSpace
 
 from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.util import find_substring
-from autoverify.util.conda import (
-    find_conda_lib,
-    get_conda_path,
-    get_conda_source_cmd,
-)
-from autoverify.util.env import cwd, environment, pkill_matches
+from autoverify.util.conda import get_conda_path, get_conda_source_cmd
+from autoverify.util.env import cwd, pkill_matches
 from autoverify.util.tempfiles import tmp_file
 from autoverify.verifier.complete.abcrown.abcrown_yaml_config import (
     AbcrownYamlConfig,
@@ -53,11 +49,6 @@ class AbCrown(CompleteVerifier):
         return [
             cwd(self.tool_path / "complete_verifier"),
             pkill_matches(["python abcrown.py"]),
-            environment(
-                LD_LIBRARY_PATH=str(
-                    find_conda_lib(self.conda_env_name, "libcudart.so.11.0")
-                )
-            ),
         ]
 
     def _parse_result(

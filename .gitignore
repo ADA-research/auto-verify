@@ -1,6 +1,7 @@
 hydra_output/
 smac3_output/
 *.vnnlib.compiled
+vnncomp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

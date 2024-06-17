@@ -64,6 +64,7 @@ def test_clone_command(dummy_repo_info: GitRepoInfo):
     expected_cmd = [
         "git",
         "clone",
+        "--recursive",
         DUMMY_CLONE_URL,
         "--branch",
         DUMMY_BRANCH,
