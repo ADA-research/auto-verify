@@ -1,15 +1,12 @@
-## Getting Started
-
 ### System requirements
 
 Auto-Verify has only been tested for Linux and will not work on MacOS and Windows. Alternatively, using [Windows Subsystem for Linux](https://learn.microsoft.com/nl-nl/windows/wsl/about) is also an option.
 
-If you want to make use of the GPU based verification algorithms, you will need a CUDA-enabled GPU.
+Additionally, if you want to make use of the GPU based verification algorithms, you will need a CUDA-enabled GPU.
 
 ### Installing Auto-Verify
 
 First, install [Miniconda](https://docs.conda.io/projects/miniconda/en/latest/). Miniconda is used to manage the environments of different verification tools, other environment managers will _not_ work.
-
 !!! warning
 
     Anaconda can fail trying to install environments in some cases where Miniconda does not.
@@ -56,10 +53,7 @@ To uninstall a verifier, run:
 
 If you have your own models to use with Auto-Verify, you can use those. However, if you just want to try it out, we recommend using the datasets that are provided for the VNNCOMP competition. These datasets are already made compatible with Auto-Verify and APIs are available to directly work with them. You can find the datasets from the previous years over here:
 
-- VNNCOMP 2023: https://github.com/stanleybak/vnncomp2023
-
-- VNNCOMP 2022: https://github.com/stanleybak/vnncomp2022
-
-- VNNCOMP 2021: https://github.com/stanleybak/vnncomp2021
-
-- VNNCOMP 2020: https://github.com/verivital/vnn-comp
+- [VNNCOMP 2023](https://github.com/stanleybak/vnncomp2023)
+- [VNNCOMP 2022](https://github.com/stanleybak/vnncomp2022)
+- [VNNCOMP 2021](https://github.com/stanleybak/vnncomp2021)
+- [VNNCOMP 2020](https://github.com/verivital/vnn-comp)
