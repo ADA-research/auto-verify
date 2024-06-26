@@ -18,6 +18,7 @@ from autoverify.util.instances import (
     VerificationDataResult,
     csv_append_verification_result,
     init_verification_result_csv,
+    json_write_verification_result,
 )
 from autoverify.util.proc import cpu_count, nvidia_gpu_count
 from autoverify.util.resources import to_allocation
@@ -220,6 +221,33 @@ class PortfolioRunner:
         csv_append_verification_result(vdr, out_csv)
 
     @staticmethod
+    def _json_log_result(
+        out_json: Path,
+        result: CompleteVerificationResult,
+        instance: VerificationInstance,
+        verifier: str,
+        configuration: Configuration,
+    ):
+        if isinstance(result, Ok):
+            res_d = result.unwrap()
+            success = "OK"
+        elif isinstance(result, Err):
+            res_d = result.unwrap_err()
+            success = "ERR"
+
+        inst_d = {
+            "network": instance.network,
+            "property": instance.property,
+            "timeout": instance.timeout,
+            "verifier": verifier,
+            "config": configuration,
+            "success": success,
+        }
+
+        vdr = VerificationDataResult.from_verification_result(res_d, inst_d)
+        json_write_verification_result(vdr, out_json)
+
+    @staticmethod
     def _vbs_from_cost_dict(cost_dict: _CostDict) -> _VbsResult:
         vbs: _VbsResult = {}
 
@@ -286,6 +314,7 @@ class PortfolioRunner:
         instances: Iterable[VerificationInstance],
         *,
         out_csv: Path | None = None,
+        out_json: Path | None = None,
         vnncompat: bool = False,
         benchmark: str | None = None,
         verifier_kwargs: dict[str, dict[str, Any]] | None = None,
@@ -295,7 +324,8 @@ class PortfolioRunner:
 
         Arguments:
             instances: Instances to evaluate.
-            out_csv: File where the results are written to.
+            out_csv: CSV File where the results are written to.
+            out_json: JSON File where the results are written to.
             vnncompat: Use some compat kwargs.
             benchmark: Only if vnncompat, benchmark name.
             verifier_kwargs: Kwargs passed to verifiers.
@@ -307,11 +337,14 @@ class PortfolioRunner:
         if out_csv:
             out_csv = out_csv.expanduser().resolve()
 
+        if out_json:
+            out_json = out_json.expanduser().resolve()
+
         results: dict[VerificationInstance, VerificationDataResult] = {}
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            for instance in instances:
-                logger.info(f"Running portfolio on {str(instance)}")
+            for index, instance in enumerate(instances):
+                logger.info(f"{index} - Running portfolio on {str(instance)}")
 
                 futures: dict[
                     Future[CompleteVerificationResult], ConfiguredVerifier
@@ -353,6 +386,15 @@ class PortfolioRunner:
                         if out_csv:
                             self._csv_log_result(
                                 out_csv,
+                                result,
+                                instance,
+                                fut_cv.verifier,
+                                fut_cv.configuration,
+                            )
+
+                        if out_json:
+                            self._json_log_result(
+                                out_json,
                                 result,
                                 instance,
                                 fut_cv.verifier,
