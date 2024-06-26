@@ -43,6 +43,8 @@ markdown_extensions:
   - def_list
 
 nav:
-  - Auto-Verify: index.md
-  - How-To Guides: how-to-guides.md
+  - About: index.md
+  - Getting started: getting-started.md
+  - Examples: examples.md
   - API: api.md
+  - Contributing: contributing.md
