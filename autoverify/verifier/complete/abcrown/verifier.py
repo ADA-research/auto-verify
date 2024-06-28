@@ -48,7 +48,6 @@ class AbCrown(CompleteVerifier):
         # Ideally just keep track of PIDs rather than pkill name matching
         return [
             cwd(self.tool_path / "complete_verifier"),
-            pkill_matches(["python abcrown.py"]),
         ]
 
     def _parse_result(
