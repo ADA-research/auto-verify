@@ -96,7 +96,7 @@ class Nnenum(CompleteVerifier):
         conda activate {self.conda_env_name}
         python -m nnenum.nnenum {str(network)} {str(property)} {str(timeout)} \
         {str(result_file)} \
-        {6} \
+        {str(cpu_count())} \
         {settings_str} \
         {shlex.quote(str(config))} \
         """
