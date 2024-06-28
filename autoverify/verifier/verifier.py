@@ -313,44 +313,24 @@ class CompleteVerifier(Verifier):
             for context in contexts:
                 stack.enter_context(context)
 
-            process = subprocess.Popen(
-                run_cmd,
-                executable="/bin/bash",
+            before_t = time.time()
+
+            process = subprocess.run(
+                run_cmd, 
+                executable="/bin/bash", 
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 shell=True,
                 universal_newlines=True,
-                preexec_fn=os.setsid,
-            )
-
-            before_t = time.time()
-            self._timeout_event: threading.Event | None = threading.Event()
-
-            def _terminate(timeout_sec):
-                assert self._timeout_event
-                on_time = self._timeout_event.wait(timeout_sec)
-
-                if not on_time:
-                    global result
-                    result = "TIMEOUT"  # type: ignore
-
-                if pid_exists(process.pid):
-                    os.killpg(os.getpgid(process.pid), signal.SIGTERM)
-
-            t = threading.Thread(target=_terminate, args=[timeout])
-            t.start()
+                preexec_fn=os.setsid)
 
             assert process.stdout
 
-            for line in iter(process.stdout.readline, ""):
-                output_lines.append(line)
+            output_str = process.stdout
 
-            process.stdout.close()
-            return_code = process.wait()
+            return_code = process.returncode
             took_t = time.time() - before_t
-            self._timeout_event.set()
 
-            output_str = "".join(output_lines)
             counter_example: str | None = None
 
             if result != "TIMEOUT":
@@ -360,8 +340,6 @@ class CompleteVerifier(Verifier):
                     result, counter_example = self._parse_result(
                         output_str, result_file
                     )
-
-            self._timeout_event = None
 
             return CompleteVerificationData(
                 result,  # type: ignore
