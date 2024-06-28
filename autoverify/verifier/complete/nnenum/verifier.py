@@ -46,7 +46,6 @@ class Nnenum(CompleteVerifier):
         return [
             cwd(self.tool_path / "src"),
             environment(OPENBLAS_NUM_THREADS="1", OMP_NUM_THREADS="1"),
-            pkill_matches(["python -m nnenum.nnenum"]),
         ]
 
     def _parse_result(
@@ -97,7 +96,7 @@ class Nnenum(CompleteVerifier):
         conda activate {self.conda_env_name}
         python -m nnenum.nnenum {str(network)} {str(property)} {str(timeout)} \
         {str(result_file)} \
-        {str(cpu_count())} \
+        {6} \
         {settings_str} \
         {shlex.quote(str(config))} \
         """
