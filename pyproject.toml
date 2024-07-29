@@ -16,11 +16,12 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
+    "ConfigSpace==0.7.1",
     "SMAC==2.0.2",
     "result==0.9.0",
-    "xdg-base-dirs==6.0.0",
+    "xdg-base-dirs==6.0.1",
     "onnxruntime==1.14.1",
-    "pandas==2.0.1",
+    "pandas==2.2.0",
     "numpy==1.24.3",
     "onnx==1.14.0",
     "swig==4.1.1.post1",
@@ -28,19 +29,19 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "black",
-    "isort",
+    "black==24.4.2",
+    "isort==5.13.2",
     "tox",
     "pytest==7.3.2",
     "pre-commit",
-    "flake8",
-    "mypy",
+    "flake8==7.1.0",
+    "mypy==1.10.0",
     "bumpver",
-    "coverage",
+    "coverage==7.5.3",
     "mkdocs",
     "pydocstyle",
-    "types-PyYAML",
-    "pytest-lazy-fixture",
+    "types-PyYAML==6.0.12.20240311",
+    "pytest-lazy-fixture==0.6.3",
 ]
 
 [project.scripts]
