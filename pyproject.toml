@@ -16,16 +16,18 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
+    "ConfigSpace==0.7.1",
     "SMAC==2.0.2",
     "result==0.9.0",
-    "xdg-base-dirs==6.0.0",
+    "xdg-base-dirs==6.0.1",
     "onnxruntime==1.14.1",
-    "pandas==2.0.1",
+    "pandas==2.2.0",
     "numpy==1.24.3",
     "onnx==1.14.0",
     "swig==4.1.1.post1",
 ]
 
+# pytest and pytest-lazy-fixture are frozen due to compatibility issues 
 [project.optional-dependencies]
 dev = [
     "black",
@@ -40,7 +42,7 @@ dev = [
     "mkdocs",
     "pydocstyle",
     "types-PyYAML",
-    "pytest-lazy-fixture",
+    "pytest-lazy-fixture==0.6.3",
 ]
 
 [project.scripts]
