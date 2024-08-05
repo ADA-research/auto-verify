@@ -334,9 +334,9 @@ class PortfolioRunner:
                         target_instance = instance
 
                     future = executor.submit(
-                        self._verifiers[cv].verify_instance, 
+                        self._verifiers[cv].verify_instance,
                         target_instance,
-                        config=cv.configuration
+                        config=cv.configuration,
                     )
                     futures[future] = cv
 
