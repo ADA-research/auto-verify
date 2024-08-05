@@ -1,11 +1,11 @@
 """Base verifier class."""
 
+import logging
 import os
 import signal
 import subprocess
 import threading
 import time
-import logging
 from abc import ABC, abstractmethod
 from contextlib import ExitStack
 from pathlib import Path
