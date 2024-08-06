@@ -46,7 +46,6 @@ class Nnenum(CompleteVerifier):
         return [
             cwd(self.tool_path / "src"),
             environment(OPENBLAS_NUM_THREADS="1", OMP_NUM_THREADS="1"),
-            pkill_matches(["python -m nnenum.nnenum"]),
         ]
 
     def _parse_result(

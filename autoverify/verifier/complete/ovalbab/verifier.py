@@ -52,7 +52,6 @@ class OvalBab(CompleteVerifier):
                     find_conda_lib(self.conda_env_name, "libcudart.so.11.0")
                 )
             ),
-            pkill_matches(["python tools/bab_tools/bab_from_vnnlib.py"]),
         ]
 
     def _parse_result(
