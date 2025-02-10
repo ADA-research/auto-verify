@@ -29,6 +29,7 @@ plugins:
   - mkdocstrings:
   - search:
       lang: en
+  - badges:
 
 markdown_extensions:
   - pymdownx.highlight:
