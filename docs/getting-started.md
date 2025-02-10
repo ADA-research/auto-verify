@@ -57,3 +57,7 @@ If you have your own models to use with Auto-Verify, you can use those. However,
 - [VNNCOMP 2022](https://github.com/stanleybak/vnncomp2022)
 - [VNNCOMP 2021](https://github.com/stanleybak/vnncomp2021)
 - [VNNCOMP 2020](https://github.com/verivital/vnn-comp)
+
+### Usage
+If you want to get started with Auto-verify quickly, you can go to the [examples](examples.md).
+To inspect the available functionalities of the package, please refer to the [API documentation](api.md). 

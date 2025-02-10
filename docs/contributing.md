@@ -44,4 +44,4 @@ To ensure that all the original code is working and everything is neat and tidy,
 
 ## Submitting your code
 
-After you have made modifications to your code, open a pull request [here](https://github.com/ADA-research/auto-verify/pulls). If a maintainer approves of the changes and the pipeline succeeds, the pull request will be merged into the main repository.
+After you have made modifications to your code, open a pull request [here](https://github.com/ADA-research/auto-verify/pulls). If a maintainer approves of the changes and the pipeline succeeds, the pull request will be merged into the main repository. If the pipeline fails, please fix them and submit a new pull request or close and reopen the issue.
