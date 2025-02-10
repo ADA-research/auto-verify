@@ -1,4 +1,43 @@
-# How-To-Guides
+# Examples
+
+In this section there are a couple examples of how you can use Auto-Verify.
+
+## Using Datasets
+
+If you have your own models to use with Auto-Verify, you can use those. However, if you just want to try it out, we recommend using the datasets that are provided for the VNNCOMP competition. Auto-Verify supports reading benchmarks defined in VNNCOMP style, which are benchmarks with the following structure:
+
+```
+vnncomp2022
+└── test_props
+    ├── instances.csv
+    ├── onnx
+    │   ├── test_nano.onnx
+    │   ├── test_sat.onnx
+    │   └── test_unsat.onnx
+    └── vnnlib
+        ├── test_nano.vnnlib
+        └── test_prop.vnnlib
+```
+
+Where `instances.csv` is a `csv` file with 3 columns: network, property, timeout. For example, the `test_props` directory contains the following 3 verification instaces:
+
+```
+onnx/test_sat.onnx,vnnlib/test_prop.vnnlib,60
+onnx/test_unsat.onnx,vnnlib/test_prop.vnnlib,60
+onnx/test_nano.onnx,vnnlib/test_nano.vnnlib,60
+```
+
+You can find the datasets from the previous years here:
+
+- VNNCOMP 2023: https://github.com/stanleybak/vnncomp2023
+
+- VNNCOMP 2022: https://github.com/stanleybak/vnncomp2022
+
+- VNNCOMP 2021: https://github.com/stanleybak/vnncomp2021
+
+- VNNCOMP 2020: https://github.com/verivital/vnn-comp
+
+After downloading one of these datasets, you need to unzip the data files that you need or use the scripts provided in the repositories to prepare the files.
 
 ## Verifying Properties
 
@@ -29,32 +68,7 @@ if __name__ == "__main__":
 
 ### Running VNNCOMP Benchmarks
 
-Auto-Verify supports reading benchmarks defined in VNNCOMP style, which are benchmarks with the following structure:
-
-```
-vnncomp2022
-└── test_props
-    ├── instances.csv
-    ├── onnx
-    │   ├── test_nano.onnx
-    │   ├── test_sat.onnx
-    │   └── test_unsat.onnx
-    └── vnnlib
-        ├── test_nano.vnnlib
-        └── test_prop.vnnlib
-```
-
-Where `instances.csv` is a `csv` file with 3 columns: network, property, timeout. For example, the `test_props` directory contains the following 3 verification instaces:
-
-```
-onnx/test_sat.onnx,vnnlib/test_prop.vnnlib,60
-onnx/test_unsat.onnx,vnnlib/test_prop.vnnlib,60
-onnx/test_nano.onnx,vnnlib/test_nano.vnnlib,60
-```
-
-VNNCOMP Benchmarks can found at the following links: [2022](https://github.com/ChristopherBrix/vnncomp2022_benchmarks/tree/main/benchmarks), [2023](https://github.com/ChristopherBrix/vnncomp2023_benchmarks/tree/main/benchmarks). Make sure to unzip all files inside the benchmark after you have downloaded it.
-
-Below is a code snippet that runs this benchmark. Note the `Path` pointing to the benchmark location.
+Below is a code snippet that runs the VNNCOMP test_props benchmark. Note the `Path` pointing to the benchmark location.
 
 ```py
 from pathlib import Path
