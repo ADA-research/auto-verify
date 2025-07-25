@@ -46,10 +46,7 @@ def _get_cpu_gpu_alloc(verifier: str, rt: ResourceTracker):
     cpus, gpu = rt.deduct_by_name(verifier, mock=True)
 
     # HACK: Need to refactor ResourceTracker
-    if gpu <= 0:
-        gpu = -1
-    else:
-        gpu = 0
+    gpu = -1 if gpu <= 0 else 0
 
     return (0, cpus - 1, gpu)
 
@@ -174,7 +171,8 @@ class Hydra:
         portfolio = Portfolio()
         self._iter = 0
 
-        for self._iter in range(self._scenario.n_iters):
+        for iter_num in range(self._scenario.n_iters):
+            self._iter = iter_num
             logger.info(f"Hydra iteration {self._iter}")
 
             new_configs = self._configurator(portfolio)

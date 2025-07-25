@@ -24,7 +24,7 @@ def config_from_txt_file(
     file: Path, cfg_space: ConfigurationSpace
 ) -> Configuration:
     """Create a config from a config in a txt file."""
-    with open(str(file), "r") as f:
+    with open(str(file)) as f:
         txt = f.read().rstrip()
 
     return config_from_str(txt, cfg_space)

@@ -1,8 +1,9 @@
 """OvalBab verifier."""
 
 from collections.abc import Iterable
+from contextlib import AbstractContextManager
 from pathlib import Path
-from typing import Any, ContextManager
+from typing import Any
 
 from ConfigSpace import Configuration, ConfigurationSpace
 
@@ -44,7 +45,7 @@ class OvalBab(CompleteVerifier):
         super().__init__(batch_size, cpu_gpu_allocation)
 
     @property
-    def contexts(self) -> list[ContextManager[None]]:
+    def contexts(self) -> list[AbstractContextManager[None]]:
         return [
             cwd(self.tool_path),
             environment(
@@ -60,7 +61,7 @@ class OvalBab(CompleteVerifier):
         _: str,
         result_file: Path | None,
     ) -> tuple[VerificationResultString, str | None]:
-        with open(str(result_file), "r") as f:
+        with open(str(result_file)) as f:
             result_text = f.read()
 
         if find_substring("violated", result_text):

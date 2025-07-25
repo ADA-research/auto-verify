@@ -1,8 +1,7 @@
 import pytest
-from ConfigSpace import Configuration
-
 from autoverify.portfolio.portfolio import ConfiguredVerifier, Portfolio
 from autoverify.portfolio.portfolio_runner import PortfolioRunner
+from ConfigSpace import Configuration
 
 
 @pytest.fixture

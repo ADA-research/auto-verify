@@ -3,7 +3,6 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-
 from autoverify.util.instances import (
     VerificationDataResult,
     VerificationInstance,
@@ -23,7 +22,7 @@ from autoverify.verifier.verification_result import CompleteVerificationData
 
 
 def read_csv_contents(csv_path: Path) -> str:
-    with open(str(csv_path), "r") as csv_file:
+    with open(str(csv_path)) as csv_file:
         return csv_file.read()
 
 
@@ -273,8 +272,8 @@ def test_read_all_vnncomp_instances():
     vnncomp_path = Path(__file__).parent.parent / "fake_vnncomp"
     instances = read_all_vnncomp_instances(vnncomp_path)
 
-    assert "trivial" in instances.keys()
-    assert "trivial_clone" in instances.keys()
+    assert "trivial" in instances
+    assert "trivial_clone" in instances
 
 
 def test_unique_networks():

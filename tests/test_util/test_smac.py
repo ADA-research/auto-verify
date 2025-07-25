@@ -2,9 +2,6 @@ import csv
 from pathlib import Path
 
 import pytest
-from ConfigSpace import ConfigurationSpace
-from smac import RunHistory, Scenario
-
 from autoverify.util.instances import VerificationInstance
 from autoverify.util.smac import (
     get_scenario_dict,
@@ -12,6 +9,8 @@ from autoverify.util.smac import (
     index_features,
     runhistory_to_csv,
 )
+from ConfigSpace import ConfigurationSpace
+from smac import RunHistory, Scenario
 
 
 @pytest.fixture
@@ -58,7 +57,7 @@ def test_rh_to_csv(runhistory: RunHistory, tmp_path: Path):
     csv_file = tmp_path / "rh.csv"
     runhistory_to_csv(runhistory, csv_file)
 
-    with open(csv_file, "r") as f:
+    with open(csv_file) as f:
         reader = csv.DictReader(f)
 
         rows = list(reader)

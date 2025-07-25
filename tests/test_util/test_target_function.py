@@ -1,5 +1,4 @@
 import pytest
-
 from autoverify.util.target_function import _process_target_function_result
 from autoverify.verifier.verification_result import CompleteVerificationResult
 
@@ -21,7 +20,7 @@ def test_timeout_process_tf_func_res(
 def test_err_process_tf_func_res(
     err_complete_verif_res: CompleteVerificationResult,
 ):
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         _process_target_function_result(err_complete_verif_res, 10)
 
 

@@ -2,9 +2,8 @@ import subprocess
 from pathlib import Path
 
 import pytest
-from pytest import MonkeyPatch
-
 from autoverify.cli.util.git import GitRepoInfo, clone_checkout_verifier
+from pytest import MonkeyPatch
 
 DUMMY_CLONE_URL = "https://github.com/example/repo.git"
 DUMMY_BRANCH = "main"

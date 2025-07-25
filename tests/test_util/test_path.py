@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pytest
-
 from autoverify.util.path import check_file_extension, read_path_file
 
 SampleFiles = tuple[Path, Path]

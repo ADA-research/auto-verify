@@ -1,5 +1,4 @@
 import pytest
-
 from autoverify.util import (
     find_substring,
     get_python_path,

@@ -1,6 +1,6 @@
 """Filters VNNCOMP style instances."""
 
-from typing import Callable
+from collections.abc import Callable
 
 from autoverify.util.verification_instance import VerificationInstance
 

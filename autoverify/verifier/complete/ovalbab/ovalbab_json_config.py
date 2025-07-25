@@ -54,11 +54,10 @@ class OvalbabJsonConfig:
             nested_keys = key.split("__")
             sub_dict = ovalbab_dict
 
-            if len(nested_keys) >= 2:
-                if nested_keys[1].startswith("nets"):
-                    i = int(nested_keys[1][-1]) - 1
-                    sub_dict = sub_dict["bounding"]["nets"][i]
-                    nested_keys = nested_keys[2:]
+            if len(nested_keys) >= 2 and nested_keys[1].startswith("nets"):
+                i = int(nested_keys[1][-1]) - 1
+                sub_dict = sub_dict["bounding"]["nets"][i]
+                nested_keys = nested_keys[2:]
 
             if nested_keys[-1] == "best_among" and value:
                 value = value.split("__")

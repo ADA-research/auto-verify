@@ -5,21 +5,21 @@ This module provides an alternative to conda-based installations using
 Python virtual environments and uv for package management.
 """
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 from autoverify.cli.util.git import GitRepoInfo
 
+from .abcrown.venv_install import VenvAbCrownRepoInfo
+from .abcrown.venv_install import install as install_abcrown_venv
+from .nnenum.venv_install import VenvNnenumRepoInfo
+from .nnenum.venv_install import install as install_nnenum_venv
 from .venv_install import (
     VENV_AV_HOME,
     VENV_VERIFIER_DIR,
     try_install_verifiers_venv,
     try_uninstall_verifiers_venv,
 )
-from .nnenum.venv_install import VenvNnenumRepoInfo
-from .nnenum.venv_install import install as install_nnenum_venv
-from .abcrown.venv_install import VenvAbCrownRepoInfo
-from .abcrown.venv_install import install as install_abcrown_venv
 from .verinet.venv_install import VenvVerinetRepoInfo
 from .verinet.venv_install import install as install_verinet_venv
 

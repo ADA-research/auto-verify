@@ -3,6 +3,7 @@
 import atexit
 import json
 import tempfile
+from contextlib import contextmanager
 from pathlib import Path
 from typing import IO, Any
 
@@ -23,41 +24,49 @@ def _cleanup_tempfiles():  # pragma: no cover
             p.unlink()
 
 
+@contextmanager
 def tmp_file(extension: str) -> IO[str]:
     """Return a new tempfile with the given extension."""
-    f = tempfile.NamedTemporaryFile("w", suffix=extension, delete=False)
+    f = tempfile.NamedTemporaryFile("w", suffix=extension, delete=False)  # noqa: SIM115
     _reg_for_clean(f.name)
-    return f
+    try:
+        yield f
+    finally:
+        f.close()
 
 
 # TODO: Just make a function that returns a tempfile with extension as param
+@contextmanager
 def tmp_json_file() -> IO[str]:
     """Returns a new temporary named empty yaml file."""
-    f = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+    f = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)  # noqa: SIM115
     _reg_for_clean(f.name)
-    return f
+    try:
+        yield f
+    finally:
+        f.close()
 
 
-def tmp_json_file_from_dict(a_dict: dict[Any, Any]) -> IO[str]:
+def tmp_json_file_from_dict(a_dict: dict[Any, Any]) -> str:
     """Returns a new temporary named json file with the dict written to it."""
-    tmp_json = tmp_json_file()
-
-    with open(tmp_json.name, "w") as fp:
-        json.dump(a_dict, fp)
-
-    return tmp_json
+    with tmp_json_file() as tmp_json:
+        json.dump(a_dict, tmp_json)
+        return tmp_json.name
 
 
+@contextmanager
 def tmp_yaml_file() -> IO[str]:
     """Returns a new temporary named empty yaml file."""
-    f = tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False)
+    f = tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False)  # noqa: SIM115
     _reg_for_clean(f.name)
-    return f
+    try:
+        yield f
+    finally:
+        f.close()
 
 
-def tmp_yaml_file_from_dict(a_dict: dict[Any, Any]) -> IO[str]:
+def tmp_yaml_file_from_dict(a_dict: dict[Any, Any]) -> str:
     """Returns a new temporary named yaml file with the dict written to it."""
-    tmp_yaml = tmp_yaml_file()
-    yaml.dump(a_dict, tmp_yaml)
-
-    return tmp_yaml
+    with tmp_yaml_file() as tmp_yaml:
+        yaml.dump(a_dict, tmp_yaml)
+        return tmp_yaml.name

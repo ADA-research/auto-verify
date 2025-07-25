@@ -6,7 +6,6 @@ environments and uv package manager instead of conda.
 """
 
 import logging
-import shlex
 import shutil
 import subprocess
 from collections.abc import Iterable
@@ -15,8 +14,6 @@ from subprocess import CalledProcessError
 
 from result import Err, Ok, Result
 from xdg_base_dirs import xdg_data_home
-
-from autoverify.util.env import cwd
 
 VENV_AV_HOME = xdg_data_home() / "autoverify-venv"
 VENV_VERIFIER_DIR = VENV_AV_HOME / "verifiers"

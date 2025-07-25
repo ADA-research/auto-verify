@@ -2,12 +2,11 @@
 
 from pathlib import Path
 
-from autoverify.cli.util.git import GitRepoInfo, clone_checkout_verifier
 from autoverify.cli.install.venv_installers.venv_install import (
     create_verifier_venv,
     install_requirements,
-    TOOL_DIR_NAME
 )
+from autoverify.cli.util.git import GitRepoInfo, clone_checkout_verifier
 
 VenvNnenumRepoInfo = GitRepoInfo(
     branch="vnncomp2022",

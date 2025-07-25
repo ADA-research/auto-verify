@@ -16,5 +16,5 @@ def parse_config_str_type(
     try:
         cfg_dict = ast.literal_eval(value)
         return Configuration(cfg_space, values=cfg_dict)
-    except Exception:
-        raise ArgumentTypeError("Failed to create configuration from arg.")
+    except Exception as err:
+        raise ArgumentTypeError("Failed to create configuration from arg.") from err

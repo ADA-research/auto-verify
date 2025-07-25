@@ -1,8 +1,10 @@
 """Nnenum verifier."""
 
 import shlex
+from collections.abc import Iterable
+from contextlib import AbstractContextManager
 from pathlib import Path
-from typing import Any, ContextManager, Iterable
+from typing import Any
 
 from ConfigSpace import Configuration, ConfigurationSpace
 
@@ -42,7 +44,7 @@ class Nnenum(CompleteVerifier):
         self._use_auto_settings = use_auto_settings
 
     @property
-    def contexts(self) -> list[ContextManager[None]]:
+    def contexts(self) -> list[AbstractContextManager[None]]:
         return [
             cwd(self.tool_path / "src"),
             environment(OPENBLAS_NUM_THREADS="1", OMP_NUM_THREADS="1"),
@@ -52,7 +54,7 @@ class Nnenum(CompleteVerifier):
     def _parse_result(
         self, _: str, result_file: Path | None
     ) -> tuple[VerificationResultString, str | None]:
-        with open(str(result_file), "r") as f:
+        with open(str(result_file)) as f:
             result_txt = f.read()
 
         first_line = result_txt.split("\n", maxsplit=1)[0]

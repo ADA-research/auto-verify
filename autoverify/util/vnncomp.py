@@ -42,11 +42,9 @@ def inst_bench_to_kwargs(
         elif benchmark == "cifar2020":
             if instance.network.name.find("convBigRELU") >= 0:
                 return {"dnnv_simplify": True}
-        elif benchmark == "cifar100_tinyimagenet_resnet":
+        elif (benchmark == "cifar100_tinyimagenet_resnet" or 
+              (benchmark == "nn4sys" and instance.network.name == "lindex.onnx")):
             return {"dnnv_simplify": True}
-        elif benchmark == "nn4sys":
-            if instance.network.name == "lindex.onnx":
-                return {"dnnv_simplify": True}
         return {}
 
     raise ValueError("Invalid verifier")
@@ -79,16 +77,15 @@ def _get_abcrown_config(benchmark: str, instance: VerificationInstance) -> str:
             return "carvana-unet-upsample.yaml"
         raise ValueError(f"Couldnt find config for {instance.as_row()}")
     elif benchmark == "cifar100_tinyimagenet_resnet":
-        if net_name == "CIFAR100_resnet_small.onnx":
-            return "cifar100_small_2022.yaml"
-        elif net_name == "CIFAR100_resnet_medium.onnx":
-            return "cifar100_med_2022.yaml"
-        elif net_name == "CIFAR100_resnet_large.onnx":
-            return "cifar100_large_2022.yaml"
-        elif net_name == "CIFAR100_resnet_super.onnx":
-            return "cifar100_super_2022.yaml"
-        elif net_name == "TinyImageNet_resnet_medium.onnx":
-            return "tinyimagenet_2022.yaml"
+        cifar100_configs = {
+            "CIFAR100_resnet_small.onnx": "cifar100_small_2022.yaml",
+            "CIFAR100_resnet_medium.onnx": "cifar100_med_2022.yaml",
+            "CIFAR100_resnet_large.onnx": "cifar100_large_2022.yaml",
+            "CIFAR100_resnet_super.onnx": "cifar100_super_2022.yaml",
+            "TinyImageNet_resnet_medium.onnx": "tinyimagenet_2022.yaml",
+        }
+        if net_name in cifar100_configs:
+            return cifar100_configs[net_name]
         raise ValueError(f"Couldnt find config for {instance.as_row()}")
     elif benchmark == "cifar2020":
         return "cifar2020_2_255.yaml"

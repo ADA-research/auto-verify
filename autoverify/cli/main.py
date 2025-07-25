@@ -3,13 +3,12 @@
 import argparse
 import logging
 import sys
-from pathlib import Path
 
 from autoverify import __version__
 from autoverify.cli.install import (
+    check_commit_hashes,
     try_install_verifiers,
     try_uninstall_verifiers,
-    check_commit_hashes,
 )
 from autoverify.cli.install.venv_installers import (
     try_install_verifiers_venv,
@@ -17,11 +16,11 @@ from autoverify.cli.install.venv_installers import (
     venv_installers,
 )
 from autoverify.config import (
-    get_config,
-    set_env_strategy,
     create_example_config,
-    should_use_venv,
+    get_config,
     get_env_strategy,
+    set_env_strategy,
+    should_use_venv,
 )
 
 
@@ -62,7 +61,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
     
     # Check command
-    check_parser = subparsers.add_parser("check", help="Check verifier status")
+    subparsers.add_parser("check", help="Check verifier status")
     
     # Config command
     config_parser = subparsers.add_parser("config", help="Manage configuration")

@@ -1,5 +1,4 @@
 import pytest
-
 from autoverify.verifier import AbCrown, Nnenum
 
 

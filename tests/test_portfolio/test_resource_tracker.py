@@ -1,7 +1,6 @@
 from copy import copy
 
 import pytest
-
 from autoverify.portfolio.portfolio import PortfolioScenario
 from autoverify.util.resource_strategy import ResourceStrategy
 from autoverify.util.resources import ResourceTracker

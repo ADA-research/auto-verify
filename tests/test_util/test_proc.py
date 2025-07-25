@@ -1,5 +1,4 @@
 import pytest
-
 from autoverify.util.proc import taskset_cpu_range
 
 

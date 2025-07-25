@@ -4,8 +4,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from ConfigSpace import Configuration, ConfigurationSpace
-
 from autoverify.portfolio.portfolio import (
     ConfiguredVerifier,
     Portfolio,
@@ -13,6 +11,7 @@ from autoverify.portfolio.portfolio import (
 )
 from autoverify.util.resource_strategy import ResourceStrategy
 from autoverify.util.verification_instance import VerificationInstance
+from ConfigSpace import Configuration, ConfigurationSpace
 
 
 @pytest.fixture

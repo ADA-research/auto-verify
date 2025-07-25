@@ -1,7 +1,7 @@
-"""Nnenum verifier."""
+"""MNBaB verifier."""
 
+from contextlib import AbstractContextManager
 from pathlib import Path
-from typing import ContextManager
 
 from ConfigSpace import Configuration, ConfigurationSpace
 
@@ -44,7 +44,7 @@ class MnBab(CompleteVerifier):
     #         subprocess.run(run_cmd, executable="/bin/bash", shell=True)
     #
     @property
-    def contexts(self) -> list[ContextManager[None]]:
+    def contexts(self) -> list[AbstractContextManager[None]]:
         env_lib_path = get_conda_path() / "envs" / self.conda_env_name / "lib"
 
         return [

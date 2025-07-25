@@ -5,11 +5,11 @@ This module provides configuration options for choosing between different
 environment management strategies (conda vs venv) and other user preferences.
 """
 
-import os
-import tomllib
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Any, Optional, Literal
-from dataclasses import dataclass, field
+from typing import Any, Literal
+
+import tomllib
 from xdg_base_dirs import xdg_config_home
 
 EnvStrategy = Literal["conda", "venv", "auto"]
@@ -23,7 +23,7 @@ class AutoVerifyConfig:
     env_strategy: EnvStrategy = "auto"
     
     # Installation paths
-    custom_install_path: Optional[Path] = None
+    custom_install_path: Path | None = None
     
     # Runtime preferences
     prefer_gpu: bool = True
@@ -43,7 +43,7 @@ class AutoVerifyConfig:
         return cls()
     
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'AutoVerifyConfig':
+    def from_dict(cls, data: dict[str, Any]) -> 'AutoVerifyConfig':
         """Create configuration from dictionary."""
         config = cls()
         
@@ -56,7 +56,7 @@ class AutoVerifyConfig:
         
         return config
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert configuration to dictionary."""
         result = {}
         for key, value in self.__dict__.items():
@@ -75,7 +75,7 @@ class ConfigManager:
     def __init__(self):
         self.config_dir = xdg_config_home() / "autoverify"
         self.config_file = self.config_dir / self.CONFIG_FILE_NAME
-        self._config: Optional[AutoVerifyConfig] = None
+        self._config: AutoVerifyConfig | None = None
     
     def get_config(self) -> AutoVerifyConfig:
         """Get the current configuration, loading from file if necessary."""
