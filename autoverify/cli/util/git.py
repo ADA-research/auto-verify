@@ -51,6 +51,8 @@ def clone_checkout_verifier(
     install_dir: Path,
     *,
     init_submodules=False,
+    custom_commit=None,
+    use_latest=False,
 ):
     """Clones a verifier and checks out the branch.
 
@@ -58,6 +60,8 @@ def clone_checkout_verifier(
         repo_info: A `GitRepoInfo` object.
         install_dir: Where the repo will be cloned to.
         init_submodules: If submodules in the repository should be initialized.
+        custom_commit: Optional specific commit hash to checkout.
+        use_latest: If True, checkout the latest commit on the branch.
     """
     with cwd(install_dir):
         install_logger.info(f"Cloning into repository: {repo_info.clone_url}")
@@ -66,8 +70,25 @@ def clone_checkout_verifier(
         os.rename(install_dir / repo_info.repo_name, install_dir / "tool")
 
     with cwd(install_dir / "tool"):
-        install_logger.info(f"Checking out commit hash {repo_info.commit_hash}")
-        subprocess.run(repo_info.checkout, check=True, capture_output=True)
+        if use_latest:
+            install_logger.info(f"Using latest commit on branch {repo_info.branch}")
+            # No need to checkout as we've already cloned the latest from the branch
+            # Just get the current commit hash for information
+            result = subprocess.run(
+                shlex.split("git rev-parse HEAD"),
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            commit_hash = result.stdout.strip()
+            install_logger.info(f"Latest commit hash: {commit_hash}")
+        elif custom_commit:
+            install_logger.info(f"Checking out custom commit hash: {custom_commit}")
+            checkout_cmd = f"git checkout {custom_commit}"
+            subprocess.run(shlex.split(checkout_cmd), check=True, capture_output=True)
+        else:
+            install_logger.info(f"Checking out default commit hash: {repo_info.commit_hash}")
+            subprocess.run(repo_info.checkout, check=True, capture_output=True)
 
         if init_submodules:
             install_logger.info("Initializing submodules")
@@ -83,3 +104,53 @@ def clone_checkout_verifier(
                 check=True,
                 capture_output=True,
             )
+
+
+def get_latest_commit_hash(repo_path: Path, branch: str = "main") -> str:
+    """Get the latest commit hash for a branch.
+    
+    Args:
+        repo_path: Path to the git repository
+        branch: Branch name to check (default: main)
+        
+    Returns:
+        The latest commit hash on the branch
+    """
+    with cwd(repo_path):
+        # Make sure we have the latest from remote
+        subprocess.run(
+            shlex.split(f"git fetch origin {branch}"),
+            check=True,
+            capture_output=True,
+        )
+        
+        # Get the latest commit hash
+        result = subprocess.run(
+            shlex.split(f"git rev-parse origin/{branch}"),
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return result.stdout.strip()
+
+
+def validate_commit_hash(repo_path: Path, commit_hash: str) -> bool:
+    """Validate if a commit hash exists in the repository.
+    
+    Args:
+        repo_path: Path to the git repository
+        commit_hash: The commit hash to validate
+        
+    Returns:
+        True if the commit hash exists, False otherwise
+    """
+    with cwd(repo_path):
+        try:
+            subprocess.run(
+                shlex.split(f"git cat-file -e {commit_hash}"),
+                check=True,
+                capture_output=True,
+            )
+            return True
+        except subprocess.CalledProcessError:
+            return False

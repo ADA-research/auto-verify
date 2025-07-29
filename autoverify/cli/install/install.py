@@ -6,6 +6,7 @@ import shutil
 import subprocess
 from collections.abc import Iterable
 from subprocess import CalledProcessError
+from typing import Optional
 
 from result import Err, Ok, Result
 from xdg_base_dirs import xdg_data_home
@@ -61,8 +62,16 @@ def _uninstall_verifier(verifier: str) -> Result[None, str]:
     return Ok()
 
 
-def _install_verifier(verifier: str) -> Result[None, str]:
-    """Tries to install the specified verifier."""
+def _install_verifier(verifier: str, version: Optional[str] = None) -> Result[None, str]:
+    """Tries to install the specified verifier.
+    
+    Args:
+        verifier: Name of the verifier to install
+        version: Optional version specifier (commit hash or "most-recent")
+        
+    Returns:
+        Result indicating success or failure
+    """
     if verifier not in installers:
         return Err(f"No installer found for verifier {verifier}")
 
@@ -75,7 +84,11 @@ def _install_verifier(verifier: str) -> Result[None, str]:
     dir_path = VERIFIER_DIR / verifier
 
     try:
-        installers[verifier](dir_path)
+        # Pass version information to the installer
+        use_latest = version == "most-recent"
+        custom_commit = None if use_latest else version
+        
+        installers[verifier](dir_path, custom_commit=custom_commit, use_latest=use_latest)
         return Ok()
     except Exception as err:
         if isinstance(err, CalledProcessError):
@@ -86,23 +99,27 @@ def _install_verifier(verifier: str) -> Result[None, str]:
         return Err("Exception during installation")
 
 
-def try_install_verifiers(verifiers: Iterable[str]):
+def try_install_verifiers(verifiers: Iterable[str], version: Optional[str] = None):
     """Tries to install the specified verifiers.
 
     Will print the result of each attempt to stdout.
 
     Args:
         verifiers: Names of the verifiers to install.
+        version: Optional version specifier (commit hash or "most-recent")
     """
     _create_base_dirs()
 
     for verifier in verifiers:
         print(f"\nInstalling {verifier}...")
-
-        install_result = _install_verifier(verifier)
+        
+        if version:
+            print(f"Using version: {version}")
+            
+        install_result = _install_verifier(verifier, version)
 
         if isinstance(install_result, Ok):
-            print(f"Succesfully installed {verifier}")
+            print(f"Successfully installed {verifier}")
         elif isinstance(install_result, Err):
             print(f"Error installing {verifier}: {install_result.err()}")
 
@@ -121,7 +138,7 @@ def try_uninstall_verifiers(verifiers: Iterable[str]):
         uninstall_result = _uninstall_verifier(verifier)
 
         if isinstance(uninstall_result, Ok):
-            print(f"Succesfully uninstalled {verifier}")
+            print(f"Successfully uninstalled {verifier}")
         elif isinstance(uninstall_result, Err):
             print(f"Error uninstalling {verifier}: {uninstall_result.err()}")
 

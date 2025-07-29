@@ -9,8 +9,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
-import tomllib
-from xdg_base_dirs import xdg_config_home
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+from xdg_base_dirs import xdg_config_home, xdg_data_home
 
 EnvStrategy = Literal["conda", "venv", "auto"]
 
@@ -62,6 +65,24 @@ class AutoVerifyConfig:
         for key, value in self.__dict__.items():
             if isinstance(value, Path):
                 result[key] = str(value)
+            elif value is None:
+                # Handle None values - tomli-w can't serialize None
+                if key == "custom_install_path":
+                    # Skip None paths
+                    continue
+                else:
+                    # For other None values, use appropriate defaults
+                    if key == "env_strategy":
+                        result[key] = "auto"
+                    elif isinstance(getattr(self.__class__, key, None), property):
+                        # Skip properties
+                        continue
+                    elif key.startswith("_"):
+                        # Skip private attributes
+                        continue
+                    else:
+                        # Use empty string for other None values
+                        result[key] = ""
             else:
                 result[key] = value
         return result
@@ -172,6 +193,24 @@ def should_use_venv() -> bool:
             return False
     
     return False
+
+
+def get_install_path() -> Path:
+    """
+    Get the installation path for verifiers based on configuration.
+    
+    Returns:
+        Path: The installation path to use
+    """
+    config = get_config()
+    if config.custom_install_path:
+        return config.custom_install_path
+    
+    # Default paths based on environment strategy
+    if should_use_venv():
+        return xdg_data_home() / "autoverify-venv"
+    else:
+        return xdg_data_home() / "autoverify"
 
 
 def create_example_config():
