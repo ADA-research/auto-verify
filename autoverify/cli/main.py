@@ -2,13 +2,11 @@
 
 import argparse
 import logging
-import os
 import sys
 from pathlib import Path
 
 from autoverify import __version__
 from autoverify.cli.install import (
-    AV_HOME,
     VERIFIER_DIR,
     check_commit_hashes,
     try_install_verifiers,
@@ -218,6 +216,7 @@ def _handle_list(args):
                             try:
                                 # Get commit hash
                                 import subprocess
+
                                 from autoverify.util.env import cwd
                                 with cwd(tool_dir):
                                     result = subprocess.run(
@@ -260,6 +259,7 @@ def _handle_list(args):
                             try:
                                 # Get commit hash
                                 import subprocess
+
                                 from autoverify.util.env import cwd
                                 with cwd(tool_dir):
                                     result = subprocess.run(

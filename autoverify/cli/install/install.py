@@ -6,7 +6,6 @@ import shutil
 import subprocess
 from collections.abc import Iterable
 from subprocess import CalledProcessError
-from typing import Optional
 
 from result import Err, Ok, Result
 from xdg_base_dirs import xdg_data_home
@@ -62,7 +61,7 @@ def _uninstall_verifier(verifier: str) -> Result[None, str]:
     return Ok()
 
 
-def _install_verifier(verifier: str, version: Optional[str] = None) -> Result[None, str]:
+def _install_verifier(verifier: str, version: str | None = None) -> Result[None, str]:
     """Tries to install the specified verifier.
     
     Args:
@@ -99,7 +98,7 @@ def _install_verifier(verifier: str, version: Optional[str] = None) -> Result[No
         return Err("Exception during installation")
 
 
-def try_install_verifiers(verifiers: Iterable[str], version: Optional[str] = None):
+def try_install_verifiers(verifiers: Iterable[str], version: str | None = None):
     """Tries to install the specified verifiers.
 
     Will print the result of each attempt to stdout.

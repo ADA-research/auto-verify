@@ -12,7 +12,6 @@ import subprocess
 from collections.abc import Iterable
 from pathlib import Path
 from subprocess import CalledProcessError
-from typing import Optional
 
 from result import Err, Ok, Result
 from xdg_base_dirs import xdg_data_home
@@ -216,7 +215,7 @@ def _uninstall_verifier_venv(verifier: str) -> Result[None, str]:
         return Err(f"Exception when deleting verifier directory: {err}")
 
 
-def _install_verifier_venv(verifier: str, installer_func, custom_commit: Optional[str] = None, use_latest: bool = False) -> Result[None, str]:
+def _install_verifier_venv(verifier: str, installer_func, custom_commit: str | None = None, use_latest: bool = False) -> Result[None, str]:
     """Tries to install the specified verifier.
     
     Args:
@@ -256,7 +255,7 @@ def _install_verifier_venv(verifier: str, installer_func, custom_commit: Optiona
         return Err(f"Exception during installation: {err}")
 
 
-def try_install_verifiers_venv(verifiers: Iterable[str], installers: dict, version: Optional[str] = None):
+def try_install_verifiers_venv(verifiers: Iterable[str], installers: dict, version: str | None = None):
     """Tries to install the specified verifiers.
 
     Will print the result of each attempt to stdout.

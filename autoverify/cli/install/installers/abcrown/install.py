@@ -1,7 +1,6 @@
 """abcrown installer."""
 
 from pathlib import Path
-from typing import Optional
 
 from autoverify.cli.util.git import GitRepoInfo, clone_checkout_verifier
 from autoverify.util.conda import create_env_from_file
@@ -14,7 +13,7 @@ AbCrownRepoInfo = GitRepoInfo(
 )
 
 
-def install(install_dir: Path, custom_commit: Optional[str] = None, use_latest: bool = False):
+def install(install_dir: Path, custom_commit: str | None = None, use_latest: bool = False):
     """Installs abcrown.
 
     Args:

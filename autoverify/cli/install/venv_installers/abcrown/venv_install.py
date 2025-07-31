@@ -1,18 +1,13 @@
 """abcrown venv installer."""
 
-import os
-import shutil
 from pathlib import Path
-from typing import Optional
-
-from result import Ok
 
 from autoverify.cli.install.venv_installers.venv_install import (
     create_verifier_venv,
     install_requirements,
 )
 from autoverify.cli.util.git import GitRepoInfo, clone_checkout_verifier
-from autoverify.util.env import cwd
+from result import Ok
 
 VenvAbCrownRepoInfo = GitRepoInfo(
     branch="main",
@@ -21,7 +16,7 @@ VenvAbCrownRepoInfo = GitRepoInfo(
 )
 
 
-def install(install_dir: Path, custom_commit: Optional[str] = None, use_latest: bool = False):
+def install(install_dir: Path, custom_commit: str | None = None, use_latest: bool = False):
     """Installs abcrown with venv.
 
     Args:
