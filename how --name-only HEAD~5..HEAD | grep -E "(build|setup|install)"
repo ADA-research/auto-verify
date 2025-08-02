@@ -1,0 +1,10 @@
+[33m158e7cf[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m cli updated functionality, delete, list verifiers etc.
+[33meaccde5[m cli: Added CLI Commands for All Configuration Options
+[33m63d335a[m Various fixes to comply with ruff check imposed by ada-verona.
+[33mac76708[m venv with uv support
+[33m942c241[m Merge pull request #97 from TrisCC/freeze-deps
+[33m41b0ba7[m Unfreeze general packages
+[33m74b1b33[m Freeze and update dependencies
+[33m413eec6[m Merge pull request #89 from Aaron99B/alpha-beta-crown-update
+[33m57cb9bf[m updated import format
+[33mbdfc2ca[m changed test for git clone command

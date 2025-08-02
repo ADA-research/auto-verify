@@ -83,9 +83,32 @@ def clone_checkout_verifier(
             commit_hash = result.stdout.strip()
             install_logger.info(f"Latest commit hash: {commit_hash}")
         elif custom_commit:
-            install_logger.info(f"Checking out custom commit hash: {custom_commit}")
-            checkout_cmd = f"git checkout {custom_commit}"
-            subprocess.run(shlex.split(checkout_cmd), check=True, capture_output=True)
+            try:
+                # Validate the commit hash exists
+                install_logger.info(f"Validating custom commit hash: {custom_commit}")
+                
+                # Try to fetch all refs first to ensure we have access to the commit
+                subprocess.run(
+                    shlex.split("git fetch --all"),
+                    check=True,
+                    capture_output=True,
+                )
+                
+                # Check if the commit exists
+                result = subprocess.run(
+                    shlex.split(f"git cat-file -e {custom_commit}"),
+                    check=True,
+                    capture_output=True,
+                )
+                
+                # If we get here, the commit exists
+                install_logger.info(f"Checking out custom commit hash: {custom_commit}")
+                checkout_cmd = f"git checkout {custom_commit}"
+                subprocess.run(shlex.split(checkout_cmd), check=True, capture_output=True)
+            except subprocess.CalledProcessError:
+                install_logger.warning(f"Custom commit hash {custom_commit} not found, falling back to default")
+                install_logger.info(f"Checking out default commit hash: {repo_info.commit_hash}")
+                subprocess.run(repo_info.checkout, check=True, capture_output=True)
         else:
             install_logger.info(f"Checking out default commit hash: {repo_info.commit_hash}")
             subprocess.run(repo_info.checkout, check=True, capture_output=True)

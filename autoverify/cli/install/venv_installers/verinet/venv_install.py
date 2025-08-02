@@ -11,8 +11,8 @@ from result import Ok
 
 VenvVerinetRepoInfo = GitRepoInfo(
     branch="main",
-    commit_hash="3f33b3a",
-    clone_url="https://github.com/vas-group-imperial/VeriNet",
+    commit_hash="813e625",
+    clone_url="https://github.com/kw-corne/VeriNet",
 )
 
 
@@ -46,7 +46,7 @@ def install(install_dir: Path, custom_commit: str | None = None, use_latest: boo
     ]
     
     # Install requirements
-    install_result = install_requirements(venv_path, requirements)
+    install_requirements(venv_path, requirements)
     
     # Print installation information
     print("\nVERINET (venv) Installation Complete")

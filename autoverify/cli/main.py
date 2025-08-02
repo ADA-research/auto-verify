@@ -54,7 +54,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
     install_parser.add_argument(
         "--version", type=str, 
-        help="Specific version to install (commit hash or 'most-recent')"
+        help="Specific version to install (full commit hash or 'most-recent'). "
+             "If a short hash is provided, it will fall back to the default version."
     )
     
     # Uninstall command
@@ -202,93 +203,91 @@ def _handle_list(args):
     """Handle list command."""
     found_verifiers = False
     
-    if args.env in ["conda", "both"]:
-        if VERIFIER_DIR.exists():
-            conda_verifiers = [d.name for d in VERIFIER_DIR.iterdir() if d.is_dir()]
-            if conda_verifiers:
-                found_verifiers = True
-                print("\nConda-based verifiers:")
-                for verifier in sorted(conda_verifiers):
-                    print(f"  • {verifier}")
-                    if args.verbose:
-                        tool_dir = VERIFIER_DIR / verifier / "tool"
-                        if tool_dir.exists():
-                            try:
-                                # Get commit hash
-                                import subprocess
+    if args.env in ["conda", "both"] and VERIFIER_DIR.exists():
+        conda_verifiers = [d.name for d in VERIFIER_DIR.iterdir() if d.is_dir()]
+        if conda_verifiers:
+            found_verifiers = True
+            print("\nConda-based verifiers:")
+            for verifier in sorted(conda_verifiers):
+                print(f"  • {verifier}")
+                if args.verbose:
+                    tool_dir = VERIFIER_DIR / verifier / "tool"
+                    if tool_dir.exists():
+                        try:
+                            # Get commit hash
+                            import subprocess
 
-                                from autoverify.util.env import cwd
-                                with cwd(tool_dir):
-                                    result = subprocess.run(
-                                        ["git", "rev-parse", "--short", "HEAD"],
-                                        capture_output=True,
-                                        text=True,
-                                        check=True
-                                    )
-                                    commit = result.stdout.strip()
-                                    
-                                    # Get branch
-                                    result = subprocess.run(
-                                        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-                                        capture_output=True,
-                                        text=True,
-                                        check=True
-                                    )
-                                    branch = result.stdout.strip()
-                                    
-                                    print(f"    - Branch: {branch}")
-                                    print(f"    - Commit: {commit}")
-                                    print(f"    - Path: {tool_dir}")
-                            except Exception:
+                            from autoverify.util.env import cwd
+                            with cwd(tool_dir):
+                                result = subprocess.run(
+                                    ["git", "rev-parse", "--short", "HEAD"],
+                                    capture_output=True,
+                                    text=True,
+                                    check=True
+                                )
+                                commit = result.stdout.strip()
+                                
+                                # Get branch
+                                result = subprocess.run(
+                                    ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                                    capture_output=True,
+                                    text=True,
+                                    check=True
+                                )
+                                branch = result.stdout.strip()
+                                
+                                print(f"    - Branch: {branch}")
+                                print(f"    - Commit: {commit}")
                                 print(f"    - Path: {tool_dir}")
+                        except Exception:
+                            print(f"    - Path: {tool_dir}")
     
-    if args.env in ["venv", "both"]:
-        if VENV_VERIFIER_DIR.exists():
-            venv_verifiers = [d.name for d in VENV_VERIFIER_DIR.iterdir() if d.is_dir()]
-            if venv_verifiers:
-                found_verifiers = True
-                print("\nVenv-based verifiers:")
-                for verifier in sorted(venv_verifiers):
-                    print(f"  • {verifier}")
-                    if args.verbose:
-                        tool_dir = VENV_VERIFIER_DIR / verifier / "tool"
-                        venv_dir = VENV_VERIFIER_DIR / verifier / "venv"
-                        activate_script = VENV_VERIFIER_DIR / verifier / "activate.sh"
-                        
-                        if tool_dir.exists():
-                            try:
-                                # Get commit hash
-                                import subprocess
+    if args.env in ["venv", "both"] and VENV_VERIFIER_DIR.exists():
+        venv_verifiers = [d.name for d in VENV_VERIFIER_DIR.iterdir() if d.is_dir()]
+        if venv_verifiers:
+            found_verifiers = True
+            print("\nVenv-based verifiers:")
+            for verifier in sorted(venv_verifiers):
+                print(f"  • {verifier}")
+                if args.verbose:
+                    tool_dir = VENV_VERIFIER_DIR / verifier / "tool"
+                    venv_dir = VENV_VERIFIER_DIR / verifier / "venv"
+                    activate_script = VENV_VERIFIER_DIR / verifier / "activate.sh"
+                    
+                    if tool_dir.exists():
+                        try:
+                            # Get commit hash
+                            import subprocess
 
-                                from autoverify.util.env import cwd
-                                with cwd(tool_dir):
-                                    result = subprocess.run(
-                                        ["git", "rev-parse", "--short", "HEAD"],
-                                        capture_output=True,
-                                        text=True,
-                                        check=True
-                                    )
-                                    commit = result.stdout.strip()
-                                    
-                                    # Get branch
-                                    result = subprocess.run(
-                                        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-                                        capture_output=True,
-                                        text=True,
-                                        check=True
-                                    )
-                                    branch = result.stdout.strip()
-                                    
-                                    print(f"    - Branch: {branch}")
-                                    print(f"    - Commit: {commit}")
-                            except Exception:
-                                pass
-                        
-                        if venv_dir.exists():
-                            print(f"    - Virtual env: {venv_dir}")
-                        
-                        if activate_script.exists():
-                            print(f"    - Activate: source {activate_script}")
+                            from autoverify.util.env import cwd
+                            with cwd(tool_dir):
+                                result = subprocess.run(
+                                    ["git", "rev-parse", "--short", "HEAD"],
+                                    capture_output=True,
+                                    text=True,
+                                    check=True
+                                )
+                                commit = result.stdout.strip()
+                                
+                                # Get branch
+                                result = subprocess.run(
+                                    ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                                    capture_output=True,
+                                    text=True,
+                                    check=True
+                                )
+                                branch = result.stdout.strip()
+                                
+                                print(f"    - Branch: {branch}")
+                                print(f"    - Commit: {commit}")
+                        except Exception:
+                            pass
+                    
+                    if venv_dir.exists():
+                        print(f"    - Virtual env: {venv_dir}")
+                    
+                    if activate_script.exists():
+                        print(f"    - Activate: source {activate_script}")
     
     if not found_verifiers:
         print("No verifiers installed.")

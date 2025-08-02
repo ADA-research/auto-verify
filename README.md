@@ -30,6 +30,8 @@ auto-verify install abcrown --version "877afa32d9d314fcb416436a616e6a5878fdab78"
 auto-verify install abcrown --version most-recent
 ```
 
+**Note:** If a short hash is provided and cannot be resolved, the installation will fall back to the default version for that verifier.
+
 This allows you to:
 - Use the default tested stable version
 - Install a specific version by commit hash

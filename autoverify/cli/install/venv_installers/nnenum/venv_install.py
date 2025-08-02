@@ -10,9 +10,9 @@ from autoverify.cli.util.git import GitRepoInfo, clone_checkout_verifier
 from result import Ok
 
 VenvNnenumRepoInfo = GitRepoInfo(
-    branch="master",
-    commit_hash="e9c0b0a",
-    clone_url="https://github.com/stanleybak/nnenum",
+    branch="vnncomp2022",
+    commit_hash="c68562d",
+    clone_url="https://github.com/kw-corne/nnenum",
 )
 
 
@@ -50,7 +50,7 @@ def install(install_dir: Path, custom_commit: str | None = None, use_latest: boo
     ]
     
     # Install requirements
-    install_result = install_requirements(venv_path, requirements)
+    install_requirements(venv_path, requirements)
     
     # Print installation information
     print("\nNNENUM (venv) Installation Complete")

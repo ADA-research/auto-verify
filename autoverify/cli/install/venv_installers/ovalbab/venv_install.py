@@ -1,39 +1,40 @@
-"""abcrown venv installer."""
+"""ovalbab venv installer."""
 
 from pathlib import Path
+
+from result import Ok
 
 from autoverify.cli.install.venv_installers.venv_install import (
     create_verifier_venv,
     install_requirements,
 )
 from autoverify.cli.util.git import GitRepoInfo, clone_checkout_verifier
-from result import Ok
 
-VenvAbCrownRepoInfo = GitRepoInfo(
+VenvOvalBabRepoInfo = GitRepoInfo(
     branch="main",
-    commit_hash="877afa32d9d314fcb416436a616e6a5878fdab78",
-    clone_url="https://github.com/Verified-Intelligence/alpha-beta-CROWN",
+    commit_hash="5de3113",
+    clone_url="https://github.com/oval-group/oval-bab",
 )
 
 
 def install(install_dir: Path, custom_commit: str | None = None, use_latest: bool = False):
-    """Installs abcrown with venv.
+    """Installs ovalbab with venv.
 
     Args:
-        install_dir: Path where ab-crown is installed.
+        install_dir: Path where oval-bab is installed.
         custom_commit: Optional specific commit hash to checkout.
         use_latest: If True, checkout the latest commit on the branch.
     """
     # Clone and checkout the repository
     clone_checkout_verifier(
-        VenvAbCrownRepoInfo, 
+        VenvOvalBabRepoInfo, 
         install_dir, 
         custom_commit=custom_commit, 
         use_latest=use_latest
     )
     
     # Create virtual environment
-    venv_result = create_verifier_venv(install_dir, "abcrown")
+    venv_result = create_verifier_venv(install_dir, "ovalbab")
     venv_path = venv_result.unwrap()
     
     # Create requirements file
@@ -52,14 +53,16 @@ onnxruntime>=1.12.1
 appdirs>=1.4.4
 """)
 
-    # Install requirements
-    requirements = ["-r", str(requirements_file)]
+    # Install the package itself
+    requirements = [
+        "-r", str(requirements_file),
+        "-e", str(install_dir / "tool")  # Install in development mode
+    ]
     install_requirements(venv_path, requirements)
     
     # Print installation information
-    print("\nABCROWN (venv) Installation Complete")
+    print("\nOVALBAB (venv) Installation Complete")
     print(f"Virtual environment: {venv_path}")
     print(f"To activate: source {venv_path}/bin/activate")
-    print("To use: python -m abcrown.main --config CONFIG_FILE")
     
-    return Ok() 
+    return Ok()

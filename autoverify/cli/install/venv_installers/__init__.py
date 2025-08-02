@@ -14,6 +14,8 @@ from .abcrown.venv_install import VenvAbCrownRepoInfo
 from .abcrown.venv_install import install as install_abcrown_venv
 from .nnenum.venv_install import VenvNnenumRepoInfo
 from .nnenum.venv_install import install as install_nnenum_venv
+from .ovalbab.venv_install import VenvOvalBabRepoInfo
+from .ovalbab.venv_install import install as install_ovalbab_venv
 from .venv_install import (
     VENV_AV_HOME,
     VENV_VERIFIER_DIR,
@@ -27,6 +29,7 @@ venv_installers: dict[str, Callable[[Path], None]] = {
     "nnenum": install_nnenum_venv,
     "abcrown": install_abcrown_venv,
     "verinet": install_verinet_venv,
+    "ovalbab": install_ovalbab_venv,
     # Add more verifiers as they get venv support
 }
 
@@ -34,6 +37,7 @@ venv_repo_infos: dict[str, GitRepoInfo] = {
     "nnenum": VenvNnenumRepoInfo,
     "abcrown": VenvAbCrownRepoInfo,
     "verinet": VenvVerinetRepoInfo,
+    "ovalbab": VenvOvalBabRepoInfo,
 }
 
 __all__ = [

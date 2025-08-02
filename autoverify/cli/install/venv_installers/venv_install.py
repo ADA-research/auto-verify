@@ -74,7 +74,7 @@ def _create_venv_with_uv(venv_path: Path, venv_name: str) -> Result[None, str]:
         venv_name: Name for the virtual environment
     """
     try:
-        cmd = ["uv", "venv", str(venv_path), "--name", f"autoverify-{venv_name}"]
+        cmd = ["uv", "venv", str(venv_path), "--prompt", f"autoverify-{venv_name}"]
         subprocess.run(cmd, check=True, capture_output=True)
         logging.info(f"Created virtual environment at {venv_path}")
         return Ok()
@@ -215,7 +215,12 @@ def _uninstall_verifier_venv(verifier: str) -> Result[None, str]:
         return Err(f"Exception when deleting verifier directory: {err}")
 
 
-def _install_verifier_venv(verifier: str, installer_func, custom_commit: str | None = None, use_latest: bool = False) -> Result[None, str]:
+def _install_verifier_venv(
+    verifier: str, 
+    installer_func, 
+    custom_commit: str | None = None, 
+    use_latest: bool = False
+) -> Result[None, str]:
     """Tries to install the specified verifier.
     
     Args:
