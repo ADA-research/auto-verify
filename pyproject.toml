@@ -4,10 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "auto-verify"
-version = "0.1.3"
+version = "0.1.4"
 description = "Efficient portfolio-based verification of neural network properties"
 readme = "README.md"
-authors = [{ name = "Corné Spek" }]
+authors = [
+    { name = "Corné Spek" },
+    { name = "Hendrik Baacke" },
+    { name = "Jan van Rijn" }
+]
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
 keywords = ["auto-verify", "Neural networks", "Robustness"]
