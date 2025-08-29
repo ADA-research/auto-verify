@@ -72,18 +72,48 @@ def clone_checkout_verifier(
     with cwd(install_dir / "tool"):
         if use_latest:
             install_logger.info(f"Using latest commit on branch {repo_info.branch}")
-            # No need to checkout as we've already cloned the latest from the branch
-            # Just get the current commit hash for information
-            result = subprocess.run(
-                shlex.split("git rev-parse HEAD"),
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            commit_hash = result.stdout.strip()
-            install_logger.info(f"Latest commit hash: {commit_hash}")
+            # Fetch the latest changes from the remote branch
+            try:
+                subprocess.run(
+                    shlex.split(f"git fetch origin {repo_info.branch}"),
+                    check=True,
+                    capture_output=True,
+                )
+                
+                # Reset to the latest commit on the branch
+                subprocess.run(
+                    shlex.split(f"git reset --hard origin/{repo_info.branch}"),
+                    check=True,
+                    capture_output=True,
+                )
+                
+                # Get the current commit hash for information
+                result = subprocess.run(
+                    shlex.split("git rev-parse HEAD"),
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+                commit_hash = result.stdout.strip()
+                install_logger.info(f"Latest commit hash: {commit_hash}")
+            except subprocess.CalledProcessError as e:
+                install_logger.warning(f"Failed to fetch latest from {repo_info.branch}, using current HEAD")
+                # Fall back to current HEAD if fetch fails
+                result = subprocess.run(
+                    shlex.split("git rev-parse HEAD"),
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+                commit_hash = result.stdout.strip()
+                install_logger.info(f"Current commit hash: {commit_hash}")
         elif custom_commit:
             try:
+                # Validate the commit hash format first
+                if not validate_commit_hash_format(custom_commit):
+                    install_logger.warning(f"Invalid commit hash format: {custom_commit}")
+                    raise ValueError(f"Invalid commit hash format: {custom_commit}")
+                
                 # Validate the commit hash exists
                 install_logger.info(f"Validating custom commit hash: {custom_commit}")
                 
@@ -105,9 +135,9 @@ def clone_checkout_verifier(
                 install_logger.info(f"Checking out custom commit hash: {custom_commit}")
                 checkout_cmd = f"git checkout {custom_commit}"
                 subprocess.run(shlex.split(checkout_cmd), check=True, capture_output=True)
-            except subprocess.CalledProcessError:
-                install_logger.warning(f"Custom commit hash {custom_commit} not found, falling back to default")
-                install_logger.info(f"Checking out default commit hash: {repo_info.commit_hash}")
+            except (subprocess.CalledProcessError, ValueError) as e:
+                install_logger.warning(f"Custom commit hash {custom_commit} not found or invalid: {e}")
+                install_logger.info(f"Falling back to default commit hash: {repo_info.commit_hash}")
                 subprocess.run(repo_info.checkout, check=True, capture_output=True)
         else:
             install_logger.info(f"Checking out default commit hash: {repo_info.commit_hash}")
@@ -155,6 +185,27 @@ def get_latest_commit_hash(repo_path: Path, branch: str = "main") -> str:
             text=True,
         )
         return result.stdout.strip()
+
+
+def validate_commit_hash_format(commit_hash: str) -> bool:
+    """Validate if a commit hash has a valid format.
+    
+    Args:
+        commit_hash: The commit hash to validate
+        
+    Returns:
+        True if the format is valid, False otherwise
+    """
+    # Git commit hashes are typically 40 characters (full) or 7+ characters (short)
+    if len(commit_hash) < 7 or len(commit_hash) > 40:
+        return False
+    
+    # Git commit hashes are hexadecimal
+    try:
+        int(commit_hash, 16)
+        return True
+    except ValueError:
+        return False
 
 
 def validate_commit_hash(repo_path: Path, commit_hash: str) -> bool:

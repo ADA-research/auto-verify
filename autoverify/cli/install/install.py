@@ -74,6 +74,12 @@ def _install_verifier(verifier: str, version: str | None = None) -> Result[None,
     if verifier not in installers:
         return Err(f"No installer found for verifier {verifier}")
 
+    # Validate version parameter
+    if version and version != "most-recent":
+        from autoverify.cli.util.git import validate_commit_hash_format
+        if not validate_commit_hash_format(version):
+            return Err(f"Invalid commit hash format: {version}. Expected 7-40 character hexadecimal string.")
+
     try:
         _init_new_verifier_dir(verifier)
     except Exception as err:
@@ -86,6 +92,12 @@ def _install_verifier(verifier: str, version: str | None = None) -> Result[None,
         # Pass version information to the installer
         use_latest = version == "most-recent"
         custom_commit = None if use_latest else version
+        
+        if version:
+            if use_latest:
+                print(f"Installing latest version of {verifier} from branch {repo_infos[verifier].branch}")
+            else:
+                print(f"Installing {verifier} at commit: {custom_commit}")
         
         installers[verifier](dir_path, custom_commit=custom_commit, use_latest=use_latest)
         return Ok()

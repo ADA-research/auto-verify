@@ -23,7 +23,7 @@ class AutoVerifyConfig:
     """Configuration for auto-verify installation and runtime."""
     
     # Environment management strategy
-    env_strategy: EnvStrategy = "auto"
+    env_strategy: EnvStrategy = "conda"  # Default to conda as recommended
     
     # Installation paths
     custom_install_path: Path | None = None
@@ -221,8 +221,8 @@ def create_example_config():
     config_dir.mkdir(parents=True, exist_ok=True)
     
     example_content = '''# Auto-verify Configuration
-# Choose environment management strategy: "conda", "venv", or "auto"
-env_strategy = "auto"
+# Choose environment management strategy: "conda" (recommended), "venv", or "auto"
+env_strategy = "conda"
 
 # Custom installation path (optional)
 # custom_install_path = "/path/to/custom/location"
@@ -245,6 +245,7 @@ require_uv = false
     
     print(f"Example configuration created at: {example_file}")
     print(f"Copy to: {config_dir / 'autoverify.toml'} and modify as needed")
+    print("\nNote: conda is the recommended environment management strategy for auto-verify")
 
 
 if __name__ == "__main__":

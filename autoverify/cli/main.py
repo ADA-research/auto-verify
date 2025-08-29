@@ -12,6 +12,7 @@ from autoverify.cli.install import (
     try_install_verifiers,
     try_uninstall_verifiers,
 )
+from autoverify.cli.install.installers import repo_infos
 from autoverify.cli.install.venv_installers import (
     VENV_VERIFIER_DIR,
     try_install_verifiers_venv,
@@ -46,17 +47,35 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
     install_parser.add_argument(
         "--env", choices=["conda", "venv", "auto"], 
-        help="Environment management strategy (overrides config)"
+        default="conda", help="Environment management strategy (default: conda)"
     )
     install_parser.add_argument(
         "--force-venv", action="store_true",
         help="Force use of venv even if conda is preferred"
     )
     install_parser.add_argument(
-        "--version", type=str, 
-        help="Specific version to install (full commit hash or 'most-recent'). "
-             "If a short hash is provided, it will fall back to the default version."
+        "--verifier-version", type=str, 
+        help="Specific verifier version to install (full commit hash or 'most-recent'). "
+             "If a short hash is provided, it will fall back to the default version. "
+             "Examples: --verifier-version '877afa32d9d314fcb416436a616e6a5878fdab78' or --verifier-version most-recent"
     )
+    install_parser.add_argument(
+        "--conda-env-name", type=str,
+        help="Custom conda environment name (overrides default __av__{verifier} naming)"
+    )
+    
+    # Add helpful epilog
+    install_parser.epilog = """
+Examples:
+  auto-verify install abcrown                    # Install abcrown with default version
+  auto-verify install abcrown --verifier-version most-recent  # Install latest version
+  auto-verify install abcrown --verifier-version 877afa32d9d314fcb416436a616e6a5878fdab78  # Install specific commit
+  auto-verify install abcrown nnenum --env conda  # Install multiple verifiers with conda
+  auto-verify install abcrown --env venv          # Force venv installation
+  
+Note: Use --verifier-version (not --version) to specify verifier versions.
+      Use auto-verify --version to see the auto-verify version.
+"""
     
     # Uninstall command
     uninstall_parser = subparsers.add_parser("uninstall", help="Uninstall verifiers")
@@ -91,6 +110,16 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     
     # Check command
     subparsers.add_parser("check", help="Check verifier status")
+    
+    # Versions command
+    versions_parser = subparsers.add_parser("versions", help="Show available versions for verifiers")
+    versions_parser.add_argument(
+        "verifier", help="Name of the verifier to check versions for"
+    )
+    versions_parser.add_argument(
+        "--branch", type=str, default=None,
+        help="Branch to check (default: main/master)"
+    )
     
     # Config command
     config_parser = subparsers.add_parser("config", help="Manage configuration")
@@ -163,6 +192,16 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 
 def _handle_install(args):
     """Handle install command."""
+    # Check for common user errors
+    if hasattr(args, 'version') and args.version:
+        print("Error: The --version flag is used to show auto-verify version information.")
+        print("To specify a verifier version, use --verifier-version instead.")
+        print("Examples:")
+        print("  auto-verify --version                    # Show auto-verify version")
+        print("  auto-verify install abcrown --verifier-version most-recent")
+        print("  auto-verify install abcrown --verifier-version '877afa32d9d314fcb416436a616e6a5878fdab78'")
+        return
+    
     # Determine which installation method to use
     use_venv = args.force_venv
     
@@ -174,6 +213,7 @@ def _handle_install(args):
         elif args.env == "auto":
             use_venv = should_use_venv()
     elif not use_venv:
+        # Default to conda if no preference specified
         use_venv = should_use_venv()
     
     current_strategy = get_env_strategy()
@@ -182,10 +222,17 @@ def _handle_install(args):
     
     if use_venv:
         print("Installing with Python virtual environments + uv/pip...")
-        try_install_verifiers_venv(args.verifiers, venv_installers, version=args.version)
+        try_install_verifiers_venv(args.verifiers, venv_installers, version=args.verifier_version)
     else:
-        print("Installing with conda environments...")
-        try_install_verifiers(args.verifiers, version=args.version)
+        print("Installing with conda environments (recommended)...")
+        if args.conda_env_name:
+            print(f"Using custom conda environment name: {args.conda_env_name}")
+        if args.verifier_version:
+            if args.verifier_version == "most-recent":
+                print("Installing latest versions of verifiers from their respective branches")
+            else:
+                print(f"Installing verifiers at specific commit: {args.verifier_version}")
+        try_install_verifiers(args.verifiers, version=args.verifier_version)
 
 
 def _handle_uninstall(args):
@@ -212,6 +259,8 @@ def _handle_list(args):
                 print(f"  • {verifier}")
                 if args.verbose:
                     tool_dir = VERIFIER_DIR / verifier / "tool"
+                    conda_env_name = f"__av__{verifier}"
+                    
                     if tool_dir.exists():
                         try:
                             # Get commit hash
@@ -239,8 +288,12 @@ def _handle_list(args):
                                 print(f"    - Branch: {branch}")
                                 print(f"    - Commit: {commit}")
                                 print(f"    - Path: {tool_dir}")
+                                print(f"    - Conda env: {conda_env_name}")
+                                print(f"    - Activate: conda activate {conda_env_name}")
                         except Exception:
                             print(f"    - Path: {tool_dir}")
+                            print(f"    - Conda env: {conda_env_name}")
+                            print(f"    - Activate: conda activate {conda_env_name}")
     
     if args.env in ["venv", "both"] and VENV_VERIFIER_DIR.exists():
         venv_verifiers = [d.name for d in VENV_VERIFIER_DIR.iterdir() if d.is_dir()]
@@ -291,6 +344,60 @@ def _handle_list(args):
     
     if not found_verifiers:
         print("No verifiers installed.")
+    
+    # Add helpful information about conda
+    if args.env in ["conda", "both"]:
+        print("\nConda Environment Management:")
+        print("  • To activate a verifier: conda activate __av__{verifier_name}")
+        print("  • To list all conda envs: conda env list")
+        print("  • To remove a conda env: conda env remove -n __av__{verifier_name}")
+
+
+def _handle_versions(args):
+    """Handle versions command."""
+    verifier = args.verifier
+    
+    if verifier not in repo_infos:
+        print(f"Error: Unknown verifier '{verifier}'")
+        print(f"Available verifiers: {', '.join(repo_infos.keys())}")
+        return
+    
+    repo_info = repo_infos[verifier]
+    branch = args.branch or repo_info.branch
+    
+    print(f"Version information for {verifier}:")
+    print(f"  Repository: {repo_info.clone_url}")
+    print(f"  Default branch: {repo_info.branch}")
+    print(f"  Default commit: {repo_info.commit_hash}")
+    print(f"  Checking branch: {branch}")
+    
+    try:
+        from autoverify.cli.util.git import get_latest_commit_hash
+        
+        # Create a temporary directory to clone and check
+        import tempfile
+        import shutil
+        
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            
+            # Clone the repository
+            from autoverify.cli.util.git import clone_checkout_verifier
+            clone_checkout_verifier(repo_info, temp_path, use_latest=False)
+            
+            # Get latest commit on the specified branch
+            latest_commit = get_latest_commit_hash(temp_path / "tool", branch)
+            print(f"  Latest commit on {branch}: {latest_commit}")
+            
+            if latest_commit != repo_info.commit_hash:
+                print(f"  Note: Default commit is {len(repo_info.commit_hash)} characters, latest is {len(latest_commit)} characters")
+                print(f"  Consider using: --verifier-version most-recent")
+            else:
+                print(f"  Default commit is up to date")
+                
+    except Exception as e:
+        print(f"  Error checking latest version: {e}")
+        print(f"  You can still install with: --verifier-version most-recent")
 
 
 def _handle_check(args):
@@ -316,8 +423,19 @@ def _handle_config(args):
         would_use_venv = should_use_venv()
         print(f"\nBased on current config and system: would use {'venv' if would_use_venv else 'conda'}")
         
+        # Show conda-specific information
+        if not would_use_venv:
+            print("\nConda Environment Information:")
+            print("  • Conda is the recommended package manager for auto-verify")
+            print("  • Verifiers are installed in isolated conda environments")
+            print("  • Environment naming: __av__{verifier_name}")
+            print("  • To activate: conda activate __av__{verifier_name}")
+        
     elif args.config_action == "set-env":
         set_env_strategy(args.strategy)
+        if args.strategy == "conda":
+            print("Conda is now the primary environment management strategy.")
+            print("This is the recommended approach for auto-verify.")
         
     elif args.config_action == "set-install-path":
         config = get_config()
@@ -416,6 +534,8 @@ def main():
             _handle_list(args)
         elif args.command == "check":
             _handle_check(args)
+        elif args.command == "versions":
+            _handle_versions(args)
         elif args.command == "config":
             _handle_config(args)
     except KeyboardInterrupt:

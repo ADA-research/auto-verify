@@ -12,6 +12,8 @@ from autoverify.cli.util.git import GitRepoInfo
 
 from .abcrown.venv_install import VenvAbCrownRepoInfo
 from .abcrown.venv_install import install as install_abcrown_venv
+from .mnbab.venv_install import VenvMnBabRepoInfo
+from .mnbab.venv_install import install as install_mnbab_venv
 from .nnenum.venv_install import VenvNnenumRepoInfo
 from .nnenum.venv_install import install as install_nnenum_venv
 from .ovalbab.venv_install import VenvOvalBabRepoInfo
@@ -28,6 +30,7 @@ from .verinet.venv_install import install as install_verinet_venv
 venv_installers: dict[str, Callable[[Path], None]] = {
     "nnenum": install_nnenum_venv,
     "abcrown": install_abcrown_venv,
+    "mnbab": install_mnbab_venv,
     "verinet": install_verinet_venv,
     "ovalbab": install_ovalbab_venv,
     # Add more verifiers as they get venv support
@@ -36,6 +39,7 @@ venv_installers: dict[str, Callable[[Path], None]] = {
 venv_repo_infos: dict[str, GitRepoInfo] = {
     "nnenum": VenvNnenumRepoInfo,
     "abcrown": VenvAbCrownRepoInfo,
+    "mnbab": VenvMnBabRepoInfo,
     "verinet": VenvVerinetRepoInfo,
     "ovalbab": VenvOvalBabRepoInfo,
 }

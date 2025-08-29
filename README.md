@@ -24,10 +24,10 @@ You can specify which version of a verifier to install:
 
 ```bash
 # Install a specific version (commit hash)
-auto-verify install abcrown --version "877afa32d9d314fcb416436a616e6a5878fdab78"
+auto-verify install abcrown --verifier-version "877afa32d9d314fcb416436a616e6a5878fdab78"
 
 # Install the most recent version
-auto-verify install abcrown --version most-recent
+auto-verify install abcrown --verifier-version most-recent
 ```
 
 **Note:** If a short hash is provided and cannot be resolved, the installation will fall back to the default version for that verifier.

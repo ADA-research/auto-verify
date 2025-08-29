@@ -232,6 +232,12 @@ def _install_verifier_venv(
     Returns:
         Result indicating success or failure
     """
+    # Validate version parameter
+    if custom_commit:
+        from autoverify.cli.util.git import validate_commit_hash_format
+        if not validate_commit_hash_format(custom_commit):
+            return Err(f"Invalid commit hash format: {custom_commit}. Expected 7-40 character hexadecimal string.")
+    
     # Create the verifier directory
     init_result = _init_new_verifier_dir(verifier)
     if init_result.is_err():
