@@ -31,7 +31,15 @@ from autoverify.config import (
 def _build_arg_parser() -> argparse.ArgumentParser:
     """Build argument parser."""
     parser = argparse.ArgumentParser(
-        description="Auto-verify: Neural network verification toolkit"
+        description="Auto-verify: Neural network verification toolkit",
+        epilog="""
+Auto-verify is a toolkit for managing neural network verification tools.
+It supports both conda and Python virtual environment management strategies.
+
+For detailed help on any command, use: auto-verify <command> --help
+For a comprehensive overview, use: auto-verify help
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
     parser.add_argument(
@@ -40,10 +48,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
     
+    # Help command
+    help_parser = subparsers.add_parser("help", help="Show comprehensive help and examples")
+    
     # Install command
     install_parser = subparsers.add_parser("install", help="Install verifiers")
     install_parser.add_argument(
-        "verifiers", nargs="+", help="Verifiers to install"
+        "verifiers", nargs="+", help="Verifiers to install (abcrown, nnenum, ovalbab, verinet, mnbab)"
     )
     install_parser.add_argument(
         "--env", choices=["conda", "venv", "auto"], 
@@ -109,7 +120,15 @@ Note: Use --verifier-version (not --version) to specify verifier versions.
     )
     
     # Check command
-    subparsers.add_parser("check", help="Check verifier status")
+    check_parser = subparsers.add_parser("check", help="Check verifier status and health")
+    check_parser.add_argument(
+        "--env", choices=["conda", "venv", "both"],
+        default="both", help="Which installation type to check"
+    )
+    check_parser.add_argument(
+        "--verbose", "-v", action="store_true",
+        help="Show detailed status information"
+    )
     
     # Versions command
     versions_parser = subparsers.add_parser("versions", help="Show available versions for verifiers")
@@ -122,7 +141,7 @@ Note: Use --verifier-version (not --version) to specify verifier versions.
     )
     
     # Config command
-    config_parser = subparsers.add_parser("config", help="Manage configuration")
+    config_parser = subparsers.add_parser("config", help="Manage configuration settings")
     config_subparsers = config_parser.add_subparsers(dest="config_action")
     
     # Config show
@@ -256,11 +275,14 @@ def _handle_list(args):
             found_verifiers = True
             print("\nConda-based verifiers:")
             for verifier in sorted(conda_verifiers):
+                tool_dir = VERIFIER_DIR / verifier / "tool"
+                conda_env_name = f"__av__{verifier}"
+                
                 print(f"  • {verifier}")
+                print(f"    - Path: {tool_dir.resolve()}")
+                print(f"    - Conda env: {conda_env_name}")
+                
                 if args.verbose:
-                    tool_dir = VERIFIER_DIR / verifier / "tool"
-                    conda_env_name = f"__av__{verifier}"
-                    
                     if tool_dir.exists():
                         try:
                             # Get commit hash
@@ -287,13 +309,13 @@ def _handle_list(args):
                                 
                                 print(f"    - Branch: {branch}")
                                 print(f"    - Commit: {commit}")
-                                print(f"    - Path: {tool_dir}")
-                                print(f"    - Conda env: {conda_env_name}")
                                 print(f"    - Activate: conda activate {conda_env_name}")
                         except Exception:
-                            print(f"    - Path: {tool_dir}")
-                            print(f"    - Conda env: {conda_env_name}")
                             print(f"    - Activate: conda activate {conda_env_name}")
+                    else:
+                        print(f"    - Activate: conda activate {conda_env_name}")
+                else:
+                    print(f"    - Activate: conda activate {conda_env_name}")
     
     if args.env in ["venv", "both"] and VENV_VERIFIER_DIR.exists():
         venv_verifiers = [d.name for d in VENV_VERIFIER_DIR.iterdir() if d.is_dir()]
@@ -301,12 +323,14 @@ def _handle_list(args):
             found_verifiers = True
             print("\nVenv-based verifiers:")
             for verifier in sorted(venv_verifiers):
+                tool_dir = VENV_VERIFIER_DIR / verifier / "tool"
+                venv_dir = VENV_VERIFIER_DIR / verifier / "venv"
+                activate_script = VENV_VERIFIER_DIR / verifier / "activate.sh"
+                
                 print(f"  • {verifier}")
+                print(f"    - Path: {tool_dir.resolve()}")
+                
                 if args.verbose:
-                    tool_dir = VENV_VERIFIER_DIR / verifier / "tool"
-                    venv_dir = VENV_VERIFIER_DIR / verifier / "venv"
-                    activate_script = VENV_VERIFIER_DIR / verifier / "activate.sh"
-                    
                     if tool_dir.exists():
                         try:
                             # Get commit hash
@@ -341,6 +365,11 @@ def _handle_list(args):
                     
                     if activate_script.exists():
                         print(f"    - Activate: source {activate_script}")
+                    else:
+                        print(f"    - Activate: source {venv_dir}/bin/activate")
+                else:
+                    if venv_dir.exists():
+                        print(f"    - Activate: source {venv_dir}/bin/activate")
     
     if not found_verifiers:
         print("No verifiers installed.")
@@ -402,7 +431,71 @@ def _handle_versions(args):
 
 def _handle_check(args):
     """Handle check command."""
-    check_commit_hashes()
+    print("Checking verifier status...")
+    
+    if args.env in ["conda", "both"]:
+        print("\nChecking conda-based verifiers...")
+        check_commit_hashes()
+    
+    if args.env in ["venv", "both"]:
+        print("\nChecking venv-based verifiers...")
+        # Check venv verifiers
+        if VENV_VERIFIER_DIR.exists():
+            venv_verifiers = [d.name for d in VENV_VERIFIER_DIR.iterdir() if d.is_dir()]
+            if venv_verifiers:
+                print(f"Found {len(venv_verifiers)} venv verifier(s):")
+                for verifier in sorted(venv_verifiers):
+                    tool_dir = VENV_VERIFIER_DIR / verifier / "tool"
+                    venv_dir = VENV_VERIFIER_DIR / verifier / "venv"
+                    
+                    print(f"  • {verifier}")
+                    print(f"    - Path: {tool_dir.resolve()}")
+                    
+                    if args.verbose:
+                        if tool_dir.exists():
+                            try:
+                                import subprocess
+                                from autoverify.util.env import cwd
+                                
+                                with cwd(tool_dir):
+                                    # Get commit hash
+                                    result = subprocess.run(
+                                        ["git", "rev-parse", "--short", "HEAD"],
+                                        capture_output=True,
+                                        text=True,
+                                        check=True
+                                    )
+                                    commit = result.stdout.strip()
+                                    
+                                    # Get branch
+                                    result = subprocess.run(
+                                        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                                        capture_output=True,
+                                        text=True,
+                                        check=True
+                                    )
+                                    branch = result.stdout.strip()
+                                    
+                                    print(f"    - Branch: {branch}")
+                                    print(f"    - Commit: {commit}")
+                            except Exception as e:
+                                print(f"    - Error getting git info: {e}")
+                        
+                        if venv_dir.exists():
+                            print(f"    - Virtual env: {venv_dir}")
+                            print(f"    - Activate: source {venv_dir}/bin/activate")
+                    else:
+                        if venv_dir.exists():
+                            print(f"    - Activate: source {venv_dir}/bin/activate")
+            else:
+                print("No venv verifiers found.")
+        else:
+            print("Venv installation directory not found.")
+    
+    if args.env not in ["conda", "venv", "both"]:
+        print("Invalid environment option. Use: conda, venv, or both")
+    
+    print("\nVerifier status check complete.")
 
 
 def _handle_config(args):
@@ -510,6 +603,163 @@ def _handle_config(args):
         _config_manager.reset_config()
 
 
+def _handle_help():
+    """Show comprehensive help and examples."""
+    help_text = """
+AUTO-VERIFY COMPREHENSIVE HELP
+==============================
+
+Auto-verify is a comprehensive toolkit for managing neural network verification tools.
+It supports both conda and Python virtual environment management strategies.
+
+SUPPORTED VERIFIERS
+------------------
+• abcrown    - Neural network verification tool
+• nnenum     - Neural network enumeration tool  
+• ovalbab    - Neural network verification tool
+• verinet    - Neural network verification tool
+• mnbab      - Neural network verification tool
+
+CORE COMMANDS
+-------------
+
+1. INSTALL VERIFIERS
+   auto-verify install <verifier> [options]
+   
+   Examples:
+   • auto-verify install abcrown                    # Install with default version
+   • auto-verify install abcrown nnenum            # Install multiple verifiers
+   • auto-verify install abcrown --env venv        # Force venv installation
+   • auto-verify install abcrown --verifier-version most-recent  # Latest version
+   • auto-verify install abcrown --verifier-version <commit-hash>  # Specific version
+   
+   Options:
+   --env {conda,venv,auto}     Environment strategy (default: conda)
+   --verifier-version <hash>    Specific commit hash or 'most-recent'
+   --conda-env-name <name>      Custom conda environment name
+   --force-venv                 Force venv even if conda preferred
+
+2. UNINSTALL VERIFIERS
+   auto-verify uninstall <verifier> [options]
+   auto-verify delete <verifier> [options]         # Alias for uninstall
+   
+   Examples:
+   • auto-verify uninstall abcrown                 # Remove from both envs
+   • auto-verify uninstall abcrown --env conda     # Remove only from conda
+   • auto-verify delete abcrown nnenum             # Remove multiple verifiers
+   
+   Options:
+   --env {conda,venv,both}     Which installation to remove (default: both)
+
+3. LIST VERIFIERS
+   auto-verify list [options]
+   
+   Examples:
+   • auto-verify list                              # List all verifiers with paths
+   • auto-verify list --env conda                  # List only conda installations
+   • auto-verify list --verbose                    # Detailed information + paths
+   
+   Options:
+   --env {conda,venv,both}     Which installations to list (default: both)
+   --verbose, -v               Show detailed information (git info, etc.)
+   
+   Note: Full paths are always displayed by default.
+
+4. CHECK VERIFIER STATUS
+   auto-verify check [options]
+   
+   Examples:
+   • auto-verify check                             # Check all verifiers with paths
+   • auto-verify check --env venv                  # Check only venv installations
+   • auto-verify check --verbose                   # Detailed status + paths
+   • auto-verify check --env conda --verbose       # Detailed conda status + paths
+   
+   Options:
+   --env {conda,venv,both}     Which installations to check (default: both)
+   --verbose, -v               Show detailed status information
+   
+   Note: Full paths are always displayed by default.
+
+5. SHOW VERIFIER VERSIONS
+   auto-verify versions <verifier> [options]
+   
+   Examples:
+   • auto-verify versions abcrown                  # Show available versions
+   • auto-verify versions abcrown --branch main    # Check specific branch
+   
+   Options:
+   --branch <branch>            Branch to check (default: main/master)
+
+CONFIGURATION MANAGEMENT
+-----------------------
+
+auto-verify config <action> [options]
+
+Available actions:
+
+• show                    - Display current configuration
+• set-env <strategy>      - Set environment strategy (conda/venv/auto)
+• set-install-path <path> - Set custom installation path
+• set-gpu <true/false>    - Set GPU preference
+• set-timeout <seconds>   - Set default verification timeout
+• set-log-level <level>   - Set logging verbosity (DEBUG/INFO/WARNING/ERROR)
+• set-verbose-installation <true/false> - Set installation verbosity
+• set-conda-fallback <true/false> - Allow conda fallback
+• set-require-uv <true/false> - Require uv for venv strategy
+• example                 - Create example configuration file
+• reset                   - Reset to default configuration
+
+Examples:
+• auto-verify config show                           # Show current config
+• auto-verify config set-env conda                 # Prefer conda
+• auto-verify config set-log-level DEBUG           # Enable debug logging
+• auto-verify config set-timeout 300               # Set 5-minute timeout
+• auto-verify config example                       # Create example config
+
+ENVIRONMENT STRATEGIES
+---------------------
+
+• conda (default): Use conda environments for package management
+• venv: Use Python virtual environments with pip
+• auto: Automatically choose based on availability
+
+INSTALLATION PATHS
+------------------
+
+• Default conda path: ~/.conda/envs/__av__{verifier}
+• Default venv path: ~/.local/share/auto-verify/venv/{verifier}
+• Custom paths can be set via config
+• Full verifier paths are always displayed in list/check commands
+
+VERSION MANAGEMENT
+-----------------
+
+• Default versions: Pre-configured stable commits for each verifier
+• Latest versions: Use --verifier-version most-recent
+• Specific versions: Use --verifier-version <full-commit-hash>
+• Short hashes: Will fall back to default version
+
+TROUBLESHOOTING
+---------------
+
+• Use --verbose flags for detailed output
+• Check verifier status with: auto-verify check
+• Verify installation with: auto-verify list --verbose
+• Reset configuration with: auto-verify config reset
+
+GETTING HELP
+------------
+
+• auto-verify --help                    # Basic help
+• auto-verify help                     # This comprehensive help
+• auto-verify <command> --help         # Command-specific help
+• auto-verify --version                 # Show version information
+
+For more information, visit the project documentation or repository.
+"""
+    print(help_text)
+
+
 def main():
     """Main entry point."""
     parser = _build_arg_parser()
@@ -538,6 +788,8 @@ def main():
             _handle_versions(args)
         elif args.command == "config":
             _handle_config(args)
+        elif args.command == "help":
+            _handle_help()
     except KeyboardInterrupt:
         print("\nOperation cancelled by user")
         sys.exit(1)
