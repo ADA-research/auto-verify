@@ -49,7 +49,7 @@ For a comprehensive overview, use: auto-verify help
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
     
     # Help command
-    help_parser = subparsers.add_parser("help", help="Show comprehensive help and examples")
+    subparsers.add_parser("help", help="Show comprehensive help and examples")
     
     # Install command
     install_parser = subparsers.add_parser("install", help="Install verifiers")
@@ -401,11 +401,11 @@ def _handle_versions(args):
     print(f"  Checking branch: {branch}")
     
     try:
-        from autoverify.cli.util.git import get_latest_commit_hash
-        
+
         # Create a temporary directory to clone and check
         import tempfile
-        import shutil
+
+        from autoverify.cli.util.git import get_latest_commit_hash
         
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
@@ -419,14 +419,15 @@ def _handle_versions(args):
             print(f"  Latest commit on {branch}: {latest_commit}")
             
             if latest_commit != repo_info.commit_hash:
-                print(f"  Note: Default commit is {len(repo_info.commit_hash)} characters, latest is {len(latest_commit)} characters")
-                print(f"  Consider using: --verifier-version most-recent")
+                print(f"  Note: Default commit is {len(repo_info.commit_hash)} characters, "
+                      f"latest is {len(latest_commit)} characters")
+                print("  Consider using: --verifier-version most-recent")
             else:
-                print(f"  Default commit is up to date")
+                print("  Default commit is up to date")
                 
     except Exception as e:
         print(f"  Error checking latest version: {e}")
-        print(f"  You can still install with: --verifier-version most-recent")
+        print("  You can still install with: --verifier-version most-recent")
 
 
 def _handle_check(args):
@@ -455,6 +456,7 @@ def _handle_check(args):
                         if tool_dir.exists():
                             try:
                                 import subprocess
+
                                 from autoverify.util.env import cwd
                                 
                                 with cwd(tool_dir):

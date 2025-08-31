@@ -96,7 +96,7 @@ def clone_checkout_verifier(
                 )
                 commit_hash = result.stdout.strip()
                 install_logger.info(f"Latest commit hash: {commit_hash}")
-            except subprocess.CalledProcessError as e:
+            except subprocess.CalledProcessError:
                 install_logger.warning(f"Failed to fetch latest from {repo_info.branch}, using current HEAD")
                 # Fall back to current HEAD if fetch fails
                 result = subprocess.run(
