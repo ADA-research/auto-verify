@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from typing import IO, Any
+from typing import IO, Any, Union
 
 from ConfigSpace import Configuration
 
@@ -13,8 +13,12 @@ from autoverify.util.tempfiles import tmp_json_file_from_dict
 class OvalbabJsonConfig:
     """Class for Oval-BaB JSON configs."""
 
-    def __init__(self, json_file: IO[str]):
-        """New instance."""
+    def __init__(self, json_file: Union[IO[str], str, Path]):
+        """New instance.
+        
+        Args:
+            json_file: Either a file object, file path string, or Path object
+        """
         self._json_file = json_file
 
     @classmethod
@@ -68,8 +72,12 @@ class OvalbabJsonConfig:
 
     def get_json_file(self) -> IO[str]:
         """Return the json file."""
+        if isinstance(self._json_file, str | Path):
+            return open(str(self._json_file), "r")
         return self._json_file
 
     def get_json_file_path(self) -> Path:
         """The path to the json file."""
+        if isinstance(self._json_file, str | Path):
+            return Path(str(self._json_file))
         return Path(self._json_file.name)
