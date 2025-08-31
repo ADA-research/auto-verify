@@ -1,7 +1,9 @@
 """Nnenum verifier."""
 
+import shlex
 from collections.abc import Iterable
 from contextlib import AbstractContextManager
+from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Any
 
@@ -82,14 +84,25 @@ class Nnenum(CompleteVerifier):
             result_file = Path(tmp.name)
         source_cmd = get_conda_source_cmd(get_conda_path())
 
-        # TODO: This is a placeholder. Need to implement the actual command
+        # In nnenum, settings are normally passed as a one word string
+        # over the CLI. This word then selects from some pre-defined settings.
+        # We want some more control however, so we also make an option to pass
+        # a stringified dict of exact settings.
+        # The "none" value for settings_str is used as a flag that makes
+        # nnenum use the dict of exact settings instead.
+        settings_str = "none"
+        if self._use_auto_settings:
+            settings_str = "auto"  # "auto" is the default
+            config = {}
+
         run_cmd = f"""
         {" ".join(source_cmd)}
         conda activate {self.conda_env_name}
-        python tools/complete_verifier/nnenum/complete_verifier.py \
-        --config {str(config)} \
-        --timeout {timeout} \
-        --result_file {str(result_file)}
+        python -m nnenum.nnenum {str(network)} {str(property)} {str(timeout)} \
+        {str(result_file)} \
+        {str(cpu_count())} \
+        {settings_str} \
+        {shlex.quote(str(config))} \
         """
 
         return run_cmd, result_file
