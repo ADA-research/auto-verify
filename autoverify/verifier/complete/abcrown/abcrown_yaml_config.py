@@ -1,7 +1,7 @@
 """File for generating abcrown configs."""
 
 from pathlib import Path
-from typing import IO, Any, Union
+from typing import IO, Any
 
 import yaml
 from ConfigSpace import Configuration
@@ -13,7 +13,7 @@ from autoverify.util.tempfiles import tmp_yaml_file, tmp_yaml_file_from_dict
 class AbcrownYamlConfig:
     """Class for ab-crown YAML configs."""
 
-    def __init__(self, yaml_file: Union[IO[str], str, Path]):
+    def __init__(self, yaml_file: IO[str] | str | Path):
         """New instance.
         
         Args:
@@ -45,10 +45,9 @@ class AbcrownYamlConfig:
             for k, v in yaml_override.items():
                 nested_set(abcrown_dict, k.split("__"), v)
 
-        new_yaml_file = tmp_yaml_file()
-        yaml.dump(abcrown_dict, new_yaml_file)
-
-        return cls(new_yaml_file)
+        with tmp_yaml_file() as new_yaml_file:
+            yaml.dump(abcrown_dict, new_yaml_file)
+            return cls(new_yaml_file)
 
     @classmethod
     def from_config(
@@ -84,7 +83,7 @@ class AbcrownYamlConfig:
     def get_yaml_file(self) -> IO[str]:
         """Get the ab-crown YAML config file."""
         if isinstance(self._yaml_file, str | Path):
-            return open(str(self._yaml_file), "r")
+            return open(str(self._yaml_file))
         if not self._yaml_file:
             raise FileNotFoundError("YAML file was not made yet.")
         return self._yaml_file

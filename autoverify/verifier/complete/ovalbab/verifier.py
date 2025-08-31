@@ -80,7 +80,8 @@ class OvalBab(CompleteVerifier):
         config: Path,
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> tuple[str, Path | None]:
-        result_file = Path(tmp_file(".txt").name)
+        with tmp_file(".txt") as tmp:
+            result_file = Path(tmp.name)
         source_cmd = get_conda_source_cmd(get_conda_path())
 
         run_cmd = f"""

@@ -12,17 +12,15 @@ from autoverify.util.tempfiles import (
 
 
 def test_tmp_file():
-    temp_file = tmp_file(".txt")
-
-    assert temp_file.name.endswith(".txt")
-    assert os.path.exists(temp_file.name)
+    with tmp_file(".txt") as temp_file:
+        assert temp_file.name.endswith(".txt")
+        assert os.path.exists(temp_file.name)
 
 
 def test_tmp_json_file():
-    temp_json_file = tmp_json_file()
-
-    assert temp_json_file.name.endswith(".json")
-    assert os.path.exists(temp_json_file.name)
+    with tmp_json_file() as temp_json_file:
+        assert temp_json_file.name.endswith(".json")
+        assert os.path.exists(temp_json_file.name)
 
 
 def test_tmp_json_file_from_dict():
@@ -38,10 +36,9 @@ def test_tmp_json_file_from_dict():
 
 
 def test_tmp_yaml_file():
-    temp_yaml_file = tmp_yaml_file()
-
-    assert temp_yaml_file.name.endswith(".yaml")
-    assert os.path.exists(temp_yaml_file.name)
+    with tmp_yaml_file() as temp_yaml_file:
+        assert temp_yaml_file.name.endswith(".yaml")
+        assert os.path.exists(temp_yaml_file.name)
 
 
 def test_tmp_yaml_file_from_dict():

@@ -1,6 +1,5 @@
 """Nnenum verifier."""
 
-import shlex
 from collections.abc import Iterable
 from contextlib import AbstractContextManager
 from pathlib import Path
@@ -11,7 +10,6 @@ from ConfigSpace import Configuration, ConfigurationSpace
 from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 from autoverify.util.env import cwd, environment, pkill_matches
-from autoverify.util.proc import cpu_count
 from autoverify.util.tempfiles import tmp_file
 from autoverify.verifier.verification_result import (
     CompleteVerificationResult,
@@ -80,28 +78,18 @@ class Nnenum(CompleteVerifier):
         config: dict[str, Any],
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> tuple[str, Path | None]:
-        result_file = Path(tmp_file(".txt").name)
+        with tmp_file(".txt") as tmp:
+            result_file = Path(tmp.name)
         source_cmd = get_conda_source_cmd(get_conda_path())
 
-        # In nnenum, settings are normally passed as a one word string
-        # over the CLI. This word then selects from some pre-defined settings.
-        # We want some more control however, so we also make an option to pass
-        # a stringified dict of exact settings.
-        # The "none" value for settings_str is used as a flag that makes
-        # nnenum use the dict of exact settings instead.
-        settings_str = "none"
-        if self._use_auto_settings:
-            settings_str = "auto"  # "auto" is the default
-            config = {}
-
+        # TODO: This is a placeholder. Need to implement the actual command
         run_cmd = f"""
         {" ".join(source_cmd)}
         conda activate {self.conda_env_name}
-        python -m nnenum.nnenum {str(network)} {str(property)} {str(timeout)} \
-        {str(result_file)} \
-        {str(cpu_count())} \
-        {settings_str} \
-        {shlex.quote(str(config))} \
+        python tools/complete_verifier/nnenum/complete_verifier.py \
+        --config {str(config)} \
+        --timeout {timeout} \
+        --result_file {str(result_file)}
         """
 
         return run_cmd, result_file

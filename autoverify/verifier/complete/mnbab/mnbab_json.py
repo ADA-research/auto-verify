@@ -5,7 +5,7 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import IO, Any, Union
+from typing import IO, Any
 
 from ConfigSpace import Configuration
 
@@ -17,7 +17,7 @@ from autoverify.util.tempfiles import tmp_file, tmp_json_file_from_dict
 class MnbabJsonConfig:
     """Class for mn-bab JSON configs."""
 
-    def __init__(self, json_file: Union[IO[str], str, Path]):
+    def __init__(self, json_file: IO[str] | str | Path):
         """_summary_.
         
         Args:
@@ -99,7 +99,7 @@ class MnbabJsonConfig:
     def get_json_file(self) -> IO[str]:
         """_summary_."""
         if isinstance(self._json_file, str | Path):
-            return open(str(self._json_file), "r")
+            return open(str(self._json_file))
         return self._json_file
 
     def get_json_file_path(self) -> Path:
@@ -115,10 +115,8 @@ class MnbabJsonConfig:
         *,
         timeout: int = sys.maxsize,
     ) -> Path:
-        tmp_csv = tmp_file(".csv")
-
-        with open(tmp_csv.name, "w") as csv_file:
-            writer = csv.writer(csv_file)
-            writer.writerow([str(network), str(property), timeout])
-
-        return Path(tmp_csv.name)
+        with tmp_file(".csv") as tmp_csv:
+            with open(tmp_csv.name, "w") as csv_file:
+                writer = csv.writer(csv_file)
+                writer.writerow([str(network), str(property), timeout])
+            return Path(tmp_csv.name)
