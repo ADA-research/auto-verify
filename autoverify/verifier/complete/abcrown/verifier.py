@@ -84,10 +84,9 @@ class AbCrown(CompleteVerifier):
         run_cmd = f"""
         {" ".join(source_cmd)}
         conda activate {self.conda_env_name}
-        python tools/complete_verifier/abcrown/complete_verifier.py \
-        --config {str(config)} \
-        --timeout {timeout} \
-        --result_file {str(result_file)}
+        python abcrown.py --config {str(config)} \
+        --results_file {str(result_file)} \
+        --timeout {str(timeout)}
         """
 
         return run_cmd, result_file

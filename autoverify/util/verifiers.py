@@ -32,7 +32,7 @@ def get_all_complete_verifier_names() -> list[str]:
         AbCrown.name,
         OvalBab.name,
         Verinet.name,
-        # MnBab.name,
+        MnBab.name,
     ]
 
 

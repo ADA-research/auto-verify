@@ -65,7 +65,14 @@ def clone_checkout_verifier(
     """
     with cwd(install_dir):
         install_logger.info(f"Cloning into repository: {repo_info.clone_url}")
-        subprocess.run(repo_info.clone, check=True, capture_output=True)
+        
+        # For repositories with problematic submodules, clone without --recursive first
+        if init_submodules:
+            # Clone without submodules first to avoid SSH issues
+            clone_cmd = ["git", "clone", repo_info.clone_url, "--branch", repo_info.branch]
+            subprocess.run(clone_cmd, check=True, capture_output=True)
+        else:
+            subprocess.run(repo_info.clone, check=True, capture_output=True)
 
         os.rename(install_dir / repo_info.repo_name, install_dir / "tool")
 
@@ -152,11 +159,27 @@ def clone_checkout_verifier(
                 capture_output=True,
             )
 
-            subprocess.run(
-                shlex.split("git submodule update"),
-                check=True,
-                capture_output=True,
-            )
+            # Handle submodules that might use SSH URLs gracefully
+            try:
+                subprocess.run(
+                    shlex.split("git submodule update"),
+                    check=True,
+                    capture_output=True,
+                )
+            except subprocess.CalledProcessError:
+                install_logger.warning(
+                    "Failed to update submodules (possibly due to SSH authentication). "
+                    "Continuing with partial installation..."
+                )
+                # Try to update only HTTPS submodules
+                try:
+                    subprocess.run(
+                        shlex.split("git submodule update --init --recursive --remote"),
+                        check=False,  # Don't fail on SSH submodules
+                        capture_output=True,
+                    )
+                except Exception:
+                    install_logger.warning("Could not update any submodules")
 
 
 def get_latest_commit_hash(repo_path: Path, branch: str = "main") -> str:

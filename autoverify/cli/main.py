@@ -130,6 +130,16 @@ Note: Use --verifier-version (not --version) to specify verifier versions.
         help="Show detailed status information"
     )
     
+    # Clean command
+    clean_parser = subparsers.add_parser("clean", help="Clean up failed verifier installations")
+    clean_parser.add_argument(
+        "verifiers", nargs="+", help="Verifiers to clean up"
+    )
+    clean_parser.add_argument(
+        "--env", choices=["conda", "venv", "both"],
+        default="both", help="Which installation type to clean"
+    )
+    
     # Versions command
     versions_parser = subparsers.add_parser("versions", help="Show available versions for verifiers")
     versions_parser.add_argument(
@@ -500,6 +510,32 @@ def _handle_check(args):
     print("\nVerifier status check complete.")
 
 
+def _handle_clean(args):
+    """Handle clean command."""
+    print("Cleaning up failed verifier installations...")
+    
+    for verifier in args.verifiers:
+        print(f"\nCleaning {verifier}...")
+        
+        if args.env in ["conda", "both"]:
+            try:
+                from autoverify.cli.install import _remove_verifier_dir
+                _remove_verifier_dir(verifier)
+                print(f"  Cleaned conda installation for {verifier}")
+            except Exception as e:
+                print(f"  Error cleaning conda installation for {verifier}: {e}")
+        
+        if args.env in ["venv", "both"]:
+            try:
+                from autoverify.cli.install.venv_installers.venv_install import _remove_verifier_dir as _remove_venv_dir
+                _remove_venv_dir(verifier)
+                print(f"  Cleaned venv installation for {verifier}")
+            except Exception as e:
+                print(f"  Error cleaning venv installation for {verifier}: {e}")
+    
+    print("\nCleanup complete.")
+
+
 def _handle_config(args):
     """Handle config command."""
     if args.config_action == "show":
@@ -692,6 +728,19 @@ CORE COMMANDS
    Options:
    --branch <branch>            Branch to check (default: main/master)
 
+6. CLEAN FAILED INSTALLATIONS
+   auto-verify clean <verifier> [options]
+   
+   Examples:
+   • auto-verify clean mnbab                       # Clean up failed mnbab installation
+   • auto-verify clean abcrown --env conda         # Clean only conda installation
+   • auto-verify clean nnenum ovalbab --env both   # Clean multiple verifiers
+   
+   Options:
+   --env {conda,venv,both}     Which installation to clean (default: both)
+   
+   Note: Use this command to clean up failed or corrupted installations.
+
 CONFIGURATION MANAGEMENT
 -----------------------
 
@@ -747,6 +796,7 @@ TROUBLESHOOTING
 • Use --verbose flags for detailed output
 • Check verifier status with: auto-verify check
 • Verify installation with: auto-verify list --verbose
+• Clean failed installations with: auto-verify clean <verifier>
 • Reset configuration with: auto-verify config reset
 
 GETTING HELP
@@ -786,6 +836,8 @@ def main():
             _handle_list(args)
         elif args.command == "check":
             _handle_check(args)
+        elif args.command == "clean":
+            _handle_clean(args)
         elif args.command == "versions":
             _handle_versions(args)
         elif args.command == "config":

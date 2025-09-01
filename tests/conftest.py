@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from autoverify.util.env import get_file_path
 from autoverify.util.instances import VerificationInstance
-from autoverify.verifier import AbCrown, Nnenum, OvalBab, Verinet
+from autoverify.verifier import AbCrown, MnBab, Nnenum, OvalBab, Verinet
 from autoverify.verifier.verification_result import (
     CompleteVerificationData,
     CompleteVerificationResult,
@@ -117,6 +117,11 @@ def verinet() -> Verinet:
 @pytest.fixture
 def ovalbab() -> OvalBab:
     return OvalBab()
+
+
+@pytest.fixture
+def mnbab() -> MnBab:
+    return MnBab()
 
 
 @pytest.fixture

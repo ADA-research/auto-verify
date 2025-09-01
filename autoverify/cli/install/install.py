@@ -38,6 +38,12 @@ def _remove_verifier_dir(verifier: str):
 def _init_new_verifier_dir(dir_name: str):
     """Creates a new directory in `VERIFIER_DIR` with specified name."""
     dir_path = VERIFIER_DIR / dir_name
+    
+    # If directory already exists, remove it first to ensure clean installation
+    if dir_path.exists():
+        print(f"Removing existing {dir_name} directory for clean installation...")
+        _remove_verifier_dir(dir_name)
+    
     dir_path.mkdir()
 
 

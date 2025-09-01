@@ -63,6 +63,7 @@ keras>=2.9.0
 keras-preprocessing>=1.1.2
 onnx==1.11.0
 onnxruntime==1.11.0
+onnxoptimizer==0.3.13
 onnx2pytorch @ git+https://github.com/KaidiXu/onnx2pytorch@102cf22e64ea7fae9462c1ba0feaa250ac0bc628#egg=onnx2pytorch
 
 # Data processing and utilities
@@ -105,6 +106,9 @@ configobj>=5.0.6
 jsonschema>=3.2.0
 toml>=0.10.2
 tomli>=2.0.1
+
+# Visualization
+graphviz>=0.20.0
 
 # Development and testing
 pytest>=7.0.0

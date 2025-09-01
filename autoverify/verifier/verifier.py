@@ -43,6 +43,7 @@ class Verifier(ABC):
         """New instance. This is used with super calls."""
         self._batch_size = batch_size
         self._cpu_gpu_allocation = cpu_gpu_allocation
+        self._printed_tool_path = False
 
     def get_init_attributes(self) -> dict[str, Any]:
         """Get attributes provided during initialization of the verifier."""
@@ -124,6 +125,15 @@ class Verifier(ABC):
         """Init the config, return type that is needed."""
         return config
 
+    def _print_verifier_path_once(self):
+        """Print the resolved verifier tool path once per instance, with bars at the top and bottom."""
+        if not self._printed_tool_path:
+            bar = "=" * 60
+            print(bar)
+            print(f"[auto-verify] Using verifier '{self.name}' at: {str(self.tool_path.expanduser().resolve())}")
+            print(bar)
+            self._printed_tool_path = True
+
     # TODO: Overload like in ConfigSpace to distinguish between return types
     def sample_configuration(
         self, *, size: int = 1
@@ -181,8 +191,9 @@ class CompleteVerifier(Verifier):
 
         Returns:
             CompleteVerificationResult: A `Result` object containing information
-                about the verification attempt. TODO: Link docs or something
+            about the verification attempt. TODO: Link docs or something
         """
+        self._print_verifier_path_once()
         network, property = network.resolve(), property.resolve()
         self._check_instance(network, property)
 
