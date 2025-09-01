@@ -37,12 +37,10 @@ dependencies = [
 # pytest and pytest-lazy-fixture are frozen due to compatibility issues 
 [project.optional-dependencies]
 dev = [
-    "black",
-    "isort",
+    "ruff",
     "tox",
     "pytest==7.3.2",
     "pre-commit",
-    "flake8",
     "mypy",
     "bumpver",
     "coverage",
@@ -54,14 +52,6 @@ dev = [
 
 [project.scripts]
 auto-verify = "autoverify.cli.main:main"
-
-[tool.black]
-line_length = 80
-target-version = ['py310']
-
-[tool.isort]
-line_length = 80
-profile = "black"
 
 [tool.pydocstyle]
 convention = "google"
@@ -116,3 +106,29 @@ omit = [
 
     "tests/*",
 ]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F", 
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
+
+[tool.ruff.format]
+line-length = 120
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
