@@ -155,3 +155,23 @@ def err_complete_verif_res(
     complete_verif_data: CompleteVerificationData,
 ) -> CompleteVerificationResult:
     return Err(complete_verif_data)
+
+
+@pytest.fixture
+def err_verif_data() -> CompleteVerificationData:
+    """Create a CompleteVerificationData with ERR result."""
+    return CompleteVerificationData(
+        result="ERR",
+        took=15.0,
+        counter_example=None,
+        err="Verification tool crashed with exit code 1",
+        stdout="Error: Invalid input format\nTraceback (most recent call last):\n...",
+    )
+
+
+@pytest.fixture
+def err_verif_res(
+    err_verif_data: CompleteVerificationData,
+) -> CompleteVerificationResult:
+    """Create a CompleteVerificationResult with ERR data."""
+    return Ok(err_verif_data)
