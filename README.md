@@ -6,6 +6,12 @@ To get started, head to the [Documentation](https://ada-research.github.io/auto-
 
 ## Installation
 
+## CLI Commands
+
+You can access the help and examples for the command-line interface by using the `--help` flag.
+```bash
+auto-verify --help
+```
 ### Installing Verifiers
 
 You can install verifiers with the following command:
