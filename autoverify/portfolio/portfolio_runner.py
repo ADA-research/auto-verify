@@ -48,11 +48,7 @@ def _get_verifier(
             benchmark, instance, cv.verifier, to_allocation(cv.resources)
         )
     else:
-        alloc: tuple[int, int, int] | None
-        if cv_alloc:
-            alloc = cv_alloc[cv]
-        else:
-            alloc = to_allocation(cv.resources) if cv.resources else None
+        alloc = cv_alloc[cv] if cv_alloc else to_allocation(cv.resources) if cv.resources else None
 
         kwargs = verifier_kwargs or {}
         kwargs = kwargs.get(cv.verifier, {})  # type: ignore
@@ -107,14 +103,8 @@ class PortfolioRunner:
 
     def _init_resources(self):
         self._allocation: dict[ConfiguredVerifier, tuple[int, int, int]] = {}
-        if self._n_cpu:
-            cpu_left = self._n_cpu
-        else:
-            cpu_left = cpu_count()
-        if self._n_gpu:
-            gpu_left = self._n_gpu
-        else:
-            gpu_left = nvidia_gpu_count()
+        cpu_left = self._n_cpu or cpu_count()
+        gpu_left = self._n_gpu or nvidia_gpu_count()
 
         for cv in self._portfolio:
             if cv.resources is None:

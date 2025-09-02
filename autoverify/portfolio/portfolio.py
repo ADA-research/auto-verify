@@ -97,9 +97,8 @@ class PortfolioScenario:
         if self.added_per_iter > self.length:
             raise ValueError("Entries added per iter should be <= length")
 
-        if self.vnn_compat_mode:
-            if not self.benchmark:
-                raise ValueError("Use a benchmark name if vnn_compat_mode=True")
+        if self.vnn_compat_mode and not self.benchmark:
+            raise ValueError("Use a benchmark name if vnn_compat_mode=True")
 
         if self.vnn_compat_mode and self.verifier_kwargs:
             raise ValueError(

@@ -1,4 +1,4 @@
-"""Base verifier class."""
+"""Base class for verifiers."""
 
 import os
 import signal
@@ -6,9 +6,10 @@ import subprocess
 import threading
 import time
 from abc import ABC, abstractmethod
-from contextlib import ExitStack
+from collections.abc import Iterable
+from contextlib import AbstractContextManager, ExitStack, suppress
 from pathlib import Path
-from typing import Any, ContextManager, Iterable
+from typing import Any
 
 from ConfigSpace import Configuration, ConfigurationSpace
 from result import Err, Ok
@@ -20,11 +21,10 @@ from autoverify.util.conda import (
     get_verifier_conda_env_name,
 )
 from autoverify.util.env import environment
+from autoverify.util.instances import VerificationInstance
 from autoverify.util.path import check_file_extension
 from autoverify.util.proc import nvidia_gpu_count, pid_exists, taskset_cpu_range
-from autoverify.util.verification_instance import VerificationInstance
-
-from .verification_result import (
+from autoverify.verifier.verification_result import (
     CompleteVerificationData,
     CompleteVerificationResult,
     VerificationResultString,
@@ -43,6 +43,7 @@ class Verifier(ABC):
         """New instance. This is used with super calls."""
         self._batch_size = batch_size
         self._cpu_gpu_allocation = cpu_gpu_allocation
+        self._printed_tool_path = False
 
     def get_init_attributes(self) -> dict[str, Any]:
         """Get attributes provided during initialization of the verifier."""
@@ -64,7 +65,7 @@ class Verifier(ABC):
 
     @property
     @abstractmethod
-    def contexts(self) -> list[ContextManager[None]] | None:
+    def contexts(self) -> list[AbstractContextManager[None]] | None:
         """Contexts to run the verification in."""
         raise NotImplementedError
 
@@ -124,6 +125,15 @@ class Verifier(ABC):
         """Init the config, return type that is needed."""
         return config
 
+    def _print_verifier_path_once(self):
+        """Print the resolved verifier tool path once per instance, with bars at the top and bottom."""
+        if not self._printed_tool_path:
+            bar = "=" * 60
+            print(bar)
+            print(f"[auto-verify] Using verifier '{self.name}' at: {str(self.tool_path.expanduser().resolve())}")
+            print(bar)
+            self._printed_tool_path = True
+
     # TODO: Overload like in ConfigSpace to distinguish between return types
     def sample_configuration(
         self, *, size: int = 1
@@ -181,8 +191,9 @@ class CompleteVerifier(Verifier):
 
         Returns:
             CompleteVerificationResult: A `Result` object containing information
-                about the verification attempt. TODO: Link docs or something
+            about the verification attempt. TODO: Link docs or something
         """
+        self._print_verifier_path_once()
         network, property = network.resolve(), property.resolve()
         self._check_instance(network, property)
 
@@ -255,7 +266,7 @@ class CompleteVerifier(Verifier):
     def _allocate_run_cmd(
         self,
         run_cmd: str,
-        contexts: list[ContextManager[None]],
+        contexts: list[AbstractContextManager[None]],
     ) -> str:
         # TODO: GPU allocation
         assert self._cpu_gpu_allocation is not None
@@ -290,10 +301,8 @@ class CompleteVerifier(Verifier):
 
     def set_timeout_event(self):
         """Signal that the process has timed out."""
-        try:
+        with suppress(AttributeError):
             self._timeout_event.set()  # type: ignore
-        except AttributeError:
-            pass
 
     def _run_verification(
         self,

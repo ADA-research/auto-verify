@@ -13,8 +13,12 @@ from autoverify.util.tempfiles import tmp_yaml_file, tmp_yaml_file_from_dict
 class AbcrownYamlConfig:
     """Class for ab-crown YAML configs."""
 
-    def __init__(self, yaml_file: IO[str]):
-        """New instance."""
+    def __init__(self, yaml_file: IO[str] | str | Path):
+        """New instance.
+        
+        Args:
+            yaml_file: Either a file object, file path string, or Path object
+        """
         self._yaml_file = yaml_file
 
     @classmethod
@@ -41,10 +45,9 @@ class AbcrownYamlConfig:
             for k, v in yaml_override.items():
                 nested_set(abcrown_dict, k.split("__"), v)
 
-        new_yaml_file = tmp_yaml_file()
-        yaml.dump(abcrown_dict, new_yaml_file)
-
-        return cls(new_yaml_file)
+        with tmp_yaml_file() as new_yaml_file:
+            yaml.dump(abcrown_dict, new_yaml_file)
+            return cls(new_yaml_file)
 
     @classmethod
     def from_config(
@@ -79,11 +82,14 @@ class AbcrownYamlConfig:
 
     def get_yaml_file(self) -> IO[str]:
         """Get the ab-crown YAML config file."""
+        if isinstance(self._yaml_file, str | Path):
+            return open(str(self._yaml_file))
         if not self._yaml_file:
             raise FileNotFoundError("YAML file was not made yet.")
-
         return self._yaml_file
 
     def get_yaml_file_path(self) -> Path:
         """Get the path to the ab-crown YAML config file."""
-        return Path(self.get_yaml_file().name)
+        if isinstance(self._yaml_file, str | Path):
+            return Path(str(self._yaml_file))
+        return Path(self._yaml_file.name)

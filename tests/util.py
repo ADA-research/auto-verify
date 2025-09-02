@@ -11,5 +11,5 @@ def run_av_cli(args: list[str]) -> str:
 
 
 def read_csv_contents(csv_path: Path) -> str:
-    with open(str(csv_path), "r") as csv_file:
+    with open(str(csv_path)) as csv_file:
         return csv_file.read()

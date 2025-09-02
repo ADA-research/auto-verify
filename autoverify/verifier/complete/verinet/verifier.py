@@ -1,8 +1,10 @@
-"""VerInet."""
+"""VeriNet verifier."""
 
 import shlex
+from collections.abc import Iterable
+from contextlib import AbstractContextManager
 from pathlib import Path
-from typing import Any, ContextManager, Iterable
+from typing import Any
 
 from ConfigSpace import Configuration, ConfigurationSpace
 
@@ -54,7 +56,7 @@ class Verinet(CompleteVerifier):
         self._transpose_matmul_weights = transpose_matmul_weights
 
     @property
-    def contexts(self) -> list[ContextManager[None]]:
+    def contexts(self) -> list[AbstractContextManager[None]]:
         return [
             cwd(self.tool_path),
             environment(

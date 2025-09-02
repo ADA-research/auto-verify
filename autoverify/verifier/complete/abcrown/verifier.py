@@ -1,8 +1,9 @@
 """ab-crown verifier."""
 
 from collections.abc import Iterable
+from contextlib import AbstractContextManager
 from pathlib import Path
-from typing import Any, ContextManager
+from typing import Any
 
 from ConfigSpace import Configuration, ConfigurationSpace
 
@@ -42,7 +43,7 @@ class AbCrown(CompleteVerifier):
         self._yaml_override = yaml_override
 
     @property
-    def contexts(self) -> list[ContextManager[None]]:
+    def contexts(self) -> list[AbstractContextManager[None]]:
         # TODO: Narrow the pkill_match_list patterns further. People may be
         # running scripts called 'abcrown.py'
         # Ideally just keep track of PIDs rather than pkill name matching
@@ -57,7 +58,7 @@ class AbCrown(CompleteVerifier):
         result_file: Path | None,
     ) -> tuple[VerificationResultString, str | None]:
         if find_substring("Result: sat", output):
-            with open(str(result_file), "r") as f:
+            with open(str(result_file)) as f:
                 counter_example = f.read()
 
             return "SAT", counter_example
@@ -76,7 +77,8 @@ class AbCrown(CompleteVerifier):
         config: Path,
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> tuple[str, Path | None]:
-        result_file = Path(tmp_file(".txt").name)
+        with tmp_file(".txt") as tmp:
+            result_file = Path(tmp.name)
         source_cmd = get_conda_source_cmd(get_conda_path())
 
         run_cmd = f"""

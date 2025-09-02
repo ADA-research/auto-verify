@@ -19,10 +19,10 @@ def get_smac_run_data(run_folder: Path) -> dict[str, Any]:
     """Get some data about from the SMAC logs."""
     data: dict[str, Any] = {}
 
-    with open(run_folder / "runhistory.json", "r") as f:
+    with open(run_folder / "runhistory.json") as f:
         runhist = json.load(f)
 
-    with open(run_folder / "intensifier.json", "r") as f:
+    with open(run_folder / "intensifier.json") as f:
         intensifier = json.load(f)
 
     data["incumbents_changed"] = intensifier["incumbents_changed"]

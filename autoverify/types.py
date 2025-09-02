@@ -1,7 +1,7 @@
 """Shared types."""
 
 # from dataclasses import dataclass, field
-from typing import Callable
+from collections.abc import Callable
 
 from ConfigSpace import Configuration
 

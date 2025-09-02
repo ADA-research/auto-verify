@@ -17,8 +17,12 @@ from autoverify.util.tempfiles import tmp_file, tmp_json_file_from_dict
 class MnbabJsonConfig:
     """Class for mn-bab JSON configs."""
 
-    def __init__(self, json_file: IO[str]):
-        """_summary_."""
+    def __init__(self, json_file: IO[str] | str | Path):
+        """_summary_.
+        
+        Args:
+            json_file: Either a file object, file path string, or Path object
+        """
         self._json_file = json_file
 
     @classmethod
@@ -94,10 +98,14 @@ class MnbabJsonConfig:
 
     def get_json_file(self) -> IO[str]:
         """_summary_."""
+        if isinstance(self._json_file, str | Path):
+            return open(str(self._json_file))
         return self._json_file
 
     def get_json_file_path(self) -> Path:
         """_summary_."""
+        if isinstance(self._json_file, str | Path):
+            return Path(str(self._json_file))
         return Path(self._json_file.name)
 
     @staticmethod
@@ -107,10 +115,8 @@ class MnbabJsonConfig:
         *,
         timeout: int = sys.maxsize,
     ) -> Path:
-        tmp_csv = tmp_file(".csv")
-
-        with open(tmp_csv.name, "w") as csv_file:
-            writer = csv.writer(csv_file)
-            writer.writerow([str(network), str(property), timeout])
-
-        return Path(tmp_csv.name)
+        with tmp_file(".csv") as tmp_csv:
+            with open(tmp_csv.name, "w") as csv_file:
+                writer = csv.writer(csv_file)
+                writer.writerow([str(network), str(property), timeout])
+            return Path(tmp_csv.name)

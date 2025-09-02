@@ -1,5 +1,4 @@
 import yaml
-
 from autoverify.util.verification_instance import VerificationInstance
 from autoverify.verifier.complete.abcrown.abcrown_yaml_config import (
     AbcrownYamlConfig,
@@ -16,6 +15,6 @@ def test_ab_config_from_yaml(tmp_path, trivial_sat: VerificationInstance):
         yaml_f, trivial_sat.network, trivial_sat.property
     )
 
-    with open(ab_cfg.get_yaml_file_path(), "r") as f:
+    with open(ab_cfg.get_yaml_file_path()) as f:
         d = yaml.safe_load(f)
         assert d["general"]["seed"] == 42

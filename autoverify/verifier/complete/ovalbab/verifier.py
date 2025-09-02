@@ -1,8 +1,9 @@
 """OvalBab verifier."""
 
 from collections.abc import Iterable
+from contextlib import AbstractContextManager
 from pathlib import Path
-from typing import Any, ContextManager
+from typing import Any
 
 from ConfigSpace import Configuration, ConfigurationSpace
 
@@ -44,7 +45,7 @@ class OvalBab(CompleteVerifier):
         super().__init__(batch_size, cpu_gpu_allocation)
 
     @property
-    def contexts(self) -> list[ContextManager[None]]:
+    def contexts(self) -> list[AbstractContextManager[None]]:
         return [
             cwd(self.tool_path),
             environment(
@@ -60,7 +61,7 @@ class OvalBab(CompleteVerifier):
         _: str,
         result_file: Path | None,
     ) -> tuple[VerificationResultString, str | None]:
-        with open(str(result_file), "r") as f:
+        with open(str(result_file)) as f:
             result_text = f.read()
 
         if find_substring("violated", result_text):
@@ -68,7 +69,7 @@ class OvalBab(CompleteVerifier):
             return "SAT", None
         elif find_substring("holds", result_text):
             return "UNSAT", None
-
+        #Fallback to timeout if we can't parse, but shouldnt we return "ERR" here?
         return "TIMEOUT", None
 
     def _get_run_cmd(
@@ -79,7 +80,8 @@ class OvalBab(CompleteVerifier):
         config: Path,
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> tuple[str, Path | None]:
-        result_file = Path(tmp_file(".txt").name)
+        with tmp_file(".txt") as tmp:
+            result_file = Path(tmp.name)
         source_cmd = get_conda_source_cmd(get_conda_path())
 
         run_cmd = f"""

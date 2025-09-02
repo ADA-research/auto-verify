@@ -4,15 +4,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "auto-verify"
-version = "0.1.3"
+version = "0.1.4"
 description = "Efficient portfolio-based verification of neural network properties"
 readme = "README.md"
-authors = [{ name = "Corné Spek" }]
-license = { file = "LICENSE" }
+authors = [
+    { name = "Corné Spek" },
+    { name = "Hendrik Baacke" },
+    { name = "Jan van Rijn" }
+]
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
 keywords = ["auto-verify", "Neural networks", "Robustness"]
 classifiers = [
     "Operating System :: Unix",
-    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.10"
 ]
 requires-python = ">=3.10"
 dependencies = [
@@ -25,17 +30,17 @@ dependencies = [
     "numpy==1.24.3",
     "onnx==1.14.0",
     "swig==4.1.1.post1",
+    "tomli>=2.0.0; python_version < '3.11'",
+    "tomli-w>=1.0.0",
 ]
 
 # pytest and pytest-lazy-fixture are frozen due to compatibility issues 
 [project.optional-dependencies]
 dev = [
-    "black",
-    "isort",
+    "ruff",
     "tox",
     "pytest==7.3.2",
     "pre-commit",
-    "flake8",
     "mypy",
     "bumpver",
     "coverage",
@@ -47,14 +52,6 @@ dev = [
 
 [project.scripts]
 auto-verify = "autoverify.cli.main:main"
-
-[tool.black]
-line_length = 80
-target-version = ['py310']
-
-[tool.isort]
-line_length = 80
-profile = "black"
 
 [tool.pydocstyle]
 convention = "google"
@@ -109,3 +106,29 @@ omit = [
 
     "tests/*",
 ]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F", 
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
+
+[tool.ruff.format]
+line-length = 120
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

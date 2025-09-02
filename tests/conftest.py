@@ -1,6 +1,13 @@
 from pathlib import Path
 
 import pytest
+from autoverify.util.env import get_file_path
+from autoverify.util.instances import VerificationInstance
+from autoverify.verifier import AbCrown, MnBab, Nnenum, OvalBab, Verinet
+from autoverify.verifier.verification_result import (
+    CompleteVerificationData,
+    CompleteVerificationResult,
+)
 from ConfigSpace import (
     Categorical,
     Configuration,
@@ -10,14 +17,6 @@ from ConfigSpace import (
 )
 from result import Err, Ok
 from smac import RunHistory
-
-from autoverify.util.env import get_file_path
-from autoverify.util.instances import VerificationInstance
-from autoverify.verifier import AbCrown, Nnenum, OvalBab, Verinet
-from autoverify.verifier.verification_result import (
-    CompleteVerificationData,
-    CompleteVerificationResult,
-)
 
 TEST_PROP_TIMEOUT = 60
 test_props = get_file_path(Path(__file__)) / "trivial_props/"
@@ -121,6 +120,11 @@ def ovalbab() -> OvalBab:
 
 
 @pytest.fixture
+def mnbab() -> MnBab:
+    return MnBab()
+
+
+@pytest.fixture
 def complete_verif_data() -> CompleteVerificationData:
     return CompleteVerificationData(
         result="SAT",
@@ -151,3 +155,23 @@ def err_complete_verif_res(
     complete_verif_data: CompleteVerificationData,
 ) -> CompleteVerificationResult:
     return Err(complete_verif_data)
+
+
+@pytest.fixture
+def err_verif_data() -> CompleteVerificationData:
+    """Create a CompleteVerificationData with ERR result."""
+    return CompleteVerificationData(
+        result="ERR",
+        took=15.0,
+        counter_example=None,
+        err="Verification tool crashed with exit code 1",
+        stdout="Error: Invalid input format\nTraceback (most recent call last):\n...",
+    )
+
+
+@pytest.fixture
+def err_verif_res(
+    err_verif_data: CompleteVerificationData,
+) -> CompleteVerificationResult:
+    """Create a CompleteVerificationResult with ERR data."""
+    return Ok(err_verif_data)

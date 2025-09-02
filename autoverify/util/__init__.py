@@ -33,10 +33,7 @@ def find_substring(needle: str, haystack: str) -> bool:
         return False
 
     L = index + len(needle)
-    if L < len(haystack) and haystack[L] not in string.whitespace:
-        return False
-
-    return True
+    return not (len(haystack) > L and haystack[L] not in string.whitespace)
 
 
 def is_list_of_strings(lst: list[Any]) -> bool:

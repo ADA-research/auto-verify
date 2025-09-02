@@ -18,11 +18,7 @@ def uses_gpu(verifier: str) -> bool:
         return True
     elif verifier == "nnenum":
         return False
-    elif verifier == "verinet":
-        return True
-    elif verifier == "ovalbab":
-        return True
-    elif verifier == "mnbab":
+    elif verifier == "verinet" or verifier == "ovalbab" or verifier == "mnbab":
         return True
 
     raise ValueError(f"Invalid verifier name: {verifier}")
@@ -36,7 +32,7 @@ def get_all_complete_verifier_names() -> list[str]:
         AbCrown.name,
         OvalBab.name,
         Verinet.name,
-        # MnBab.name,
+        MnBab.name,
     ]
 
 
@@ -48,15 +44,15 @@ def get_verifier_configspace(verifier: str) -> ConfigurationSpace:
 # TODO: Dont hardcode this
 def verifier_from_name(name: str) -> type[Verifier]:
     """Return the class type from the verifier name."""
-    if name == "abcrown":
-        return AbCrown
-    elif name == "nnenum":
-        return Nnenum
-    elif name == "mnbab":
-        return MnBab
-    elif name == "ovalbab":
-        return OvalBab
-    elif name == "verinet":
-        return Verinet
+    verifier_map = {
+        "abcrown": AbCrown,
+        "nnenum": Nnenum,
+        "mnbab": MnBab,
+        "ovalbab": OvalBab,
+        "verinet": Verinet,
+    }
+    
+    if name in verifier_map:
+        return verifier_map[name]
 
     raise ValueError(f"Invalid verifier name: {name}")

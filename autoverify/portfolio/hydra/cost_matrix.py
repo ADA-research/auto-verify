@@ -123,7 +123,7 @@ class CostMatrix(MutableMapping[Configuration, InstanceCost]):
                 raise RuntimeError(f"Config {config} not in matrix")
 
             for instance, cost in self.matrix[config].items():
-                if instance not in vbs_cost.keys():
+                if instance not in vbs_cost:
                     continue
 
                 vbs_cost[instance] = min(vbs_cost[instance], cost)

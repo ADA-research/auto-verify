@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import csv
-from collections.abc import Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Iterable, Literal, overload
+from typing import Any, Literal, overload
 
 import pandas as pd
 
@@ -139,19 +139,13 @@ _InstancePredicate = Callable[[VerificationInstance], bool]
 def _passes_at_least_1(
     predicates: Iterable[_InstancePredicate], instance: VerificationInstance
 ) -> bool:
-    for pred in predicates:
-        if pred(instance):
-            return True
-    return False
+    return any(pred(instance) for pred in predicates)
 
 
 def _passes_all(
     predicates: Iterable[_InstancePredicate], instance: VerificationInstance
 ) -> bool:
-    for pred in predicates:
-        if not pred(instance):
-            return False
-    return True
+    return all(pred(instance) for pred in predicates)
 
 
 @overload

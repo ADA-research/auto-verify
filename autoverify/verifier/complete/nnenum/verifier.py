@@ -1,15 +1,17 @@
 """Nnenum verifier."""
 
 import shlex
+from collections.abc import Iterable
+from contextlib import AbstractContextManager
+from multiprocessing import cpu_count
 from pathlib import Path
-from typing import Any, ContextManager, Iterable
+from typing import Any
 
 from ConfigSpace import Configuration, ConfigurationSpace
 
 from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 from autoverify.util.env import cwd, environment, pkill_matches
-from autoverify.util.proc import cpu_count
 from autoverify.util.tempfiles import tmp_file
 from autoverify.verifier.verification_result import (
     CompleteVerificationResult,
@@ -42,7 +44,7 @@ class Nnenum(CompleteVerifier):
         self._use_auto_settings = use_auto_settings
 
     @property
-    def contexts(self) -> list[ContextManager[None]]:
+    def contexts(self) -> list[AbstractContextManager[None]]:
         return [
             cwd(self.tool_path / "src"),
             environment(OPENBLAS_NUM_THREADS="1", OMP_NUM_THREADS="1"),
@@ -52,7 +54,7 @@ class Nnenum(CompleteVerifier):
     def _parse_result(
         self, _: str, result_file: Path | None
     ) -> tuple[VerificationResultString, str | None]:
-        with open(str(result_file), "r") as f:
+        with open(str(result_file)) as f:
             result_txt = f.read()
 
         first_line = result_txt.split("\n", maxsplit=1)[0]
@@ -78,7 +80,8 @@ class Nnenum(CompleteVerifier):
         config: dict[str, Any],
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> tuple[str, Path | None]:
-        result_file = Path(tmp_file(".txt").name)
+        with tmp_file(".txt") as tmp:
+            result_file = Path(tmp.name)
         source_cmd = get_conda_source_cmd(get_conda_path())
 
         # In nnenum, settings are normally passed as a one word string

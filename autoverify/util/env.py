@@ -3,10 +3,10 @@
 import os
 import shutil
 import sys
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from autoverify.util.proc import pkill_match
 

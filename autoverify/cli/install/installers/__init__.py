@@ -1,5 +1,5 @@
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 from autoverify.cli.util.git import GitRepoInfo
 
