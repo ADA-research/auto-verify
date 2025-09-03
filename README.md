@@ -111,9 +111,10 @@ auto-verify config show
 
 Controls how verification tool environments are managed:
 
+- `conda`: Use Conda environments **(recommended)**
 - `auto`: Automatically detect and use the best available option (prefers venv if uv is available)
-- `venv`: Use Python virtual environments with uv (recommended)
-- `conda`: Use Conda environments (legacy support)
+- `venv`: Use Python virtual environments with uv **(experimental feature)**
+
 
 ```bash
 # Set environment strategy to venv
