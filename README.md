@@ -2,8 +2,6 @@
 
 Auto-Verify is a framework for neural network verification, that allows you to install, configure and run verification tools in parallel portfolios.
 
-To get started, the [Documentation](https://ada-research.github.io/auto-verify/) is also an option.
-
 ## Installation
 We recommend using [miniforge](https://github.com/conda-forge/miniforge) to set up the environment for auto-verify.
 
