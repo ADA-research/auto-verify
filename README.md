@@ -13,15 +13,25 @@ You can access the help and examples for the command-line interface by using the
 auto-verify --help
 ```
 ### Installing Verifiers
+Currently, auto-verify supports four verifiers:
 
-You can install verifiers with the following command:
+- (nnenum)[https://github.com/stanleybak/nnenum)] (Stanley Bak)
+- (AB-CROWN)[https://github.com/Verified-Intelligence/alpha-beta-CROWN] (Zhang et al)
+- (VeriNet)[https://github.com/vas-group-imperial/VeriNet] (VAS Group)
+- (Oval-BaB)[https://github.com/oval-group/oval-bab] (OVAL Research Group)
+  
+These verifiers can be installed as follows:
+```bash
+auto-verify install nnenum
+auto-verify install abcrown
+auto-verify install verinet
+auto-verify install ovalbab
+```
+
+You can also install multiple verifiers in one go with the following command:
 
 ```bash
-# Install a verifier using the default (stable) version
-auto-verify install nnenum
-
-# Install multiple verifiers
-auto-verify install nnenum abcrown verinet
+auto-verify install nnenum abcrown ovalbab verinet
 ```
 
 #### Specifying Verifier Versions
@@ -29,10 +39,8 @@ auto-verify install nnenum abcrown verinet
 You can specify which version of a verifier to install:
 
 ```bash
-# Install a specific version (commit hash)
 auto-verify install abcrown --verifier-version "877afa32d9d314fcb416436a616e6a5878fdab78"
 
-# Install the most recent version
 auto-verify install abcrown --verifier-version most-recent
 ```
 
@@ -48,12 +56,14 @@ This allows you to:
 You can also specify which environment management strategy to use:
 
 ```bash
-# Force using venv
-auto-verify install nnenum --env venv
-
 # Force using conda
 auto-verify install nnenum --env conda
+
+# Force using venv
+auto-verify install nnenum --env venv
 ```
+
+Note: We recommend to use the conda option and using [miniforge](https://github.com/conda-forge/miniforge) as the package manager.
 
 ### Listing Installed Verifiers
 
@@ -311,17 +321,5 @@ When a custom path is set, both venv and conda verifiers will be installed under
 
 ## Using with ada-verona
 
-Auto-verify can be used as a plugin for [ada-verona](https://github.com/henba1/ada-verona), providing formal verification capabilities:
+Auto-verify can be used as a plugin for the robustness experiment setup package [ada-verona](https://github.com/ADA-research/VERONA), providing formal verification capabilities.
 
-```python
-import ada_verona
-
-# Check if auto-verify is available
-print(f"Auto-verify available: {ada_verona.HAS_AUTO_VERIFY}")
-print(f"Available verifiers: {ada_verona.AUTO_VERIFY_VERIFIERS}")
-
-# Create a verifier
-verifier = ada_verona.create_auto_verify_verifier("nnenum", timeout=300)
-```
-
-See the [Plugin Architecture documentation](https://github.com/henba1/ada-verona/blob/main/PLUGIN_ARCHITECTURE.md) for more details.
