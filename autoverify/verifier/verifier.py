@@ -1,5 +1,6 @@
 """Base class for verifiers."""
 
+import logging
 import os
 import signal
 import subprocess
@@ -198,6 +199,7 @@ class CompleteVerifier(Verifier):
         self._check_instance(network, property)
 
         if config is None:
+            logging.debug("Config is None, continuing with the defaults")
             config = self.default_config
 
         # Tools use different configuration formats and methods, so we let
@@ -247,6 +249,7 @@ class CompleteVerifier(Verifier):
             self._check_instance(instance.network, instance.property)
 
         if config is None:
+            logging.debug("Config is None, continuing with the defaults")
             config = self.default_config
 
         return self._verify_batch(
