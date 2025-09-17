@@ -2,9 +2,23 @@
 
 Auto-Verify is a framework for neural network verification, that allows you to install, configure and run verification tools in parallel portfolios.
 
-To get started, head to the [Documentation](https://ada-research.github.io/auto-verify/).
+To get started, the [Documentation](https://ada-research.github.io/auto-verify/) is also an option.
 
 ## Installation
+We recommend using [miniforge](https://github.com/conda-forge/miniforge) to set up the environment for auto-verify.
+
+After Miniconda is installed, setup auto-verify by running the following commands:
+
+```bash
+conda create -n auto-verify python=3.10
+conda activate auto-verify
+pip install auto-verify  #or use uv pip if you have uv installed
+```
+
+## Getting started 
+To get started, the [How-To Guides](https://ada-research.github.io/auto-verify/how-to-guides/) offer a useful starting point. 
+
+We also recommend having a look at the [API documentation](https://ada-research.github.io/auto-verify/api/).
 
 ## CLI Commands
 
