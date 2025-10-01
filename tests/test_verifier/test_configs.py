@@ -12,9 +12,7 @@ def test_ab_config_from_yaml(tmp_path, trivial_sat: VerificationInstance):
     with open(yaml_f, "w") as f:
         yaml.dump({"general": {"seed": 42}}, f)
 
-    ab_cfg = AbcrownYamlConfig.from_yaml(
-        yaml_f, trivial_sat.network, trivial_sat.property
-    )
+    ab_cfg = AbcrownYamlConfig.from_yaml(yaml_f, trivial_sat.network, trivial_sat.property)
 
     with open(ab_cfg.get_yaml_file_path()) as f:
         d = yaml.safe_load(f)

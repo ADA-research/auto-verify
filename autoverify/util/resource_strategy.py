@@ -15,9 +15,7 @@ class ResourceStrategy(Enum):
     Exact = "exact"
 
 
-def resources_from_strategy(
-    rs: ResourceStrategy, verifiers: list[str]
-) -> ResourceList:
+def resources_from_strategy(rs: ResourceStrategy, verifiers: list[str]) -> ResourceList:
     """Get the resources for each verifier given the strat."""
     resources: ResourceList = []
 

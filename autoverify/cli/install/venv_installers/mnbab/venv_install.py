@@ -27,17 +27,13 @@ def install(install_dir: Path, custom_commit: str | None = None, use_latest: boo
     """
     # Clone and checkout the repository
     clone_checkout_verifier(
-        VenvMnBabRepoInfo, 
-        install_dir, 
-        custom_commit=custom_commit, 
-        use_latest=use_latest,
-        init_submodules=True
+        VenvMnBabRepoInfo, install_dir, custom_commit=custom_commit, use_latest=use_latest, init_submodules=True
     )
-    
+
     # Create virtual environment
     venv_result = create_verifier_venv(install_dir, "mnbab")
     venv_path = venv_result.unwrap()
-    
+
     # Create requirements file reflecting conda environment
     requirements_file = install_dir / "requirements.txt"
     with open(requirements_file, "w") as f:
@@ -142,18 +138,18 @@ wurlitzer==3.0.3
     # Install requirements
     requirements = ["-r", str(requirements_file)]
     install_requirements(venv_path, requirements)
-    
+
     # Create deps directory (similar to conda installer)
     deps_dir = install_dir / "deps"
     deps_dir.mkdir(exist_ok=True)
-    
+
     # Note: ELINA compilation would need to be handled separately in venv mode
     # as it requires system-level dependencies and compilation tools
-    
+
     # Print installation information
     print("\nMNBAB (venv) Installation Complete")
     print(f"Virtual environment: {venv_path}")
     print(f"To activate: source {venv_path}/bin/activate")
     print("Note: ELINA compilation may require additional system dependencies")
-    
+
     return Ok()

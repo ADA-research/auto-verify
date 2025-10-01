@@ -14,16 +14,16 @@ def test_ok_process_tf_func_res(
 def test_timeout_process_tf_func_res(
     timeout_complete_verif_res: CompleteVerificationResult,
 ):
-    assert (
-        _process_target_function_result(timeout_complete_verif_res, 10) == 420.0
-    )
+    assert _process_target_function_result(timeout_complete_verif_res, 10) == 420.0
 
 
 def test_err_process_tf_func_res(
     err_complete_verif_res: CompleteVerificationResult,
 ):
-    with pytest.raises(CompleteVerificationData):
+    with pytest.raises(Exception) as exc_info:
         _process_target_function_result(err_complete_verif_res, 10)
+    # The exception should be the CompleteVerificationData object
+    assert isinstance(exc_info.value, CompleteVerificationData)
 
 
 def test_err_result_process_tf_func_res(
@@ -40,17 +40,17 @@ def test_all_result_types():
     sat_data = CompleteVerificationData(result="SAT", took=10.0)
     sat_result = _process_target_function_result(Ok(sat_data), 2)
     assert sat_result == 10.0
-    
-    # Test UNSAT result  
+
+    # Test UNSAT result
     unsat_data = CompleteVerificationData(result="UNSAT", took=20.0)
     unsat_result = _process_target_function_result(Ok(unsat_data), 2)
     assert unsat_result == 20.0
-    
+
     # Test TIMEOUT result (should apply penalty)
     timeout_data = CompleteVerificationData(result="TIMEOUT", took=5.0)
     timeout_result = _process_target_function_result(Ok(timeout_data), 2)
     assert timeout_result == 10.0  # 5.0 * 2
-    
+
     # Test ERR result (should not apply penalty)
     err_data = CompleteVerificationData(result="ERR", took=8.0)
     err_result = _process_target_function_result(Ok(err_data), 2)

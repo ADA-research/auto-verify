@@ -122,18 +122,10 @@ def test_vdr_from_verif_res(complete_verif_data: CompleteVerificationData):
 @pytest.mark.parametrize(
     "vis",
     [
+        [VerificationInstance(Path("fake_net.onnx"), Path("fake_prop.vnnlib"), 180)],
         [
-            VerificationInstance(
-                Path("fake_net.onnx"), Path("fake_prop.vnnlib"), 180
-            )
-        ],
-        [
-            VerificationInstance(
-                Path("fake_net.onnx"), Path("fake_prop.vnnlib"), 180
-            ),
-            VerificationInstance(
-                Path("fake_net.onnx"), Path("fake_prop.vnnlib"), 180
-            ),
+            VerificationInstance(Path("fake_net.onnx"), Path("fake_prop.vnnlib"), 180),
+            VerificationInstance(Path("fake_net.onnx"), Path("fake_prop.vnnlib"), 180),
         ],
         [],
     ],
@@ -156,22 +148,16 @@ def test_init_verification_result_csv(tmp_path: Path):
 
     assert tmp_csv.exists()
 
-    expected_header = (
-        ",".join(get_dataclass_field_names(VerificationDataResult)) + "\n"
-    )
+    expected_header = ",".join(get_dataclass_field_names(VerificationDataResult)) + "\n"
     assert read_csv_contents(tmp_csv) == expected_header
 
 
-def test_append_verification_result(
-    tmp_path: Path, vdr: VerificationDataResult
-):
+def test_append_verification_result(tmp_path: Path, vdr: VerificationDataResult):
     tmp_csv = tmp_path / "tmp.csv"
     init_verification_result_csv(tmp_csv)
     csv_append_verification_result(vdr, tmp_csv)
 
-    expected_header = (
-        ",".join(get_dataclass_field_names(VerificationDataResult)) + "\n"
-    )
+    expected_header = ",".join(get_dataclass_field_names(VerificationDataResult)) + "\n"
     expected_row = (
         ",".join(
             [
@@ -194,9 +180,7 @@ def test_append_verification_result(
     assert read_csv_contents(tmp_csv) == expected_header + expected_row
 
 
-def test_read_verification_result_from_csv(
-    tmp_path: Path, vdr: VerificationDataResult
-):
+def test_read_verification_result_from_csv(tmp_path: Path, vdr: VerificationDataResult):
     tmp_csv = tmp_path / "tmp.csv"
     init_verification_result_csv(tmp_csv)
     csv_append_verification_result(vdr, tmp_csv)
@@ -206,9 +190,7 @@ def test_read_verification_result_from_csv(
     assert vdrs == [vdr, vdr]
 
 
-def test_write_verification_result_from_csv(
-    tmp_path: Path, vdr: VerificationDataResult
-):
+def test_write_verification_result_from_csv(tmp_path: Path, vdr: VerificationDataResult):
     tmp_csv = tmp_path / "tmp.csv"
     tmp_csv2 = tmp_path / "tmp2.csv"
     init_verification_result_csv(tmp_csv)
@@ -219,9 +201,7 @@ def test_write_verification_result_from_csv(
     results_df = pd.read_csv(tmp_csv)
     write_verification_results_to_csv(results_df, tmp_csv2)
 
-    assert read_verification_result_from_csv(
-        tmp_csv
-    ) == read_verification_result_from_csv(tmp_csv2)
+    assert read_verification_result_from_csv(tmp_csv) == read_verification_result_from_csv(tmp_csv2)
 
 
 def test_read_vnncomp_instances():
@@ -255,14 +235,10 @@ def test_read_vnncomp_instances():
     def _sat_filter(inst: VerificationInstance) -> bool:
         return inst.network.name == "test_sat.onnx"
 
-    instances = read_vnncomp_instances(
-        bench_name, vnncomp_path, predicate=_nano_filter
-    )
+    instances = read_vnncomp_instances(bench_name, vnncomp_path, predicate=_nano_filter)
     assert len(instances) == 2
 
-    instances = read_vnncomp_instances(
-        bench_name, vnncomp_path, predicate=[_nano_filter, _sat_filter]
-    )
+    instances = read_vnncomp_instances(bench_name, vnncomp_path, predicate=[_nano_filter, _sat_filter])
     assert len(instances) == 4
 
     with pytest.raises(ValueError):

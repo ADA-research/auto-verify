@@ -7,9 +7,7 @@ from typing import Any
 from ConfigSpace import Configuration, ConfigurationSpace
 
 
-def parse_config_str_type(
-    value: str, cfg_space: ConfigurationSpace
-) -> Configuration:
+def parse_config_str_type(value: str, cfg_space: ConfigurationSpace) -> Configuration:
     """Type to use in `argparse` for a verifier configuration."""
     cfg_dict: dict[str, Any] = {}
 

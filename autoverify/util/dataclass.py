@@ -9,9 +9,7 @@ from typing import Any
 def get_dataclass_field_names(obj: Any) -> list[str]:
     """Returns the fields of a dataclass as a list of strings."""
     if not inspect.isclass(obj):
-        raise ValueError(
-            f"Argument data_cls should be a class, got {type(obj)}"
-        )
+        raise ValueError(f"Argument data_cls should be a class, got {type(obj)}")
 
     if not is_dataclass(obj):
         raise ValueError(f"'{obj.__name__}' is not a dataclass")

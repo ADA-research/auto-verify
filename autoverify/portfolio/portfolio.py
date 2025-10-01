@@ -79,9 +79,7 @@ class PortfolioScenario:
     def __post_init__(self):
         """Validate the PF scenario."""
         if self.added_per_iter > 1 or self.configs_per_iter > 1:
-            raise ValueError(
-                "Adding more than 1 config per iter not supported yet."
-            )
+            raise ValueError("Adding more than 1 config per iter not supported yet.")
 
         if not 0 <= self.alpha <= 1:
             raise ValueError(f"Alpha should be in [0.0, 1.0], got {self.alpha}")
@@ -101,10 +99,7 @@ class PortfolioScenario:
             raise ValueError("Use a benchmark name if vnn_compat_mode=True")
 
         if self.vnn_compat_mode and self.verifier_kwargs:
-            raise ValueError(
-                "Cannot use vnn_compat_mode and "
-                "verifier_kwargs at the same time."
-            )
+            raise ValueError("Cannot use vnn_compat_mode and verifier_kwargs at the same time.")
 
         self.n_iters = math.ceil(self.length / self.added_per_iter)
         self._verify_resources()
@@ -123,21 +118,14 @@ class PortfolioScenario:
 
         for v in self.verifiers:
             if v not in seen:
-                raise ValueError(
-                    f"Verifier '{v}' in verifiers but not in resources."
-                )
+                raise ValueError(f"Verifier '{v}' in verifiers but not in resources.")
 
         if self.resource_strategy == ResourceStrategy.Auto:
             for r in self.resources:
                 if r[1] != 0:
-                    raise ValueError(
-                        "CPU resources should be 0 when using `Auto`"
-                    )
+                    raise ValueError("CPU resources should be 0 when using `Auto`")
         else:
-            raise NotImplementedError(
-                f"ResourceStrategy {self.resource_strategy} "
-                f"is not implemented yet."
-            )
+            raise NotImplementedError(f"ResourceStrategy {self.resource_strategy} is not implemented yet.")
 
     def get_smac_scenario_kwargs(self) -> dict[str, Any]:
         """Return the SMAC scenario kwargs as a dict.
@@ -149,9 +137,7 @@ class PortfolioScenario:
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
         return {
-            "instances": verification_instances_to_smac_instances(
-                self.instances
-            ),
+            "instances": verification_instances_to_smac_instances(self.instances),
             "instance_features": index_features(self.instances),
             "output_directory": self.output_dir,
         }
@@ -263,14 +249,10 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
 
         self._pf_set.discard(cv)
 
-    def reallocate_resources(
-        self, strategy: ResourceStrategy = ResourceStrategy.Auto
-    ):
+    def reallocate_resources(self, strategy: ResourceStrategy = ResourceStrategy.Auto):
         """Realloacte based on current contents and given strategy."""
         if strategy != ResourceStrategy.Auto:
-            raise NotImplementedError(
-                "Given `ResourceStrategy` is not supported yet."
-            )
+            raise NotImplementedError("Given `ResourceStrategy` is not supported yet.")
 
         # NOTE: Should put this alloc stuff in a function
         n_cores = cpu_count()
@@ -287,9 +269,7 @@ class Portfolio(MutableSet[ConfiguredVerifier]):
                 extra_core = 1
                 cores_remainder -= 1
 
-            new_resources = (
-                (cores_per + extra_core, resources[1]) if resources else None
-            )
+            new_resources = (cores_per + extra_core, resources[1]) if resources else None
 
             self.discard(cv)
             self.add(ConfiguredVerifier(verifier, config, new_resources))

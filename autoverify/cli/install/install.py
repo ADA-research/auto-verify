@@ -38,12 +38,12 @@ def _remove_verifier_dir(verifier: str):
 def _init_new_verifier_dir(dir_name: str):
     """Creates a new directory in `VERIFIER_DIR` with specified name."""
     dir_path = VERIFIER_DIR / dir_name
-    
+
     # If directory already exists, remove it first to ensure clean installation
     if dir_path.exists():
         print(f"Removing existing {dir_name} directory for clean installation...")
         _remove_verifier_dir(dir_name)
-    
+
     dir_path.mkdir()
 
 
@@ -69,11 +69,11 @@ def _uninstall_verifier(verifier: str) -> Result[None, str]:
 
 def _install_verifier(verifier: str, version: str | None = None) -> Result[None, str]:
     """Tries to install the specified verifier.
-    
+
     Args:
         verifier: Name of the verifier to install
         version: Optional version specifier (commit hash or "most-recent")
-        
+
     Returns:
         Result indicating success or failure
     """
@@ -83,6 +83,7 @@ def _install_verifier(verifier: str, version: str | None = None) -> Result[None,
     # Validate version parameter
     if version and version != "most-recent":
         from autoverify.cli.util.git import validate_commit_hash_format
+
         if not validate_commit_hash_format(version):
             return Err(f"Invalid commit hash format: {version}. Expected 7-40 character hexadecimal string.")
 
@@ -98,13 +99,13 @@ def _install_verifier(verifier: str, version: str | None = None) -> Result[None,
         # Pass version information to the installer
         use_latest = version == "most-recent"
         custom_commit = None if use_latest else version
-        
+
         if version:
             if use_latest:
                 print(f"Installing latest version of {verifier} from branch {repo_infos[verifier].branch}")
             else:
                 print(f"Installing {verifier} at commit: {custom_commit}")
-        
+
         installers[verifier](dir_path, custom_commit=custom_commit, use_latest=use_latest)
         return Ok()
     except Exception as err:
@@ -129,10 +130,10 @@ def try_install_verifiers(verifiers: Iterable[str], version: str | None = None):
 
     for verifier in verifiers:
         print(f"\nInstalling {verifier}...")
-        
+
         if version:
             print(f"Using version: {version}")
-            
+
         install_result = _install_verifier(verifier, version)
 
         if isinstance(install_result, Ok):
@@ -172,9 +173,7 @@ def check_commit_hashes():
         cmd = f"git rev-parse {repo_info.branch}"
 
         with cwd(file / "tool"):
-            commit_hash = subprocess.run(
-                shlex.split(cmd), capture_output=True
-            ).stdout.decode()
+            commit_hash = subprocess.run(shlex.split(cmd), capture_output=True).stdout.decode()
 
             # Currently have short hashes in install files
             # Switching to long ones might be good

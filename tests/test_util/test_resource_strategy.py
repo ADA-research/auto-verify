@@ -7,9 +7,7 @@ from autoverify.util.resource_strategy import (
 
 
 def test_resources_from_strategy():
-    resources = resources_from_strategy(
-        ResourceStrategy.Auto, ["nnenum", "verinet", "abcrown"]
-    )
+    resources = resources_from_strategy(ResourceStrategy.Auto, ["nnenum", "verinet", "abcrown"])
     assert resources == [
         ("nnenum", 0, 0),
         ("verinet", 0, 1),

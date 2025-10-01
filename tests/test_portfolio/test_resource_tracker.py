@@ -28,9 +28,7 @@ def resource_tracker(
         alpha=1,
     )
 
-    rt = ResourceTracker(
-        pf_scen, strategy=ResourceStrategy.Auto, cpu_gpu_count=(16, 1)
-    )
+    rt = ResourceTracker(pf_scen, strategy=ResourceStrategy.Auto, cpu_gpu_count=(16, 1))
     return rt
 
 

@@ -26,11 +26,7 @@ class GitRepoInfo:
 
     @property
     def repo_name(self) -> str:
-        return (
-            self.clone_url.rstrip("/")
-            .rsplit("/", maxsplit=1)[-1]
-            .removesuffix(".git")
-        )
+        return self.clone_url.rstrip("/").rsplit("/", maxsplit=1)[-1].removesuffix(".git")
 
     @property
     def clone(self) -> list[str]:
@@ -65,7 +61,7 @@ def clone_checkout_verifier(
     """
     with cwd(install_dir):
         install_logger.info(f"Cloning into repository: {repo_info.clone_url}")
-        
+
         # For repositories with problematic submodules, clone without --recursive first
         if init_submodules:
             # Clone without submodules first to avoid SSH issues
@@ -86,14 +82,14 @@ def clone_checkout_verifier(
                     check=True,
                     capture_output=True,
                 )
-                
+
                 # Reset to the latest commit on the branch
                 subprocess.run(
                     shlex.split(f"git reset --hard origin/{repo_info.branch}"),
                     check=True,
                     capture_output=True,
                 )
-                
+
                 # Get the current commit hash for information
                 result = subprocess.run(
                     shlex.split("git rev-parse HEAD"),
@@ -120,24 +116,24 @@ def clone_checkout_verifier(
                 if not validate_commit_hash_format(custom_commit):
                     install_logger.warning(f"Invalid commit hash format: {custom_commit}")
                     raise ValueError(f"Invalid commit hash format: {custom_commit}")
-                
+
                 # Validate the commit hash exists
                 install_logger.info(f"Validating custom commit hash: {custom_commit}")
-                
+
                 # Try to fetch all refs first to ensure we have access to the commit
                 subprocess.run(
                     shlex.split("git fetch --all"),
                     check=True,
                     capture_output=True,
                 )
-                
+
                 # Check if the commit exists
                 result = subprocess.run(
                     shlex.split(f"git cat-file -e {custom_commit}"),
                     check=True,
                     capture_output=True,
                 )
-                
+
                 # If we get here, the commit exists
                 install_logger.info(f"Checking out custom commit hash: {custom_commit}")
                 checkout_cmd = f"git checkout {custom_commit}"
@@ -184,11 +180,11 @@ def clone_checkout_verifier(
 
 def get_latest_commit_hash(repo_path: Path, branch: str = "main") -> str:
     """Get the latest commit hash for a branch.
-    
+
     Args:
         repo_path: Path to the git repository
         branch: Branch name to check (default: main)
-        
+
     Returns:
         The latest commit hash on the branch
     """
@@ -199,7 +195,7 @@ def get_latest_commit_hash(repo_path: Path, branch: str = "main") -> str:
             check=True,
             capture_output=True,
         )
-        
+
         # Get the latest commit hash
         result = subprocess.run(
             shlex.split(f"git rev-parse origin/{branch}"),
@@ -212,17 +208,17 @@ def get_latest_commit_hash(repo_path: Path, branch: str = "main") -> str:
 
 def validate_commit_hash_format(commit_hash: str) -> bool:
     """Validate if a commit hash has a valid format.
-    
+
     Args:
         commit_hash: The commit hash to validate
-        
+
     Returns:
         True if the format is valid, False otherwise
     """
     # Git commit hashes are typically 40 characters (full) or 7+ characters (short)
     if len(commit_hash) < 7 or len(commit_hash) > 40:
         return False
-    
+
     # Git commit hashes are hexadecimal
     try:
         int(commit_hash, 16)
@@ -233,11 +229,11 @@ def validate_commit_hash_format(commit_hash: str) -> bool:
 
 def validate_commit_hash(repo_path: Path, commit_hash: str) -> bool:
     """Validate if a commit hash exists in the repository.
-    
+
     Args:
         repo_path: Path to the git repository
         commit_hash: The commit hash to validate
-        
+
     Returns:
         True if the commit hash exists, False otherwise
     """

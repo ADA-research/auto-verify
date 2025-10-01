@@ -35,18 +35,18 @@ def _remove_verifier_dir(verifier: str):
 
 def _init_new_verifier_dir(dir_name: str) -> Result[None, str]:
     """Creates a new directory in `VENV_VERIFIER_DIR` with specified name.
-    
+
     Args:
         dir_name: Name of the verifier directory to create
-        
+
     Returns:
         Result indicating success or an error message
     """
     dir_path = VENV_VERIFIER_DIR / dir_name
-    
+
     if dir_path.exists():
         return Err(f"Verifier '{dir_name}' is already installed at {dir_path}")
-        
+
     try:
         dir_path.mkdir()
         return Ok()
@@ -57,9 +57,7 @@ def _init_new_verifier_dir(dir_name: str) -> Result[None, str]:
 def _check_uv_available() -> bool:
     """Check if uv is available in the system."""
     try:
-        result = subprocess.run(
-            ["uv", "--version"], capture_output=True, text=True, check=True
-        )
+        result = subprocess.run(["uv", "--version"], capture_output=True, text=True, check=True)
         logging.info(f"uv version: {result.stdout.strip()}")
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
@@ -68,7 +66,7 @@ def _check_uv_available() -> bool:
 
 def _create_venv_with_uv(venv_path: Path, venv_name: str) -> Result[None, str]:
     """Create a virtual environment using uv.
-    
+
     Args:
         venv_path: Path where the venv will be created
         venv_name: Name for the virtual environment
@@ -86,13 +84,14 @@ def _create_venv_with_uv(venv_path: Path, venv_name: str) -> Result[None, str]:
 
 def _create_venv_fallback(venv_path: Path, venv_name: str) -> Result[None, str]:
     """Fallback to standard venv if uv is not available.
-    
+
     Args:
         venv_path: Path where the venv will be created
         venv_name: Name for the virtual environment
     """
     try:
         import venv
+
         venv.create(venv_path, with_pip=True, prompt=f"autoverify-{venv_name}")
         logging.info(f"Created virtual environment at {venv_path} (fallback)")
         return Ok()
@@ -104,23 +103,23 @@ def _create_venv_fallback(venv_path: Path, venv_name: str) -> Result[None, str]:
 def create_verifier_venv(verifier_dir: Path, verifier_name: str) -> Result[Path, str]:
     """
     Create a virtual environment for the verifier.
-    
+
     Args:
         verifier_dir: Directory where the verifier will be installed
         verifier_name: Name of the verifier
-        
+
     Returns:
         Result containing the venv path or error message
     """
     venv_path = verifier_dir / VENV_DIR_NAME
-    
+
     # Try uv first, fallback to standard venv
     if _check_uv_available():
         result = _create_venv_with_uv(venv_path, verifier_name)
     else:
         logging.warning("uv not found, falling back to standard venv")
         result = _create_venv_fallback(venv_path, verifier_name)
-    
+
     if isinstance(result, Ok):
         return Ok(venv_path)
     else:
@@ -130,11 +129,11 @@ def create_verifier_venv(verifier_dir: Path, verifier_name: str) -> Result[Path,
 def install_requirements_with_uv(venv_path: Path, requirements: list[str]) -> Result[None, str]:
     """
     Install requirements using uv.
-    
+
     Args:
         venv_path: Path to the virtual environment
         requirements: List of requirements to install
-        
+
     Returns:
         Result indicating success or failure
     """
@@ -152,11 +151,11 @@ def install_requirements_with_uv(venv_path: Path, requirements: list[str]) -> Re
 def install_requirements_fallback(venv_path: Path, requirements: list[str]) -> Result[None, str]:
     """
     Install requirements using standard pip.
-    
+
     Args:
         venv_path: Path to the virtual environment
         requirements: List of requirements to install
-        
+
     Returns:
         Result indicating success or failure
     """
@@ -175,11 +174,11 @@ def install_requirements_fallback(venv_path: Path, requirements: list[str]) -> R
 def install_requirements(venv_path: Path, requirements: list[str]) -> Result[None, str]:
     """
     Install requirements using the best available method.
-    
+
     Args:
         venv_path: Path to the virtual environment
         requirements: List of requirements to install
-        
+
     Returns:
         Result indicating success or failure
     """
@@ -203,10 +202,10 @@ def get_venv_activation_cmd(verifier: str) -> str:
 def _uninstall_verifier_venv(verifier: str) -> Result[None, str]:
     """Tries to uninstall the specified verifier."""
     verifier_path = VENV_VERIFIER_DIR / verifier
-    
+
     if not verifier_path.exists():
         return Err(f"Verifier '{verifier}' is not installed (path {verifier_path} does not exist)")
-        
+
     try:
         _remove_verifier_dir(verifier)
         return Ok()
@@ -216,28 +215,26 @@ def _uninstall_verifier_venv(verifier: str) -> Result[None, str]:
 
 
 def _install_verifier_venv(
-    verifier: str, 
-    installer_func, 
-    custom_commit: str | None = None, 
-    use_latest: bool = False
+    verifier: str, installer_func, custom_commit: str | None = None, use_latest: bool = False
 ) -> Result[None, str]:
     """Tries to install the specified verifier.
-    
+
     Args:
         verifier: Name of the verifier to install
         installer_func: Function to install the verifier
         custom_commit: Optional specific commit hash to checkout
         use_latest: If True, checkout the latest commit on the branch
-        
+
     Returns:
         Result indicating success or failure
     """
     # Validate version parameter
     if custom_commit:
         from autoverify.cli.util.git import validate_commit_hash_format
+
         if not validate_commit_hash_format(custom_commit):
             return Err(f"Invalid commit hash format: {custom_commit}. Expected 7-40 character hexadecimal string.")
-    
+
     # Create the verifier directory
     init_result = _init_new_verifier_dir(verifier)
     if init_result.is_err():
@@ -248,14 +245,14 @@ def _install_verifier_venv(
     try:
         # Pass version information to the installer
         installer_func(dir_path, custom_commit=custom_commit, use_latest=use_latest)
-        
+
         # Create activation script
         with open(dir_path / "activate.sh", "w") as f:
             f.write(f"#!/bin/bash\nsource {dir_path / VENV_DIR_NAME / 'bin' / 'activate'}\n")
-        
+
         # Make the activation script executable
         os.chmod(dir_path / "activate.sh", 0o755)
-        
+
         return Ok()
     except Exception as err:
         if isinstance(err, CalledProcessError):
@@ -280,14 +277,14 @@ def try_install_verifiers_venv(verifiers: Iterable[str], installers: dict, versi
 
     for verifier in verifiers:
         print(f"\nInstalling {verifier} with venv...")
-        
+
         if verifier not in installers:
             print(f"Error: No venv installer found for verifier {verifier}")
             continue
-            
+
         if version:
             print(f"Using version: {version}")
-            
+
         use_latest = version == "most-recent"
         custom_commit = None if use_latest else version
 
@@ -318,4 +315,4 @@ def try_uninstall_verifiers_venv(verifiers: Iterable[str]):
         if isinstance(uninstall_result, Ok):
             print(f"Successfully uninstalled venv-based {verifier}")
         elif isinstance(uninstall_result, Err):
-            print(f"Error uninstalling venv-based {verifier}: {uninstall_result.err()}") 
+            print(f"Error uninstalling venv-based {verifier}: {uninstall_result.err()}")

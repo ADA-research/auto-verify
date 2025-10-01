@@ -46,9 +46,9 @@ venv_repo_infos: dict[str, GitRepoInfo] = {
 
 __all__ = [
     "VENV_AV_HOME",
-    "VENV_VERIFIER_DIR", 
+    "VENV_VERIFIER_DIR",
     "venv_installers",
     "venv_repo_infos",
     "try_install_verifiers_venv",
     "try_uninstall_verifiers_venv",
-] 
+]

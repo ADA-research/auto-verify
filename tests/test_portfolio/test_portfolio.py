@@ -23,9 +23,7 @@ def portfolio_json(portfolio: Portfolio, tmp_path: Path) -> Path:
 
 
 @pytest.fixture
-def pf_scenario_kwargs(
-    trivial_instances: list[VerificationInstance], tmp_path: Path
-) -> dict[str, Any]:
+def pf_scenario_kwargs(trivial_instances: list[VerificationInstance], tmp_path: Path) -> dict[str, Any]:
     return {
         "verifiers": ["nnenum", "abcrown"],
         "resources": [("nnenum", 0, 0), ("abcrown", 0, 1)],
@@ -119,9 +117,7 @@ def test_to_json(portfolio: Portfolio, tmp_path: Path):
     assert all(v for v in seen.values())
 
 
-def test_from_json(
-    portfolio_json: Path, simple_configspace: ConfigurationSpace
-):
+def test_from_json(portfolio_json: Path, simple_configspace: ConfigurationSpace):
     cfg_space_map = {
         "foo": simple_configspace,
         "hello": simple_configspace,
@@ -147,9 +143,7 @@ def test_portfolio_dunders(portfolio: Portfolio):
         portfolio.add(cv)
 
     with pytest.raises(ValueError):
-        portfolio.discard(
-            ConfiguredVerifier("foooo", cv.configuration, cv.resources)
-        )
+        portfolio.discard(ConfiguredVerifier("foooo", cv.configuration, cv.resources))
 
     before_len = len(portfolio)
     portfolio.discard(cv)

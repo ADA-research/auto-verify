@@ -49,9 +49,7 @@ def vnn_smac_tune_verifier(
 
     target_function = get_vnn_verifier_tf(verifier, benchmark)
 
-    smac = AlgorithmConfigurationFacade(
-        scenario, target_function, overwrite=True
-    )
+    smac = AlgorithmConfigurationFacade(scenario, target_function, overwrite=True)
 
     logger.info(
         f"Tuning {name} with walltime_limit={str(walltime_limit)} "
@@ -108,9 +106,7 @@ def smac_tune_verifier(
 
     target_function = get_verifier_tf(verifier)
 
-    smac = AlgorithmConfigurationFacade(
-        scenario, target_function, overwrite=True
-    )
+    smac = AlgorithmConfigurationFacade(scenario, target_function, overwrite=True)
 
     logger.info(
         f"Tuning {verifier.name} with walltime_limit={str(walltime_limit)} "

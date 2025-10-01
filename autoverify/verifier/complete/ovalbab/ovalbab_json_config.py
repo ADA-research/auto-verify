@@ -15,7 +15,7 @@ class OvalbabJsonConfig:
 
     def __init__(self, json_file: IO[str] | str | Path):
         """New instance.
-        
+
         Args:
             json_file: Either a file object, file path string, or Path object
         """

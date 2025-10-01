@@ -16,7 +16,4 @@ def test_bad_install(mock_verifier_dir, capfd: CaptureFixture):
     try_install_verifiers([test_name])
 
     captured = capfd.readouterr()
-    assert (
-        f"Error installing {test_name}: "
-        f"No installer found for verifier {test_name}" in captured.out
-    )
+    assert f"Error installing {test_name}: No installer found for verifier {test_name}" in captured.out

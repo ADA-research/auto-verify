@@ -22,14 +22,13 @@ def install(install_dir: Path, custom_commit: str | None = None, use_latest: boo
         use_latest: If True, checkout the latest commit on the branch.
     """
     # Clone and checkout the repository with version management
-    clone_checkout_verifier(NnenumRepoInfo, install_dir, 
-                           custom_commit=custom_commit, use_latest=use_latest)
-    
+    clone_checkout_verifier(NnenumRepoInfo, install_dir, custom_commit=custom_commit, use_latest=use_latest)
+
     # Copy environment file and create conda environment
     copy_env_file_to(Path(__file__), install_dir)
     print("Creating conda environment...")
     create_env_from_file(install_dir / "environment.yml")
-    
+
     # Print installation information
     print("\nNNENUM (conda) Installation Complete")
     print(f"Installation directory: {install_dir}")

@@ -26,17 +26,12 @@ def install(install_dir: Path, custom_commit: str | None = None, use_latest: boo
         use_latest: If True, checkout the latest commit on the branch.
     """
     # Clone and checkout the repository
-    clone_checkout_verifier(
-        VenvOvalBabRepoInfo, 
-        install_dir, 
-        custom_commit=custom_commit, 
-        use_latest=use_latest
-    )
-    
+    clone_checkout_verifier(VenvOvalBabRepoInfo, install_dir, custom_commit=custom_commit, use_latest=use_latest)
+
     # Create virtual environment
     venv_result = create_verifier_venv(install_dir, "ovalbab")
     venv_path = venv_result.unwrap()
-    
+
     # Create requirements file reflecting conda environment
     requirements_file = install_dir / "requirements.txt"
     with open(requirements_file, "w") as f:
@@ -99,14 +94,16 @@ typing-extensions>=4.0.0
 
     # Install the package itself
     requirements = [
-        "-r", str(requirements_file),
-        "-e", str(install_dir / "tool")  # Install in development mode
+        "-r",
+        str(requirements_file),
+        "-e",
+        str(install_dir / "tool"),  # Install in development mode
     ]
     install_requirements(venv_path, requirements)
-    
+
     # Print installation information
     print("\nOVALBAB (venv) Installation Complete")
     print(f"Virtual environment: {venv_path}")
     print(f"To activate: source {venv_path}/bin/activate")
-    
+
     return Ok()

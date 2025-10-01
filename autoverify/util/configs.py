@@ -20,9 +20,7 @@ def config_from_str(cfg: str, cfg_space: ConfigurationSpace) -> Configuration:
     return Configuration(cfg_space, config_dict_from_config_str(cfg))
 
 
-def config_from_txt_file(
-    file: Path, cfg_space: ConfigurationSpace
-) -> Configuration:
+def config_from_txt_file(file: Path, cfg_space: ConfigurationSpace) -> Configuration:
     """Create a config from a config in a txt file."""
     with open(str(file)) as f:
         txt = f.read().rstrip()
@@ -30,9 +28,7 @@ def config_from_txt_file(
     return config_from_str(txt, cfg_space)
 
 
-def config_from_file(
-    file: Path, cfg_space: ConfigurationSpace
-) -> Configuration:
+def config_from_file(file: Path, cfg_space: ConfigurationSpace) -> Configuration:
     """Create a config from a config in a file."""
     if file.suffix == ".txt":
         return config_from_txt_file(file, cfg_space)

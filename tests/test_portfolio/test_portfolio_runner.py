@@ -26,6 +26,6 @@ def test_init_runner(portfolio: Portfolio, faulty_pf: Portfolio):
     allocs = [(8, 15, -1), (0, 7, 0)]
     allocs2 = [(8, 15, 0), (0, 7, -1)]
 
-    assert all(
-        alloc in list(runner._allocation.values()) for alloc in allocs
-    ) or all(alloc in list(runner._allocation.values()) for alloc in allocs2)
+    assert all(alloc in list(runner._allocation.values()) for alloc in allocs) or all(
+        alloc in list(runner._allocation.values()) for alloc in allocs2
+    )

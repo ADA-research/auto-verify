@@ -92,6 +92,4 @@ def test_clone_checkout_verifier_with_submodules(
     mock_install_dir: Path,
 ):
     # TODO:
-    clone_checkout_verifier(
-        dummy_git_repo_info, mock_install_dir, init_submodules=True
-    )
+    clone_checkout_verifier(dummy_git_repo_info, mock_install_dir, init_submodules=True)

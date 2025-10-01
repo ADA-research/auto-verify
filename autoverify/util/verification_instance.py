@@ -61,17 +61,9 @@ class VerificationInstance:
 
     def as_row(self, resolve_paths: bool = True) -> list[str]:
         """Returns the instance as a list of strings."""
-        net = (
-            str(self.network.expanduser().resolve())
-            if resolve_paths
-            else str(self.network)
-        )
+        net = str(self.network.expanduser().resolve()) if resolve_paths else str(self.network)
 
-        prop = (
-            str(self.property.expanduser().resolve())
-            if resolve_paths
-            else str(self.property)
-        )
+        prop = str(self.property.expanduser().resolve()) if resolve_paths else str(self.property)
 
         return [net, prop, str(self.timeout)]
 
@@ -83,6 +75,4 @@ class VerificationInstance:
         """
         simplified_nets_dir = self.network.parent.parent / "onnx_simplified"
 
-        return VerificationInstance(
-            simplified_nets_dir / self.network.name, self.property, self.timeout
-        )
+        return VerificationInstance(simplified_nets_dir / self.network.name, self.property, self.timeout)

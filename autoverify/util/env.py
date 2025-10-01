@@ -22,9 +22,7 @@ def get_file_path(file: Path) -> Path:
     Returns:
         Path: The path to the file.
     """
-    return Path(
-        os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(file)))
-    )
+    return Path(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(file))))
 
 
 def copy_env_file_to(installer_py_file: Path, install_dir: Path):

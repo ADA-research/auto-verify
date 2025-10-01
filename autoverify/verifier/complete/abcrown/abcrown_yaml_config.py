@@ -15,7 +15,7 @@ class AbcrownYamlConfig:
 
     def __init__(self, yaml_file: IO[str] | str | Path):
         """New instance.
-        
+
         Args:
             yaml_file: Either a file object, file path string, or Path object
         """
@@ -35,9 +35,7 @@ class AbcrownYamlConfig:
         abcrown_dict = yaml.safe_load(yaml_file.read_text())
 
         nested_set(abcrown_dict, ["model", "onnx_path"], str(network))
-        nested_set(
-            abcrown_dict, ["specification", "vnnlib_path"], str(property)
-        )
+        nested_set(abcrown_dict, ["specification", "vnnlib_path"], str(property))
         nested_set(abcrown_dict, ["general", "save_adv_example"], True)
         nested_set(abcrown_dict, ["solver", "batch_size"], batch_size)
 
@@ -68,9 +66,7 @@ class AbcrownYamlConfig:
             nested_set(abcrown_dict, nested_keys, value)
 
         nested_set(abcrown_dict, ["model", "onnx_path"], str(network))
-        nested_set(
-            abcrown_dict, ["specification", "vnnlib_path"], str(property)
-        )
+        nested_set(abcrown_dict, ["specification", "vnnlib_path"], str(property))
         nested_set(abcrown_dict, ["general", "save_adv_example"], True)
         nested_set(abcrown_dict, ["solver", "batch_size"], batch_size)
 

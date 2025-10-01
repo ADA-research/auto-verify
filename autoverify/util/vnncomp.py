@@ -42,8 +42,9 @@ def inst_bench_to_kwargs(
         elif benchmark == "cifar2020":
             if instance.network.name.find("convBigRELU") >= 0:
                 return {"dnnv_simplify": True}
-        elif (benchmark == "cifar100_tinyimagenet_resnet" or 
-              (benchmark == "nn4sys" and instance.network.name == "lindex.onnx")):
+        elif benchmark == "cifar100_tinyimagenet_resnet" or (
+            benchmark == "nn4sys" and instance.network.name == "lindex.onnx"
+        ):
             return {"dnnv_simplify": True}
         return {}
 
@@ -94,10 +95,7 @@ def _get_abcrown_config(benchmark: str, instance: VerificationInstance) -> str:
     elif benchmark == "mnist_fc":
         if net_name == "mnist-net_256x2.onnx":
             return "mnistfc_small.yaml"
-        elif (
-            net_name == "mnist-net_256x4.onnx"
-            or net_name == "mnist-net_256x6.onnx"
-        ):
+        elif net_name == "mnist-net_256x4.onnx" or net_name == "mnist-net_256x6.onnx":
             return "mnistfc.yaml"
         raise ValueError(f"Couldnt find config for {instance.as_row()}")
     elif benchmark == "nn4sys":

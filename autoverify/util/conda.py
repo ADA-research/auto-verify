@@ -93,9 +93,7 @@ def get_conda_path() -> Path:
 def get_conda_path2() -> Path:
     """Alternative way to get the conda path, only works if an env is active."""
     if "CONDA_PREFIX" not in os.environ:
-        raise RuntimeError(
-            "This function only works if a Conda environment is active."
-        )
+        raise RuntimeError("This function only works if a Conda environment is active.")
 
     return Path(os.environ["CONDA_PREFIX"]).parent.parent
 
@@ -169,6 +167,4 @@ def get_conda_source_cmd(conda_path: Path | None = None) -> list[str]:
     if conda_path is None:
         conda_path = get_conda_path()
 
-    return shlex.split(
-        f"source {str(conda_path / 'etc' / 'profile.d' / 'conda.sh')}"
-    )
+    return shlex.split(f"source {str(conda_path / 'etc' / 'profile.d' / 'conda.sh')}")

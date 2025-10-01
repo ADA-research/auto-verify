@@ -40,9 +40,7 @@ def _warmup(
     if isinstance(verifier, str):
         v = verifier_from_name(verifier)()
         assert isinstance(v, CompleteVerifier)
-        v.verify_property(
-            warmup_inst.network, warmup_inst.property, config=config, timeout=10
-        )
+        v.verify_property(warmup_inst.network, warmup_inst.property, config=config, timeout=10)
     else:
         verifier.verify_property(
             warmup_inst.network,
