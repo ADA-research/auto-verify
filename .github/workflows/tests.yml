@@ -27,7 +27,7 @@ jobs:
           version: "latest"
       - name: Install dependencies
         run: |
-          uv pip install tox tox-gh-actions tox-uv
+          uv pip install --system tox tox-gh-actions tox-uv
       - name: Test with tox
         run: tox
       - name: Upload Coverage to Codecov
