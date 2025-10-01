@@ -14,7 +14,7 @@ from .ovalbab.install import install as install_ovalbab
 from .verinet.install import VerinetRepoInfo
 from .verinet.install import install as install_verinet
 
-installers: dict[str, Callable[[Path], None]] = {
+installers: dict[str, Callable[[Path, str | None, bool], None]] = {
     "nnenum": install_nnenum,
     "abcrown": install_abcrown,
     "mnbab": install_mnbab,

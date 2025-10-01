@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+
 from autoverify.util.verification_instance import VerificationInstance
 from autoverify.verifier import Nnenum
 from autoverify.verify.eval_verifier import eval_verifier

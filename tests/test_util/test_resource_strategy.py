@@ -1,4 +1,5 @@
 import pytest
+
 from autoverify.util.resource_strategy import (
     ResourceStrategy,
     resources_from_strategy,

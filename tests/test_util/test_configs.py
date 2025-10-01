@@ -1,12 +1,13 @@
 from pathlib import Path
 
 import pytest
+from ConfigSpace import ConfigurationSpace
+
 from autoverify.util.configs import (
     config_dict_from_config_str,
     config_from_file,
     config_from_str,
 )
-from ConfigSpace import ConfigurationSpace
 
 
 @pytest.fixture

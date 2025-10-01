@@ -2,11 +2,12 @@ import os
 from pathlib import Path
 
 import pytest
+from pytest_lazyfixture import lazy_fixture
+from result import Ok
+
 from autoverify.util.env import get_file_path
 from autoverify.util.instances import VerificationInstance
 from autoverify.verifier.verifier import CompleteVerifier
-from pytest_lazyfixture import lazy_fixture
-from result import Ok
 
 pytestmark = pytest.mark.parametrize(
     "verifier",

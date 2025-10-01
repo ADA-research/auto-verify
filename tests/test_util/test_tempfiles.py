@@ -2,6 +2,7 @@ import json
 import os
 
 import yaml
+
 from autoverify.util.tempfiles import (
     tmp_file,
     tmp_json_file,

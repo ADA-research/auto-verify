@@ -1,8 +1,9 @@
 import pytest
-from autoverify.portfolio.hydra.cost_matrix import CostMatrix, InstanceCost
 from ConfigSpace import ConfigurationSpace
 from smac import RunHistory
 from smac.runhistory.enumerations import StatusType
+
+from autoverify.portfolio.hydra.cost_matrix import CostMatrix, InstanceCost
 
 
 def test_update_instance_cost():

@@ -1,6 +1,7 @@
 import pytest
-from autoverify.verifier import AbCrown, Nnenum
+
 from autoverify.util.proc import nvidia_gpu_count
+from autoverify.verifier import AbCrown, Nnenum
 
 
 @pytest.mark.verifier

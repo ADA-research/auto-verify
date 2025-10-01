@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+
 from autoverify.util.instances import (
     VerificationDataResult,
     VerificationInstance,

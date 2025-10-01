@@ -2,12 +2,13 @@
 
 from pathlib import Path
 
+from result import Ok
+
 from autoverify.cli.install.venv_installers.venv_install import (
     create_verifier_venv,
     install_requirements,
 )
 from autoverify.cli.util.git import GitRepoInfo, clone_checkout_verifier
-from result import Ok
 
 VenvMnBabRepoInfo = GitRepoInfo(
     branch="SABR_ready",
