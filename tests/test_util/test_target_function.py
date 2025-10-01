@@ -20,10 +20,10 @@ def test_timeout_process_tf_func_res(
 def test_err_process_tf_func_res(
     err_complete_verif_res: CompleteVerificationResult,
 ):
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(Exception) as exc_info:  # noqa: B017
         _process_target_function_result(err_complete_verif_res, 10)
-    # The exception should be the CompleteVerificationData object
-    assert isinstance(exc_info.value, CompleteVerificationData)
+    # The exception should contain the CompleteVerificationData object
+    assert isinstance(exc_info.value.args[0], CompleteVerificationData)
 
 
 def test_err_result_process_tf_func_res(
