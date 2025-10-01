@@ -51,7 +51,7 @@ def verifier_from_name(name: str) -> type[Verifier]:
         "ovalbab": OvalBab,
         "verinet": Verinet,
     }
-    
+
     if name in verifier_map:
         return verifier_map[name]
 

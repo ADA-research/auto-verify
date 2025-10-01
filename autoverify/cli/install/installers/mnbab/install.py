@@ -1,4 +1,4 @@
-"""mnbab installer."""
+"""Mnbab installer."""
 
 import shlex
 import subprocess
@@ -29,9 +29,10 @@ def install(install_dir: Path, custom_commit: str | None = None, use_latest: boo
         use_latest: If True, checkout the latest commit on the branch.
     """
     # Clone and checkout the repository with version management
-    clone_checkout_verifier(MnBabRepoInfo, install_dir, init_submodules=True, 
-                           custom_commit=custom_commit, use_latest=use_latest)
-    
+    clone_checkout_verifier(
+        MnBabRepoInfo, install_dir, init_submodules=True, custom_commit=custom_commit, use_latest=use_latest
+    )
+
     # Copy environment file and create conda environment
     copy_env_file_to(Path(__file__), install_dir)
     print("Creating conda environment...")
@@ -68,7 +69,7 @@ def install(install_dir: Path, custom_commit: str | None = None, use_latest: boo
         environment(MPFR_PREFIX=mpfr_path, CDD_PREFIX=cddlib_path),
     ):
         subprocess.run(elina_cmd, shell=True)
-    
+
     # Print installation information
     print("\nMNBAB (conda) Installation Complete")
     print(f"Installation directory: {install_dir}")

@@ -1,4 +1,4 @@
-"""ab-crown configuration space."""
+"""Ab-crown configuration space."""
 
 from ConfigSpace import (
     Categorical,
@@ -442,9 +442,7 @@ for hp in AbCrownConfigspace.get_hyperparameters():
         continue
 
     AbCrownConfigspace.add_condition(
-        EqualsCondition(
-            hp, AbCrownConfigspace["bab__branching__input_split__enable"], True
-        )
+        EqualsCondition(hp, AbCrownConfigspace["bab__branching__input_split__enable"], True)
     )
 
 for hp in AbCrownConfigspace.get_hyperparameters():
@@ -454,9 +452,7 @@ for hp in AbCrownConfigspace.get_hyperparameters():
     if hp.name == "attack__pgd_order":
         continue
 
-    AbCrownConfigspace.add_condition(
-        NotEqualsCondition(hp, AbCrownConfigspace["attack__pgd_order"], "skip")
-    )
+    AbCrownConfigspace.add_condition(NotEqualsCondition(hp, AbCrownConfigspace["attack__pgd_order"], "skip"))
 
 
 AbCrownConfigspace.add_forbidden_clauses(
@@ -475,21 +471,15 @@ AbCrownConfigspace.add_forbidden_clauses(
                 AbCrownConfigspace["general__enable_incomplete_verification"],
                 True,
             ),
-            ForbiddenEqualsClause(
-                AbCrownConfigspace["bab__branching__input_split__enable"], True
-            ),
+            ForbiddenEqualsClause(AbCrownConfigspace["bab__branching__input_split__enable"], True),
         ),
         ForbiddenAndConjunction(
-            ForbiddenEqualsClause(
-                AbCrownConfigspace["general__complete_verifier"], "skip"
-            ),
+            ForbiddenEqualsClause(AbCrownConfigspace["general__complete_verifier"], "skip"),
             ForbiddenEqualsClause(
                 AbCrownConfigspace["general__enable_incomplete_verification"],
                 False,
             ),
-            ForbiddenEqualsClause(
-                AbCrownConfigspace["attack__pgd_order"], "skip"
-            ),
+            ForbiddenEqualsClause(AbCrownConfigspace["attack__pgd_order"], "skip"),
         ),
     ]
 )

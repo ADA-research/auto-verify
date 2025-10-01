@@ -1,8 +1,9 @@
 import pytest
-from autoverify.portfolio.hydra.cost_matrix import CostMatrix, InstanceCost
 from ConfigSpace import ConfigurationSpace
 from smac import RunHistory
 from smac.runhistory.enumerations import StatusType
+
+from autoverify.portfolio.hydra.cost_matrix import CostMatrix, InstanceCost
 
 
 def test_update_instance_cost():
@@ -103,9 +104,7 @@ def test_vbs_cost2(simple_configspace: ConfigurationSpace):
         cm.vbs_cost([cfg4], ["foo"])
 
 
-def test_cost_matrix_dunders(
-    small_cost_matrix: CostMatrix, simple_configspace: ConfigurationSpace
-):
+def test_cost_matrix_dunders(small_cost_matrix: CostMatrix, simple_configspace: ConfigurationSpace):
     new_config = simple_configspace.sample_configuration()
     small_cost_matrix[new_config] = {"foo": 1000, "bar": 1000}
     assert small_cost_matrix[new_config] == {"foo": 1000, "bar": 1000}

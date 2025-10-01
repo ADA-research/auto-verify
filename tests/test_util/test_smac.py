@@ -2,6 +2,9 @@ import csv
 from pathlib import Path
 
 import pytest
+from ConfigSpace import ConfigurationSpace
+from smac import RunHistory, Scenario
+
 from autoverify.util.instances import VerificationInstance
 from autoverify.util.smac import (
     get_scenario_dict,
@@ -9,8 +12,6 @@ from autoverify.util.smac import (
     index_features,
     runhistory_to_csv,
 )
-from ConfigSpace import ConfigurationSpace
-from smac import RunHistory, Scenario
 
 
 @pytest.fixture

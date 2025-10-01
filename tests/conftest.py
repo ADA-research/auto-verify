@@ -1,13 +1,6 @@
 from pathlib import Path
 
 import pytest
-from autoverify.util.env import get_file_path
-from autoverify.util.instances import VerificationInstance
-from autoverify.verifier import AbCrown, MnBab, Nnenum, OvalBab, Verinet
-from autoverify.verifier.verification_result import (
-    CompleteVerificationData,
-    CompleteVerificationResult,
-)
 from ConfigSpace import (
     Categorical,
     Configuration,
@@ -17,6 +10,14 @@ from ConfigSpace import (
 )
 from result import Err, Ok
 from smac import RunHistory
+
+from autoverify.util.env import get_file_path
+from autoverify.util.instances import VerificationInstance
+from autoverify.verifier import AbCrown, MnBab, Nnenum, OvalBab, Verinet
+from autoverify.verifier.verification_result import (
+    CompleteVerificationData,
+    CompleteVerificationResult,
+)
 
 TEST_PROP_TIMEOUT = 60
 test_props = get_file_path(Path(__file__)) / "trivial_props/"

@@ -19,7 +19,7 @@ class MnbabJsonConfig:
 
     def __init__(self, json_file: IO[str] | str | Path):
         """_summary_.
-        
+
         Args:
             json_file: Either a file object, file path string, or Path object
         """
@@ -34,12 +34,8 @@ class MnbabJsonConfig:
         timeout: int,
     ):
         mnbab_dict["network_path"] = str(network)
-        mnbab_dict["benchmark_instances_path"] = str(
-            cls._temp_instance_file(network, property)
-        )
-        mnbab_dict["test_data_path"] = str(
-            cls._temp_instance_file(network, property)
-        )
+        mnbab_dict["benchmark_instances_path"] = str(cls._temp_instance_file(network, property))
+        mnbab_dict["test_data_path"] = str(cls._temp_instance_file(network, property))
 
         mnbab_dict["input_dim"] = [784]  # # TODO: get_input_shape(network)
         mnbab_dict["use_gpu"] = True  # TODO: Make this a choice

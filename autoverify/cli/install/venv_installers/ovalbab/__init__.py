@@ -1,4 +1,4 @@
-"""ovalbab venv installer package."""
+"""Ovalbab venv installer package."""
 
 from .venv_install import VenvOvalBabRepoInfo, install
 

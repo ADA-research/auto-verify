@@ -51,9 +51,7 @@ class Nnenum(CompleteVerifier):
             pkill_matches(["python -m nnenum.nnenum"]),
         ]
 
-    def _parse_result(
-        self, _: str, result_file: Path | None
-    ) -> tuple[VerificationResultString, str | None]:
+    def _parse_result(self, _: str, result_file: Path | None) -> tuple[VerificationResultString, str | None]:
         with open(str(result_file)) as f:
             result_txt = f.read()
 
@@ -144,9 +142,7 @@ class Nnenum(CompleteVerifier):
         return dict_config
 
     @staticmethod
-    def is_same_config(
-        config1: Configuration | str, config2: Configuration | str
-    ) -> bool:
+    def is_same_config(config1: Configuration | str, config2: Configuration | str) -> bool:
         """Return if two configs are equivalent."""
         if isinstance(config1, Configuration):
             config1 = str(config1["settings_mode"])  # type: ignore

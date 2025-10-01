@@ -50,11 +50,7 @@ def nvidia_gpu_count() -> int:  # pragma: no cover
     cmd2 = "wc -l"
 
     ps = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE)
-    count = (
-        subprocess.check_output(shlex.split(cmd2), stdin=ps.stdout)
-        .decode()
-        .rstrip()
-    )
+    count = subprocess.check_output(shlex.split(cmd2), stdin=ps.stdout).decode().rstrip()
 
     return int(count)
 

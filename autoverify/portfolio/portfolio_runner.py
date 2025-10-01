@@ -44,9 +44,7 @@ def _get_verifier(
 ) -> CompleteVerifier:
     if vnncompat:
         assert benchmark and cv.resources
-        return inst_bench_to_verifier(
-            benchmark, instance, cv.verifier, to_allocation(cv.resources)
-        )
+        return inst_bench_to_verifier(benchmark, instance, cv.verifier, to_allocation(cv.resources))
     else:
         alloc = cv_alloc[cv] if cv_alloc else to_allocation(cv.resources) if cv.resources else None
 
@@ -54,7 +52,8 @@ def _get_verifier(
         kwargs = kwargs.get(cv.verifier, {})  # type: ignore
 
         v = verifier_from_name(cv.verifier)(
-            cpu_gpu_allocation=alloc, **kwargs  # type: ignore
+            cpu_gpu_allocation=alloc,
+            **kwargs,  # type: ignore
         )
         assert isinstance(v, CompleteVerifier)
 
@@ -108,10 +107,7 @@ class PortfolioRunner:
 
         for cv in self._portfolio:
             if cv.resources is None:
-                raise ValueError(
-                    "No resources for"
-                    f"{cv.verifier} :: {cv.configuration} found."
-                )
+                raise ValueError(f"No resources for{cv.verifier} :: {cv.configuration} found.")
 
             # CPU (taskset) and GPU (CUDA_VISIBLE_DEVICES) index start at 0
             n_cpu, n_gpu = cv.resources[0], cv.resources[1]
@@ -303,9 +299,7 @@ class PortfolioRunner:
             for instance in instances:
                 logger.info(f"Running portfolio on {str(instance)}")
 
-                futures: dict[
-                    Future[CompleteVerificationResult], ConfiguredVerifier
-                ] = {}
+                futures: dict[Future[CompleteVerificationResult], ConfiguredVerifier] = {}
                 self._verifiers = self._get_verifiers(
                     instance,
                     vnncompat,
@@ -315,17 +309,12 @@ class PortfolioRunner:
                 is_solved = False
 
                 for cv in self._portfolio:
-                    if (
-                        uses_simplified_network
-                        and cv.verifier in uses_simplified_network
-                    ):
+                    if uses_simplified_network and cv.verifier in uses_simplified_network:
                         target_instance = instance.as_simplified_network()
                     else:
                         target_instance = instance
 
-                    future = executor.submit(
-                        self._verifiers[cv].verify_instance, target_instance
-                    )
+                    future = executor.submit(self._verifiers[cv].verify_instance, target_instance)
                     futures[future] = cv
 
                 for future in concurrent.futures.as_completed(futures):
@@ -333,9 +322,7 @@ class PortfolioRunner:
                     result = future.result()
 
                     if not is_solved:
-                        got_solved = self._process_result(
-                            result, results, fut_cv, instance, self._verifiers
-                        )
+                        got_solved = self._process_result(result, results, fut_cv, instance, self._verifiers)
 
                         if got_solved and not is_solved:
                             is_solved = True
@@ -374,15 +361,10 @@ class PortfolioRunner:
                 log_string = f"{cv.verifier} timed out"
             else:
                 self._cancel_running(cv, verifiers)
-                log_string = (
-                    f"Verified by {cv.verifier} in {r.took:.2f} sec, "
-                    f"result = {r.result}"
-                )
+                log_string = f"Verified by {cv.verifier} in {r.took:.2f} sec, result = {r.result}"
 
             instance_data["success"] = "OK"
-            results[instance] = VerificationDataResult.from_verification_result(
-                r, instance_data
-            )
+            results[instance] = VerificationDataResult.from_verification_result(r, instance_data)
 
             # Signal that the instance was solved
             if r.result in ["SAT", "UNSAT"]:
@@ -393,9 +375,7 @@ class PortfolioRunner:
             r = result.unwrap_err()
 
             instance_data["success"] = "ERR"
-            results[instance] = VerificationDataResult.from_verification_result(
-                r, instance_data
-            )
+            results[instance] = VerificationDataResult.from_verification_result(r, instance_data)
 
         logger.info(log_string)
         # Instance was not solved

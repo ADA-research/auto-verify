@@ -1,8 +1,9 @@
 from pathlib import Path
 
 import pytest
-from autoverify.cli.install.install import try_install_verifiers
 from pytest import CaptureFixture, MonkeyPatch
+
+from autoverify.cli.install.install import try_install_verifiers
 
 
 @pytest.fixture
@@ -15,7 +16,4 @@ def test_bad_install(mock_verifier_dir, capfd: CaptureFixture):
     try_install_verifiers([test_name])
 
     captured = capfd.readouterr()
-    assert (
-        f"Error installing {test_name}: "
-        f"No installer found for verifier {test_name}" in captured.out
-    )
+    assert f"Error installing {test_name}: No installer found for verifier {test_name}" in captured.out

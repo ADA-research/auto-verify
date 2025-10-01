@@ -78,15 +78,11 @@ def get_vnn_verifier_tf(
 ) -> TargetFunction:
     """Get a tf for a vnncomp benchmark from a name."""
 
-    def target_function(
-        config: Configuration, instance: Instance, seed: Seed
-    ) -> Cost:
+    def target_function(config: Configuration, instance: Instance, seed: Seed) -> Cost:
         """_summary_."""
         seed += 1  # silence warning, cant rename the param to _ or smac errors
 
-        verifier_inst = inst_bench_to_verifier(
-            benchmark, VerificationInstance.from_str(instance), verifier
-        )
+        verifier_inst = inst_bench_to_verifier(benchmark, VerificationInstance.from_str(instance), verifier)
 
         result = _run_verification_instance(verifier_inst, config, instance)
         return _process_target_function_result(result, timeout_penalty)
@@ -94,14 +90,10 @@ def get_vnn_verifier_tf(
     return target_function
 
 
-def get_verifier_tf(
-    verifier: Verifier, *, timeout_penalty: int = _DEFAULT_PAR
-) -> TargetFunction:
+def get_verifier_tf(verifier: Verifier, *, timeout_penalty: int = _DEFAULT_PAR) -> TargetFunction:
     """Get a target function to use in SMAC for a verifier."""
 
-    def target_function(
-        config: Configuration, instance: Instance, seed: Seed
-    ) -> Cost:
+    def target_function(config: Configuration, instance: Instance, seed: Seed) -> Cost:
         """_summary_."""
         seed += 1  # silence warning, cant rename the param to _ or smac errors
 

@@ -14,7 +14,10 @@ class InstanceCost(MutableMapping[str, float]):
     """Mapping from instance to cost."""
 
     def __init__(self):
-        """Creates a new. empty `InstanceCost`."""
+        """Creates a new.
+
+        empty `InstanceCost`.
+        """
         self.store: dict[str, float] = {}
         # Map that stores the amount of values in the average cost
         # Needed for updating the average

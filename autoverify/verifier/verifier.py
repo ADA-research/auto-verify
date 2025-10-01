@@ -40,7 +40,10 @@ class Verifier(ABC):
         batch_size: int = 512,
         cpu_gpu_allocation: tuple[int, int, int] | None = None,
     ):
-        """New instance. This is used with super calls."""
+        """New instance.
+
+        This is used with super calls.
+        """
         self._batch_size = batch_size
         self._cpu_gpu_allocation = cpu_gpu_allocation
         self._printed_tool_path = False
@@ -75,9 +78,7 @@ class Verifier(ABC):
         tool_path = VERIFIER_DIR / self.name / TOOL_DIR_NAME
 
         if not tool_path.exists():
-            raise FileNotFoundError(
-                f"Could not find installation for tool {self.name}"
-            )
+            raise FileNotFoundError(f"Could not find installation for tool {self.name}")
 
         return Path(tool_path)  # mypy complains tool_path is any
 
@@ -126,7 +127,8 @@ class Verifier(ABC):
         return config
 
     def _print_verifier_path_once(self):
-        """Print the resolved verifier tool path once per instance, with bars at the top and bottom."""
+        """Print the resolved verifier tool path once per instance, with bars
+        at the top and bottom."""
         if not self._printed_tool_path:
             bar = "=" * 60
             print(bar)
@@ -135,9 +137,7 @@ class Verifier(ABC):
             self._printed_tool_path = True
 
     # TODO: Overload like in ConfigSpace to distinguish between return types
-    def sample_configuration(
-        self, *, size: int = 1
-    ) -> Configuration | list[Configuration]:
+    def sample_configuration(self, *, size: int = 1) -> Configuration | list[Configuration]:
         """Sample one or more configurations.
 
         Args:
@@ -204,9 +204,7 @@ class CompleteVerifier(Verifier):
         # them do some initialization here
         config = self._init_config(network, property, config)
 
-        run_cmd, output_file = self._get_run_cmd(
-            network, property, config=config, timeout=timeout
-        )
+        run_cmd, output_file = self._get_run_cmd(network, property, config=config, timeout=timeout)
 
         outcome = self._run_verification(
             run_cmd,
@@ -242,7 +240,10 @@ class CompleteVerifier(Verifier):
         *,
         config: Configuration | Path | None = None,
     ) -> list[CompleteVerificationResult]:
-        """Verify a batch. Not yet implemented."""
+        """Verify a batch.
+
+        Not yet implemented.
+        """
         for instance in instances:
             self._check_instance(instance.network, instance.property)
 
@@ -278,10 +279,7 @@ class CompleteVerifier(Verifier):
         gpus = nvidia_gpu_count()
 
         if gpu_dev > gpus - 1:
-            raise ValueError(
-                f"Asked for GPU {gpu_dev} (0-indexed), "
-                f"but only found {gpus} GPU(s)"
-            )
+            raise ValueError(f"Asked for GPU {gpu_dev} (0-indexed), but only found {gpus} GPU(s)")
 
         if gpu_dev >= 0:
             contexts.append(environment(CUDA_VISIBLE_DEVICES=str(gpu_dev)))
@@ -366,9 +364,7 @@ class CompleteVerifier(Verifier):
                 if return_code > 0:
                     result = "ERR"
                 else:
-                    result, counter_example = self._parse_result(
-                        output_str, result_file
-                    )
+                    result, counter_example = self._parse_result(output_str, result_file)
 
             self._timeout_event = None
 

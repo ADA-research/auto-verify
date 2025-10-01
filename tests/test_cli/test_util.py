@@ -2,8 +2,9 @@ import subprocess
 from pathlib import Path
 
 import pytest
-from autoverify.cli.util.git import GitRepoInfo, clone_checkout_verifier
 from pytest import MonkeyPatch
+
+from autoverify.cli.util.git import GitRepoInfo, clone_checkout_verifier
 
 DUMMY_CLONE_URL = "https://github.com/example/repo.git"
 DUMMY_BRANCH = "main"
@@ -91,6 +92,4 @@ def test_clone_checkout_verifier_with_submodules(
     mock_install_dir: Path,
 ):
     # TODO:
-    clone_checkout_verifier(
-        dummy_git_repo_info, mock_install_dir, init_submodules=True
-    )
+    clone_checkout_verifier(dummy_git_repo_info, mock_install_dir, init_submodules=True)

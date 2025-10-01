@@ -51,9 +51,7 @@ def _get_cpu_gpu_alloc(verifier: str, rt: ResourceTracker):
     return (0, cpus - 1, gpu)
 
 
-def _remap_rh_keys(
-    key_map: dict[Configuration, Configuration], rh: RunHistory
-) -> RunHistory:
+def _remap_rh_keys(key_map: dict[Configuration, Configuration], rh: RunHistory) -> RunHistory:
     new_rh = RunHistory()
 
     for tk, tv in rh.items():
@@ -75,16 +73,12 @@ def _remap_rh_keys(
     return new_rh
 
 
-def _get_init_kwargs(
-    verifier: str, scenario: PortfolioScenario, instance: VerificationInstance
-) -> dict[str, Any]:
+def _get_init_kwargs(verifier: str, scenario: PortfolioScenario, instance: VerificationInstance) -> dict[str, Any]:
     init_kwargs: dict[str, Any] = {}
 
     if scenario.vnn_compat_mode:
         assert scenario.benchmark is not None
-        init_kwargs = inst_bench_to_kwargs(
-            scenario.benchmark, verifier, instance
-        )
+        init_kwargs = inst_bench_to_kwargs(scenario.benchmark, verifier, instance)
     elif scenario.verifier_kwargs:
         return scenario.verifier_kwargs.get(verifier, {})
 
@@ -98,17 +92,13 @@ def _get_simplified_network(network: Path) -> Path:
     return simplified_nets_dir / network.name
 
 
-def _prep_instance(
-    instance: str, verifier: str, uses_simplified_network: Iterable[str] | None
-) -> str:
+def _prep_instance(instance: str, verifier: str, uses_simplified_network: Iterable[str] | None) -> str:
     if not uses_simplified_network or verifier not in uses_simplified_network:
         return instance
 
     verif_inst = VerificationInstance.from_str(instance)
     simple_net = _get_simplified_network(verif_inst.network)
-    verif_inst = VerificationInstance(
-        simple_net, verif_inst.property, verif_inst.timeout
-    )
+    verif_inst = VerificationInstance(simple_net, verif_inst.property, verif_inst.timeout)
 
     # str() becauase mypy thinks its Any (?????)
     return str(verif_inst.as_smac_instance())
@@ -191,9 +181,7 @@ class Hydra:
         portfolio.reallocate_resources(self._scenario.resource_strategy)
         return portfolio
 
-    def _configurator(
-        self, pf: Portfolio
-    ) -> list[tuple[Configuration, RunHistory]]:
+    def _configurator(self, pf: Portfolio) -> list[tuple[Configuration, RunHistory]]:
         # TODO: Iter > 0
         new_configs: list[tuple[Configuration, RunHistory]] = []
 
@@ -232,9 +220,7 @@ class Hydra:
             verifier = verifiers[config["index"]]
             assert isinstance(verifier, str)
 
-            instance = _prep_instance(
-                instance, verifier, self._scenario.uses_simplified_network
-            )
+            instance = _prep_instance(instance, verifier, self._scenario.uses_simplified_network)
 
             verifier_class = verifier_from_name(verifier)
             init_kwargs = _get_init_kwargs(
@@ -243,9 +229,7 @@ class Hydra:
                 VerificationInstance.from_str(instance),
             )
             alloc = _get_cpu_gpu_alloc(verifier, self._ResourceTracker)
-            verifier_inst = verifier_class(
-                cpu_gpu_allocation=alloc, **init_kwargs
-            )
+            verifier_inst = verifier_class(cpu_gpu_allocation=alloc, **init_kwargs)
 
             verifier_tf = get_verifier_tf(verifier_inst)
 
@@ -259,11 +243,7 @@ class Hydra:
 
             return float(min(cost, pf_cost))
 
-        walltime_limit = (
-            self._scenario.seconds_per_iter
-            * self._scenario.pick_budget
-            / self._scenario.configs_per_iter
-        )
+        walltime_limit = self._scenario.seconds_per_iter * self._scenario.pick_budget / self._scenario.configs_per_iter
 
         pick_cfgspace = ConfigurationSpace()
         pick_cfgspace.add_hyperparameter(
@@ -298,20 +278,14 @@ class Hydra:
 
         return str(verifiers[inc["index"]])
 
-    def _tune(
-        self, verifier: str, run_name: str, target_func: TargetFunction
-    ) -> tuple[Configuration, RunHistory]:
+    def _tune(self, verifier: str, run_name: str, target_func: TargetFunction) -> tuple[Configuration, RunHistory]:
         verifier_inst = verifier_from_name(verifier)()
 
         if self._scenario.tune_budget == 0:
             logger.info("Tune budget is 0, returning default configuration.")
             return verifier_inst.default_config, RunHistory()
 
-        walltime_limit = (
-            self._scenario.seconds_per_iter
-            * self._scenario.tune_budget
-            / self._scenario.configs_per_iter
-        )
+        walltime_limit = self._scenario.seconds_per_iter * self._scenario.tune_budget / self._scenario.configs_per_iter
 
         smac_scenario = Scenario(
             verifier_inst.config_space,
@@ -336,17 +310,11 @@ class Hydra:
         def hydra_tf(config: Configuration, instance: str, seed: int) -> float:
             seed += 1  # silence warning
 
-            instance = _prep_instance(
-                instance, verifier, self._scenario.uses_simplified_network
-            )
+            instance = _prep_instance(instance, verifier, self._scenario.uses_simplified_network)
 
-            init_kwargs = _get_init_kwargs(
-                name, self._scenario, VerificationInstance.from_str(instance)
-            )
+            init_kwargs = _get_init_kwargs(name, self._scenario, VerificationInstance.from_str(instance))
             alloc = _get_cpu_gpu_alloc(verifier, self._ResourceTracker)
-            verifier_inst = verifier_class(
-                cpu_gpu_allocation=alloc, **init_kwargs
-            )
+            verifier_inst = verifier_class(cpu_gpu_allocation=alloc, **init_kwargs)
             verifier_tf = get_verifier_tf(verifier_inst)
 
             assert isinstance(verifier_inst, CompleteVerifier)
@@ -381,9 +349,7 @@ class Hydra:
         name = cfg.config_space.name
         assert name is not None
 
-        cv = ConfiguredVerifier(
-            name, cfg, self._ResourceTracker.deduct_by_name(name, mock=True)
-        )
+        cv = ConfiguredVerifier(name, cfg, self._ResourceTracker.deduct_by_name(name, mock=True))
         if cv in pf:
             logger.info(f"Config {cv} already in portfolio")
             if self._scenario.stop_early:
@@ -393,11 +359,7 @@ class Hydra:
         pf.add(cv)
 
         # Re calculate the cost of the pf
-        vbs_cost = _mean_unevaluated(
-            self._cost_matrix.vbs_cost(
-                pf.configs, self._scenario.get_smac_instances()
-            )
-        )
+        vbs_cost = _mean_unevaluated(self._cost_matrix.vbs_cost(pf.configs, self._scenario.get_smac_instances()))
 
         pf.update_costs(vbs_cost)
         self._ResourceTracker.deduct_by_name(name)

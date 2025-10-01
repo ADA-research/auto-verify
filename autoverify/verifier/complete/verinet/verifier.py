@@ -62,9 +62,7 @@ class Verinet(CompleteVerifier):
             environment(
                 OPENBLAS_NUM_THREADS="1",
                 OMP_NUM_THREADS="1",
-                LD_LIBRARY_PATH=str(
-                    find_conda_lib(self.conda_env_name, "libcudart.so.11.0")
-                ),
+                LD_LIBRARY_PATH=str(find_conda_lib(self.conda_env_name, "libcudart.so.11.0")),
             ),
             pkill_matches(
                 [

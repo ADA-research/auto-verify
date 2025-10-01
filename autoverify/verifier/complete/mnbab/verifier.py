@@ -25,7 +25,7 @@ class MnBab(CompleteVerifier):
 
     def __init__(self, batch_size: int = 512, cpu_gpu_allocation: tuple[int, int, int] | None = None):
         """Initialize MnBab verifier.
-        
+
         Args:
             batch_size: Batch size for verification (default: 512)
             cpu_gpu_allocation: CPU/GPU allocation tuple (default: None)
@@ -65,11 +65,11 @@ class MnBab(CompleteVerifier):
         result_file: Path | None,
     ) -> tuple[VerificationResultString, str | None]:
         """Parse the verification result.
-        
+
         Args:
             output: Command output
             result_file: Path to result file
-            
+
         Returns:
             Tuple of (result, counter_example)
         """
@@ -87,7 +87,7 @@ class MnBab(CompleteVerifier):
                         return "TIMEOUT", None
             except Exception:
                 pass
-        
+
         # Fallback parsing from output
         if "SAT" in output:
             return "SAT", output
@@ -95,7 +95,7 @@ class MnBab(CompleteVerifier):
             return "UNSAT", None
         elif "TIMEOUT" in output:
             return "TIMEOUT", None
-        
+
         # Default to timeout if we can't parse
         return "TIMEOUT", None
 
@@ -108,10 +108,10 @@ class MnBab(CompleteVerifier):
         timeout: int = DEFAULT_VERIFICATION_TIMEOUT_SEC,
     ) -> tuple[str, Path | None]:
         from autoverify.util.tempfiles import tmp_file
-        
+
         with tmp_file(".txt") as tmp:
             result_file = Path(tmp.name)
-            
+
         source_cmd = get_conda_source_cmd(get_conda_path())
 
         run_cmd = f"""
@@ -152,11 +152,11 @@ class MnBab(CompleteVerifier):
         config: Configuration | Path | None,
     ) -> list[CompleteVerificationResult]:
         """Verify a batch of instances.
-        
+
         Args:
             instances: Iterable of verification instances
             config: Configuration to use for verification
-            
+
         Returns:
             List of verification results
         """
@@ -171,11 +171,11 @@ class MnBab(CompleteVerifier):
     @staticmethod
     def is_same_config(config1: Configuration | str, config2: Configuration | str) -> bool:
         """Check if two configurations are the same.
-        
+
         Args:
             config1: First configuration
             config2: Second configuration
-            
+
         Returns:
             True if configurations are the same, False otherwise
         """

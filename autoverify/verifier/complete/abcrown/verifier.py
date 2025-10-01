@@ -1,4 +1,4 @@
-"""ab-crown verifier."""
+"""Ab-crown verifier."""
 
 from collections.abc import Iterable
 from contextlib import AbstractContextManager

@@ -1,5 +1,4 @@
-"""
-Virtual environment based installers for auto-verify verifiers.
+"""Virtual environment based installers for auto-verify verifiers.
 
 This module provides an alternative to conda-based installations using
 Python virtual environments and uv for package management.
@@ -46,9 +45,9 @@ venv_repo_infos: dict[str, GitRepoInfo] = {
 
 __all__ = [
     "VENV_AV_HOME",
-    "VENV_VERIFIER_DIR", 
+    "VENV_VERIFIER_DIR",
     "venv_installers",
     "venv_repo_infos",
     "try_install_verifiers_venv",
     "try_uninstall_verifiers_venv",
-] 
+]

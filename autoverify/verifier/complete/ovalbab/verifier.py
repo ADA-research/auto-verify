@@ -48,11 +48,7 @@ class OvalBab(CompleteVerifier):
     def contexts(self) -> list[AbstractContextManager[None]]:
         return [
             cwd(self.tool_path),
-            environment(
-                LD_LIBRARY_PATH=str(
-                    find_conda_lib(self.conda_env_name, "libcudart.so.11.0")
-                )
-            ),
+            environment(LD_LIBRARY_PATH=str(find_conda_lib(self.conda_env_name, "libcudart.so.11.0"))),
             pkill_matches(["python tools/bab_tools/bab_from_vnnlib.py"]),
         ]
 
@@ -69,7 +65,7 @@ class OvalBab(CompleteVerifier):
             return "SAT", None
         elif find_substring("holds", result_text):
             return "UNSAT", None
-        #Fallback to timeout if we can't parse, but shouldnt we return "ERR" here?
+        # Fallback to timeout if we can't parse, but shouldnt we return "ERR" here?
         return "TIMEOUT", None
 
     def _get_run_cmd(

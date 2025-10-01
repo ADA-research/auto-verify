@@ -88,9 +88,7 @@ def init_verification_result_csv(csv_path: Path):
         writer.writerow(get_dataclass_field_names(VerificationDataResult))
 
 
-def csv_append_verification_result(
-    verification_result: VerificationDataResult, csv_path: Path
-):
+def csv_append_verification_result(verification_result: VerificationDataResult, csv_path: Path):
     """_summary_."""
     with open(str(csv_path.expanduser()), "a") as csv_file:
         writer = csv.writer(csv_file)
@@ -136,15 +134,11 @@ def verification_instances_to_smac_instances(
 _InstancePredicate = Callable[[VerificationInstance], bool]
 
 
-def _passes_at_least_1(
-    predicates: Iterable[_InstancePredicate], instance: VerificationInstance
-) -> bool:
+def _passes_at_least_1(predicates: Iterable[_InstancePredicate], instance: VerificationInstance) -> bool:
     return any(pred(instance) for pred in predicates)
 
 
-def _passes_all(
-    predicates: Iterable[_InstancePredicate], instance: VerificationInstance
-) -> bool:
+def _passes_all(predicates: Iterable[_InstancePredicate], instance: VerificationInstance) -> bool:
     return all(pred(instance) for pred in predicates)
 
 
@@ -207,9 +201,7 @@ def read_vnncomp_instances(
     benchmark_dir = vnncomp_path / benchmark
 
     if not benchmark_dir.is_dir():
-        raise ValueError(
-            f"{benchmark} is not a valid benchmark in {str(vnncomp_path)}"
-        )
+        raise ValueError(f"{benchmark} is not a valid benchmark in {str(vnncomp_path)}")
 
     instances = benchmark_dir / instance_file_name
     verification_instances = []

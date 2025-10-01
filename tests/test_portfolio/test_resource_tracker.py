@@ -1,6 +1,7 @@
 from copy import copy
 
 import pytest
+
 from autoverify.portfolio.portfolio import PortfolioScenario
 from autoverify.util.resource_strategy import ResourceStrategy
 from autoverify.util.resources import ResourceTracker
@@ -27,9 +28,7 @@ def resource_tracker(
         alpha=1,
     )
 
-    rt = ResourceTracker(
-        pf_scen, strategy=ResourceStrategy.Auto, cpu_gpu_count=(16, 1)
-    )
+    rt = ResourceTracker(pf_scen, strategy=ResourceStrategy.Auto, cpu_gpu_count=(16, 1))
     return rt
 
 
