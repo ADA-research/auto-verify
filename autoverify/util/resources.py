@@ -101,8 +101,8 @@ class ResourceTracker:
     def _get_possible_auto(self) -> list[str]:
         """Auto strategy.
 
-        Every verifier gets `n_cpu / pf_len` cores, GPUs are
-        assigned 1 per.
+        Every verifier gets `n_cpu / pf_len` cores, GPUs are assigned 1
+        per.
         """
         possible: list[str] = []
         _, gpu_left = self._resources

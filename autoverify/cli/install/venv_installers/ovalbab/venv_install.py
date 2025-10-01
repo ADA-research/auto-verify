@@ -1,4 +1,4 @@
-"""ovalbab venv installer."""
+"""Ovalbab venv installer."""
 
 from pathlib import Path
 

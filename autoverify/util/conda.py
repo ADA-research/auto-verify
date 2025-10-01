@@ -91,7 +91,8 @@ def get_conda_path() -> Path:
 
 
 def get_conda_path2() -> Path:
-    """Alternative way to get the conda path, only works if an env is active."""
+    """Alternative way to get the conda path, only works if an env is
+    active."""
     if "CONDA_PREFIX" not in os.environ:
         raise RuntimeError("This function only works if a Conda environment is active.")
 

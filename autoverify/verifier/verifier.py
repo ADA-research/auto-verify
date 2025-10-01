@@ -40,7 +40,10 @@ class Verifier(ABC):
         batch_size: int = 512,
         cpu_gpu_allocation: tuple[int, int, int] | None = None,
     ):
-        """New instance. This is used with super calls."""
+        """New instance.
+
+        This is used with super calls.
+        """
         self._batch_size = batch_size
         self._cpu_gpu_allocation = cpu_gpu_allocation
         self._printed_tool_path = False
@@ -124,7 +127,8 @@ class Verifier(ABC):
         return config
 
     def _print_verifier_path_once(self):
-        """Print the resolved verifier tool path once per instance, with bars at the top and bottom."""
+        """Print the resolved verifier tool path once per instance, with bars
+        at the top and bottom."""
         if not self._printed_tool_path:
             bar = "=" * 60
             print(bar)
@@ -236,7 +240,10 @@ class CompleteVerifier(Verifier):
         *,
         config: Configuration | Path | None = None,
     ) -> list[CompleteVerificationResult]:
-        """Verify a batch. Not yet implemented."""
+        """Verify a batch.
+
+        Not yet implemented.
+        """
         for instance in instances:
             self._check_instance(instance.network, instance.property)
 

@@ -1,8 +1,7 @@
-"""
-Virtual environment based installation for auto-verify verifiers.
+"""Virtual environment based installation for auto-verify verifiers.
 
-This module provides functionality to install verifiers using Python virtual
-environments and uv package manager instead of conda.
+This module provides functionality to install verifiers using Python
+virtual environments and uv package manager instead of conda.
 """
 
 import logging
@@ -101,8 +100,7 @@ def _create_venv_fallback(venv_path: Path, venv_name: str) -> Result[None, str]:
 
 
 def create_verifier_venv(verifier_dir: Path, verifier_name: str) -> Result[Path, str]:
-    """
-    Create a virtual environment for the verifier.
+    """Create a virtual environment for the verifier.
 
     Args:
         verifier_dir: Directory where the verifier will be installed
@@ -127,8 +125,7 @@ def create_verifier_venv(verifier_dir: Path, verifier_name: str) -> Result[Path,
 
 
 def install_requirements_with_uv(venv_path: Path, requirements: list[str]) -> Result[None, str]:
-    """
-    Install requirements using uv.
+    """Install requirements using uv.
 
     Args:
         venv_path: Path to the virtual environment
@@ -149,8 +146,7 @@ def install_requirements_with_uv(venv_path: Path, requirements: list[str]) -> Re
 
 
 def install_requirements_fallback(venv_path: Path, requirements: list[str]) -> Result[None, str]:
-    """
-    Install requirements using standard pip.
+    """Install requirements using standard pip.
 
     Args:
         venv_path: Path to the virtual environment
@@ -172,8 +168,7 @@ def install_requirements_fallback(venv_path: Path, requirements: list[str]) -> R
 
 
 def install_requirements(venv_path: Path, requirements: list[str]) -> Result[None, str]:
-    """
-    Install requirements using the best available method.
+    """Install requirements using the best available method.
 
     Args:
         venv_path: Path to the virtual environment

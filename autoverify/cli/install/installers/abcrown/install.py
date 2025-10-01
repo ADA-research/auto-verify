@@ -1,4 +1,4 @@
-"""abcrown installer."""
+"""Abcrown installer."""
 
 from pathlib import Path
 

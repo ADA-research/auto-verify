@@ -1,4 +1,4 @@
-"""verinet venv installer."""
+"""Verinet venv installer."""
 
 from pathlib import Path
 

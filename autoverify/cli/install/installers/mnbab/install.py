@@ -1,4 +1,4 @@
-"""mnbab installer."""
+"""Mnbab installer."""
 
 import shlex
 import subprocess

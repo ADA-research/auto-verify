@@ -1,4 +1,4 @@
-"""ab-crown configuration space."""
+"""Ab-crown configuration space."""
 
 from ConfigSpace import (
     Categorical,

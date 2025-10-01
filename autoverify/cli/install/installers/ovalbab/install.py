@@ -1,4 +1,4 @@
-"""ovalbab installer."""
+"""Ovalbab installer."""
 
 import os
 import subprocess

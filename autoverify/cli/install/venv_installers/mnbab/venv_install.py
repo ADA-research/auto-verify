@@ -1,4 +1,4 @@
-"""mnbab venv installer."""
+"""Mnbab venv installer."""
 
 from pathlib import Path
 

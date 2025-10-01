@@ -1,5 +1,4 @@
-"""
-Virtual environment based installers for auto-verify verifiers.
+"""Virtual environment based installers for auto-verify verifiers.
 
 This module provides an alternative to conda-based installations using
 Python virtual environments and uv for package management.

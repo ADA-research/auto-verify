@@ -1,8 +1,8 @@
-"""
-Configuration system for auto-verify.
+"""Configuration system for auto-verify.
 
-This module provides configuration options for choosing between different
-environment management strategies (conda vs venv) and other user preferences.
+This module provides configuration options for choosing between
+different environment management strategies (conda vs venv) and other
+user preferences.
 """
 
 from dataclasses import dataclass
@@ -168,7 +168,8 @@ def get_env_strategy() -> EnvStrategy:
 
 
 def should_use_venv() -> bool:
-    """Determine if venv should be used based on configuration and availability."""
+    """Determine if venv should be used based on configuration and
+    availability."""
     config = get_config()
     strategy = config.env_strategy
 
@@ -198,8 +199,7 @@ def should_use_venv() -> bool:
 
 
 def get_install_path() -> Path:
-    """
-    Get the installation path for verifiers based on configuration.
+    """Get the installation path for verifiers based on configuration.
 
     Returns:
         Path: The installation path to use

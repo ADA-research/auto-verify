@@ -1,7 +1,7 @@
 """Evaluate the performance of a verifier on a set of instances.
 
-This file is meant for functions that benchmark the performance of a verifier,
-collecting detailed results about the verification run.
+This file is meant for functions that benchmark the performance of a
+verifier, collecting detailed results about the verification run.
 """
 
 import copy

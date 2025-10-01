@@ -1,4 +1,4 @@
-"""nnenum installer."""
+"""Nnenum installer."""
 
 from pathlib import Path
 
