@@ -2,7 +2,7 @@
 
 from ConfigSpace import ConfigurationSpace
 
-from autoverify.verifier import AbCrown, MnBab, Nnenum, OvalBab, Verinet
+from autoverify.verifier import AbCrown, MnBab, Nnenum, OvalBab, SDPCrown, Verinet
 from autoverify.verifier.verifier import Verifier
 
 
@@ -20,6 +20,8 @@ def uses_gpu(verifier: str) -> bool:
         return False
     elif verifier == "verinet" or verifier == "ovalbab" or verifier == "mnbab":
         return True
+    elif verifier == "sdpcrown":
+        return True
 
     raise ValueError(f"Invalid verifier name: {verifier}")
 
@@ -33,6 +35,7 @@ def get_all_complete_verifier_names() -> list[str]:
         OvalBab.name,
         Verinet.name,
         MnBab.name,
+        SDPCrown.name,
     ]
 
 
@@ -50,6 +53,7 @@ def verifier_from_name(name: str) -> type[Verifier]:
         "mnbab": MnBab,
         "ovalbab": OvalBab,
         "verinet": Verinet,
+        "sdpcrown": SDPCrown,
     }
 
     if name in verifier_map:
