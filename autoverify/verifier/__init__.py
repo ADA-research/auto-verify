@@ -1,4 +1,4 @@
-from .complete import AbCrown, MnBab, Nnenum, OvalBab, Verinet
+from .complete import AbCrown, MnBab, Nnenum, OvalBab, SDPCrown, Verinet
 
 __all__ = [
     "Nnenum",
@@ -6,4 +6,5 @@ __all__ = [
     "MnBab",
     "OvalBab",
     "Verinet",
+    "SDPCrown",
 ]
