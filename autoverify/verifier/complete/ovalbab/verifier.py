@@ -101,10 +101,8 @@ class OvalBab(CompleteVerifier):
     ) -> Path:
         if isinstance(config, Configuration):
             json_config = OvalbabJsonConfig.from_config(config)
-        elif isinstance(config, Path):
+        else:  # isinstance(config, Path)
             json_config = OvalbabJsonConfig.from_json(config)
-        else:
-            raise ValueError("Config should be a Configuration, Path or None")
 
         return Path(json_config.get_json_file_path())
 

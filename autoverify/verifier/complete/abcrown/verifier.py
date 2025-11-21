@@ -115,7 +115,7 @@ class AbCrown(CompleteVerifier):
                 batch_size=self._batch_size,
                 yaml_override=self._yaml_override,
             )
-        elif isinstance(config, Path):
+        else: # isinstance(config, Path)
             yaml_config = AbcrownYamlConfig.from_yaml(
                 config,
                 network,
@@ -123,7 +123,5 @@ class AbCrown(CompleteVerifier):
                 batch_size=self._batch_size,
                 yaml_override=self._yaml_override,
             )
-        else:
-            raise ValueError("Config should be a Configuration or Path")
-
+        
         return Path(yaml_config.get_yaml_file_path())
