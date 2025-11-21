@@ -109,4 +109,3 @@ class SDPCrownYamlConfig:
         """
         config = self.get_config_dict()
         return config.get(param, default)
-

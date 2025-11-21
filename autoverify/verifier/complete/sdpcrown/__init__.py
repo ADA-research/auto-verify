@@ -5,4 +5,3 @@ __all__ = [
     "SDPCrown",
     "SDPCrownConfigspace",
 ]
-

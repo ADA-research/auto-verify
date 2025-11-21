@@ -34,4 +34,3 @@ def install(install_dir: Path, custom_commit: str | None = None, use_latest: boo
     print(f"Installation directory: {install_dir}")
     print("To activate: conda activate __av__sdpcrown")
     print("To use: python -m autoverify.verifier.complete.sdpcrown.sdpcrown_runner")
-

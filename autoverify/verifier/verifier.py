@@ -202,17 +202,17 @@ class CompleteVerifier(Verifier):
 
         # Tools use different configuration formats and methods, so we let
         # them do some initialization here
-        
+
         config = self._init_config(
-            network, 
-            property, 
+            network,
+            property,
             config,
         )
 
         run_cmd, output_file = self._get_run_cmd(
-            network, 
-            property, 
-            config=config, 
+            network,
+            property,
+            config=config,
             timeout=timeout,
         )
 
