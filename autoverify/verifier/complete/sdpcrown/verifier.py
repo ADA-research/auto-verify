@@ -14,7 +14,6 @@ from autoverify.util.env import cwd, pkill_matches
 from autoverify.util.tempfiles import tmp_file
 from autoverify.verifier.complete.sdpcrown.configspace import SDPCrownConfigspace
 from autoverify.verifier.complete.sdpcrown.sdpcrown_yaml_config import SDPCrownYamlConfig
-
 from autoverify.verifier.verification_result import (
     CompleteVerificationResult,
     VerificationResultString,
@@ -34,8 +33,7 @@ class SDPCrown(CompleteVerifier):
         cpu_gpu_allocation: tuple[int, int, int] | None = None,
         yaml_override: dict[str, Any] | None = None,
     ):
-        """Init SDPCrown verifier.
-        """
+        """Init SDPCrown verifier."""
         if cpu_gpu_allocation and cpu_gpu_allocation[2] < 0:
             raise ValueError("SDP-CROWN CPU only mode not yet supported")
 
@@ -81,8 +79,6 @@ class SDPCrown(CompleteVerifier):
             result_file = Path(tmp.name)
         source_cmd = get_conda_source_cmd(get_conda_path())
 
-
-
         # Probably need to define my own params and make it work inside SDP-CROWN
         run_cmd = f"""
         {" ".join(source_cmd)}
@@ -96,6 +92,7 @@ class SDPCrown(CompleteVerifier):
         """
 
         return run_cmd, result_file
+
     #
     def _verify_batch(
         self,
@@ -117,11 +114,10 @@ class SDPCrown(CompleteVerifier):
                 config,
                 yaml_override=self._yaml_override,
             )
-        else: # isinstance(config, Path)
+        else:  # isinstance(config, Path)
             yaml_config = SDPCrownYamlConfig.from_yaml(
                 config,
                 yaml_override=self._yaml_override,
             )
 
         return Path(yaml_config.get_yaml_file_path())
-
