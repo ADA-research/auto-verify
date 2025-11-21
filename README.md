@@ -1,6 +1,7 @@
 # Auto-Verify 0.1.4
 
-[![PyPI version](https://img.shields.io/pypi/v/auto-verify.svg)](https://pypi.org/project/auto-verify/)
+[![PyPI version](https://img.shields.io/pypi/v/auto-verify.svg?color=green)](https://pypi.org/project/auto-verify/)
+[![Tests](https://github.com/ada-research/auto-verify/actions/workflows/tests.yml/badge.svg)](https://github.com/ada-research/auto-verify/actions/workflows/tests.yml)
 [![License](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-auto--verify-blue)](https://ada-research.github.io/auto-verify/)
 
