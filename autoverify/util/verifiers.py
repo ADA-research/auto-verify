@@ -18,9 +18,7 @@ def uses_gpu(verifier: str) -> bool:
         return True
     elif verifier == "nnenum":
         return False
-    elif verifier == "verinet" or verifier == "ovalbab" or verifier == "mnbab":
-        return True
-    elif verifier == "sdpcrown":
+    elif verifier == "verinet" or verifier == "ovalbab" or verifier == "mnbab" or verifier == "sdpcrown":
         return True
 
     raise ValueError(f"Invalid verifier name: {verifier}")

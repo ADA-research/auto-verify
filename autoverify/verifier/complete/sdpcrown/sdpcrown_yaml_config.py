@@ -6,7 +6,6 @@ from typing import IO, Any
 import yaml
 from ConfigSpace import Configuration
 
-from autoverify.util.dict import nested_set
 from autoverify.util.tempfiles import tmp_yaml_file, tmp_yaml_file_from_dict
 
 

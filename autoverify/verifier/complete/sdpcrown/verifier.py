@@ -5,7 +5,6 @@ from contextlib import AbstractContextManager
 from pathlib import Path
 from typing import Any
 
-import numpy as np
 from ConfigSpace import Configuration, ConfigurationSpace
 
 from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
@@ -13,8 +12,8 @@ from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 from autoverify.util.env import cwd, pkill_matches
 from autoverify.util.tempfiles import tmp_file
-from autoverify.verifier.complete.sdpcrown.sdpcrown_yaml_config import SDPCrownYamlConfig
 from autoverify.verifier.complete.sdpcrown.configspace import SDPCrownConfigspace
+from autoverify.verifier.complete.sdpcrown.sdpcrown_yaml_config import SDPCrownYamlConfig
 
 from autoverify.verifier.verification_result import (
     CompleteVerificationResult,

@@ -8,7 +8,7 @@ Only supports parameters present in the example YAML:
     - end
 """
 
-from ConfigSpace import ConfigurationSpace, Float, Integer
+from ConfigSpace import ConfigurationSpace, Float
 
 SDPCrownConfigspace = ConfigurationSpace(name="sdpcrown")
 SDPCrownConfigspace.add_hyperparameters(
