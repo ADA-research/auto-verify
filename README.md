@@ -36,7 +36,7 @@ Currently, auto-verify supports the following verifiers:
 - [AB-CROWN](https://github.com/Verified-Intelligence/alpha-beta-CROWN) (Zhang et al.)
 - [VeriNet](https://github.com/vas-group-imperial/VeriNet) (VAS Group)
 - [Oval-BaB](https://github.com/oval-group/oval-bab) (OVAL Research Group)
-- [SDP-CROWN](https://github.com/Hong-Ming/SDP-CROWN) (Chiu et al., ICML 2025) – efficient L2-norm robustness verification via semidefinite-program-based bound propagation.
+- [SDP-CROWN](https://github.com/Hong-Ming/SDP-CROWN) (Chiu et al. - OVAL Research Group) – efficient L2-norm robustness verification via semidefinite-program-based bound propagation.
  
 These verifiers can be installed as follows:
 ```bash
