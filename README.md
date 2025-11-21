@@ -1,5 +1,9 @@
 # Auto-Verify 0.1.4
 
+[![PyPI version](https://img.shields.io/pypi/v/auto-verify.svg)](https://pypi.org/project/auto-verify/)
+[![License](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](LICENSE)
+[![Docs](https://img.shields.io/badge/docs-auto--verify-blue)](https://ada-research.github.io/auto-verify/)
+
 Auto-Verify is a framework for neural network verification, that allows you to install, configure and run verification tools in parallel portfolios.
 
 ## Installation
@@ -25,16 +29,18 @@ You can access the help and examples for the command-line interface by using the
 auto-verify --help
 ```
 ### Installing Verifiers
-Currently, auto-verify supports four verifiers:
+Currently, auto-verify supports the following verifiers:
 
-- (nnenum)[https://github.com/stanleybak/nnenum)] (Stanley Bak)
-- (AB-CROWN)[https://github.com/Verified-Intelligence/alpha-beta-CROWN] (Zhang et al)
-- (VeriNet)[https://github.com/vas-group-imperial/VeriNet] (VAS Group)
-- (Oval-BaB)[https://github.com/oval-group/oval-bab] (OVAL Research Group)
-  
+- [nnenum](https://github.com/stanleybak/nnenum) (Stanley Bak)
+- [AB-CROWN](https://github.com/Verified-Intelligence/alpha-beta-CROWN) (Zhang et al.)
+- [VeriNet](https://github.com/vas-group-imperial/VeriNet) (VAS Group)
+- [Oval-BaB](https://github.com/oval-group/oval-bab) (OVAL Research Group)
+- [SDP-CROWN](https://github.com/Hong-Ming/SDP-CROWN) (Chiu et al., ICML 2025) – efficient L2-norm robustness verification via semidefinite-program-based bound propagation.
+ 
 These verifiers can be installed as follows:
 ```bash
 auto-verify install nnenum
+auto-verify install sdpcrown
 auto-verify install abcrown
 auto-verify install verinet
 auto-verify install ovalbab
@@ -43,7 +49,7 @@ auto-verify install ovalbab
 You can also install multiple verifiers in one go with the following command:
 
 ```bash
-auto-verify install nnenum abcrown ovalbab verinet
+auto-verify install nnenum abcrown ovalbab verinet sdpcrown
 ```
 
 #### Specifying Verifier Versions
