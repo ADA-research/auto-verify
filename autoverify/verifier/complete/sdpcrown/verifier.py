@@ -13,9 +13,10 @@ from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 from autoverify.util.env import cwd, pkill_matches
 from autoverify.util.tempfiles import tmp_file
-from autoverify.verifier.complete.sdpcrown.configspace import SDPCrownConfigspace
 from autoverify.verifier.complete.sdpcrown.sdpcrown_yaml_config import SDPCrownYamlConfig
-from autoverify.verifier.Result import (
+from autoverify.verifier.complete.sdpcrown.configspace import SDPCrownConfigspace
+
+from autoverify.verifier.verification_result import (
     CompleteVerificationResult,
     VerificationResultString,
 )
