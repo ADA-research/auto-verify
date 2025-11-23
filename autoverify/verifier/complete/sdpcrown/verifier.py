@@ -56,7 +56,10 @@ class SDPCrown(CompleteVerifier):
             if result_file and result_file.exists():
                 with open(str(result_file)) as f:
                     counter_example = f.read()
+
             else:
+                # SDP-CROWN with compute_bounds only gives existence, not a specific
+                # adversarial input, hence counter_example will always be None
                 counter_example = None
 
             return "SAT", counter_example
@@ -79,16 +82,16 @@ class SDPCrown(CompleteVerifier):
             result_file = Path(tmp.name)
         source_cmd = get_conda_source_cmd(get_conda_path())
 
-        # Probably need to define my own params and make it work inside SDP-CROWN
+        # Build the command to run SDP-CROWN for a single instance.
+        # Note: We do not forward the timeout here; auto-verify enforces the
+        # overall timeout at the process level in `_run_verification`.
         run_cmd = f"""
         {" ".join(source_cmd)}
         conda activate {self.conda_env_name}
         python sdp_crown.py \
             --model {str(network)} \
             --config {str(config)} \
-            --vnnlib_property {str(property)} \
-            --results_file {str(result_file)}
-            --timeout {str(timeout)} \
+            --vnnlib_property {str(property)}
         """
 
         return run_cmd, result_file
