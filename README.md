@@ -1,4 +1,4 @@
-# Auto-Verify 0.1.4
+# Auto-Verify
 
 [![PyPI version](https://img.shields.io/pypi/v/auto-verify.svg?color=green)](https://pypi.org/project/auto-verify/)
 [![Tests](https://github.com/ada-research/auto-verify/actions/workflows/tests.yml/badge.svg)](https://github.com/ada-research/auto-verify/actions/workflows/tests.yml)
@@ -6,6 +6,18 @@
 [![Docs](https://img.shields.io/badge/docs-auto--verify-blue)](https://ada-research.github.io/auto-verify/)
 
 Auto-Verify is a framework for neural network verification, that allows you to install, configure and run verification tools in parallel portfolios.
+
+---
+
+> **Update November 2025:** As of the latest Auto-Verify release v1.0.0, the package also supports **L2 Verification** via integration of the SDP-CROWN verifier.
+>
+> See the original [SDP-CROWN research repository](https://github.com/Hong-Ming/SDP-CROWN) and the corresponding paper:
+>
+> **[SDP-CROWN: Efficient Bound Propagation for Neural Network Verification with Tightness of Semidefinite Programming](https://arxiv.org/pdf/2506.06665)**  
+> **ICML 2025**  
+> Hong-Ming Chiu, Hao Chen, Huan Zhang, Richard Y. Zhang
+
+---
 
 ## Installation
 We recommend using [miniforge](https://github.com/conda-forge/miniforge) to set up the environment for auto-verify.
