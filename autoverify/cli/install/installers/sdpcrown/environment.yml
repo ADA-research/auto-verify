@@ -102,7 +102,6 @@ dependencies:
     - torchvision==0.24.1
     - torchaudio==2.9.1
     # Packages not available in conda-forge or incompatible with Python 3.11
-    - protobuf==4.25.8
     - graphviz==0.20.3
     - cfgv==3.4.0
     - pycparser==2.23
@@ -112,7 +111,7 @@ dependencies:
     - psutil==5.9.0
     - scikit-learn==1.4.2
     # Custom/niche packages
-    - ada-verona==0.1.4
+    - ada-verona
     - onnx2pytorch==0.4.1
     - onnx2torch==1.5.15
     - onnxsim==0.4.36
