@@ -112,7 +112,7 @@ dependencies:
     - psutil==5.9.0
     - scikit-learn==1.4.2
     # Custom/niche packages
-    - ada-verona==0.1.4
+    - ada-verona
     - onnx2pytorch==0.4.1
     - onnx2torch==1.5.15
     - onnxsim==0.4.36
