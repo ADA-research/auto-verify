@@ -9,7 +9,6 @@ dependencies:
   - numpy=1.26.4
   - scipy=1.13.1
   - pandas=2.2.2
-  - scikit-learn=1.4.2
   # Visualization
   - matplotlib=3.10.7
   - seaborn=0.13.2
@@ -111,8 +110,9 @@ dependencies:
     - tzdata==2024.1
     - pyreadline3==3.5.4
     - psutil==5.9.0
+    - scikit-learn==1.4.2
     # Custom/niche packages
-    - ada-verona==1.0.3
+    - ada-verona==0.1.4
     - onnx2pytorch==0.4.1
     - onnx2torch==1.5.15
     - onnxsim==0.4.36
