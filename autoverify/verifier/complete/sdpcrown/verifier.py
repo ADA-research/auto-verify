@@ -11,6 +11,7 @@ from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
 from autoverify.util.env import cwd, pkill_matches
+from autoverify.util.path import check_file_extension
 from autoverify.util.tempfiles import tmp_file
 from autoverify.verifier.complete.sdpcrown.configspace import SDPCrownConfigspace
 from autoverify.verifier.complete.sdpcrown.sdpcrown_yaml_config import SDPCrownYamlConfig
@@ -39,6 +40,28 @@ class SDPCrown(CompleteVerifier):
 
         super().__init__(batch_size, cpu_gpu_allocation)
         self._yaml_override = yaml_override
+
+    # Override the default ONNX-only check from CompleteVerifier so that
+    # SDP-CROWN can also be used with PyTorch `.pth` checkpoints. We still
+    # enforce that the network file exists, and that the property is a
+    # valid `.vnnlib` file.
+    @staticmethod
+    def _check_instance(network: Path, property: Path) -> None:
+        """Check that the network/property files exist and have supported formats.
+
+        SDP-CROWN supports:
+        - Networks saved as ONNX (`.onnx`) for the original workflow.
+        - Networks saved as PyTorch checkpoints (`.pth`), which are then
+          loaded by `sdp_crown.py --model <path>` (used in the VERONA
+          integration for adversarial-training-box models).
+        """
+        if not network.is_file():
+            raise FileNotFoundError(f"Network {network} does not exist.")
+        if network.suffix not in {".onnx", ".pth"}:
+            raise ValueError("Network should be in onnx or pth format")
+
+        if not check_file_extension(property, ".vnnlib"):
+            raise ValueError("Property should be in vnnlib format")
 
     @property
     def contexts(self) -> list[AbstractContextManager[None]]:
