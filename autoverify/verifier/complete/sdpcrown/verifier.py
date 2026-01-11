@@ -10,7 +10,7 @@ from ConfigSpace import Configuration, ConfigurationSpace
 from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
-from autoverify.util.env import cwd, pkill_matches
+from autoverify.util.env import cwd
 from autoverify.util.path import check_file_extension
 from autoverify.util.tempfiles import tmp_file
 from autoverify.verifier.complete.sdpcrown.configspace import SDPCrownConfigspace
@@ -67,7 +67,6 @@ class SDPCrown(CompleteVerifier):
     def contexts(self) -> list[AbstractContextManager[None]]:
         return [
             cwd(self.tool_path),
-            pkill_matches(["python sdp_crown.py"]),
         ]
 
     def _parse_result(
