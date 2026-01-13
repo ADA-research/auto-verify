@@ -121,6 +121,4 @@ class Verinet(CompleteVerifier):
         *,
         config: Configuration | Path | None,
     ) -> list[CompleteVerificationResult]:
-        # source_cmd = get_conda_source_cmd()
-        # TODO:
         raise NotImplementedError("Batch verification not supported yet")

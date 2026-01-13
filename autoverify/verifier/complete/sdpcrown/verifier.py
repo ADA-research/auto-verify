@@ -41,10 +41,6 @@ class SDPCrown(CompleteVerifier):
         super().__init__(batch_size, cpu_gpu_allocation)
         self._yaml_override = yaml_override
 
-    # Override the default ONNX-only check from CompleteVerifier so that
-    # SDP-CROWN can also be used with PyTorch `.pth` checkpoints. We still
-    # enforce that the network file exists, and that the property is a
-    # valid `.vnnlib` file.
     @staticmethod
     def _check_instance(network: Path, property: Path) -> None:
         """Check that the network/property files exist and have supported formats.
@@ -104,9 +100,6 @@ class SDPCrown(CompleteVerifier):
             result_file = Path(tmp.name)
         source_cmd = get_conda_source_cmd(get_conda_path())
 
-        # Build the command to run SDP-CROWN for a single instance.
-        # Note: We do not forward the timeout here; auto-verify enforces the
-        # overall timeout at the process level in `_run_verification`.
         run_cmd = f"""
         {" ".join(source_cmd)}
         conda activate {self.conda_env_name}

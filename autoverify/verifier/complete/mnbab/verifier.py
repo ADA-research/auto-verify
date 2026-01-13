@@ -32,24 +32,6 @@ class MnBab(CompleteVerifier):
         """
         super().__init__(batch_size=batch_size, cpu_gpu_allocation=cpu_gpu_allocation)
 
-    #
-    # def test(self):
-    #     """_summary_."""
-    #     source_cmd = get_conda_source_cmd(get_conda_path())
-    #     env_lib_path = get_conda_path() / "envs" / self.conda_env_name / "lib"
-    #
-    #     run_cmd = f"""
-    #     {" ".join(source_cmd)}
-    #     conda activate {self.conda_env_name}
-    #     export PYTHONPATH=$PYTHONPATH:$PWD
-    #     python src/run_instance.py
-    #     """
-    #
-    #     with cwd(self.tool_path), environment(
-    #         LD_LIBRARY_PATH=str(env_lib_path)
-    #     ):
-    #         subprocess.run(run_cmd, executable="/bin/bash", shell=True)
-    #
     @property
     def contexts(self) -> list[AbstractContextManager[None]]:
         env_lib_path = get_conda_path() / "envs" / self.conda_env_name / "lib"
@@ -73,8 +55,6 @@ class MnBab(CompleteVerifier):
         Returns:
             Tuple of (result, counter_example)
         """
-        # TODO: Implement proper result parsing based on mnbab output
-        # For now, return a basic implementation
         if result_file and result_file.exists():
             try:
                 with open(result_file) as f:
@@ -88,16 +68,13 @@ class MnBab(CompleteVerifier):
             except Exception:
                 pass
 
-        # Fallback parsing from output
         if "SAT" in output:
             return "SAT", output
         elif "UNSAT" in output:
             return "UNSAT", None
         elif "TIMEOUT" in output:
             return "TIMEOUT", None
-
-        # Default to timeout if we can't parse
-        return "TIMEOUT", None
+        return "ERR", None
 
     def _get_run_cmd(
         self,
@@ -160,8 +137,6 @@ class MnBab(CompleteVerifier):
         Returns:
             List of verification results
         """
-        # TODO: Implement batch verification for mnbab
-        # For now, verify instances one by one
         results = []
         for instance in instances:
             result = self.verify_instance(instance, config=config)
@@ -179,6 +154,4 @@ class MnBab(CompleteVerifier):
         Returns:
             True if configurations are the same, False otherwise
         """
-        # TODO: Implement proper configuration comparison for mnbab
-        # For now, convert to strings and compare
         return str(config1) == str(config2)

@@ -44,9 +44,6 @@ class AbCrown(CompleteVerifier):
 
     @property
     def contexts(self) -> list[AbstractContextManager[None]]:
-        # TODO: Narrow the pkill_match_list patterns further. People may be
-        # running scripts called 'abcrown.py'
-        # Ideally just keep track of PIDs rather than pkill name matching
         return [
             cwd(self.tool_path / "complete_verifier"),
             pkill_matches(["python abcrown.py"]),
@@ -97,8 +94,6 @@ class AbCrown(CompleteVerifier):
         *,
         config: Configuration | Path | None,
     ) -> list[CompleteVerificationResult]:
-        # source_cmd = get_conda_source_cmd()
-        # TODO:
         raise NotImplementedError("Batch verification not supported yet")
 
     def _init_config(
@@ -115,7 +110,7 @@ class AbCrown(CompleteVerifier):
                 batch_size=self._batch_size,
                 yaml_override=self._yaml_override,
             )
-        else:  # isinstance(config, Path)
+        else:
             yaml_config = AbcrownYamlConfig.from_yaml(
                 config,
                 network,
