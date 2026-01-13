@@ -5,7 +5,10 @@
 [![License](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-auto--verify-blue)](https://ada-research.github.io/auto-verify/)
 
-Auto-Verify is a framework for neural network verification, that allows you to install, configure and run verification tools in parallel portfolios.
+## What is Auto-Verify? 
+
+[Auto-Verify](https://pypi.org/project/auto-verify/) is a framework that provides an abstraction layer for a range of neural network verifiers, handling their installation, configuration, and execution. 
+The package can be used together with another package by our research group, [ada-verona](https://pypi.org/project/ada-verona/), to simplify the setup of neural network verification experiments for evaluating formal verification tools. For more details, see the [How does Auto-Verify work with ada-verona?](#how-does-auto-verify-work-with-ada-verona) section in [Getting Started](#getting-started).
 
 ---
 
@@ -34,6 +37,13 @@ pip install auto-verify  #or use uv pip if you have uv installed
 To get started, the [How-To Guides](https://ada-research.github.io/auto-verify/how-to-guides/) offer a useful starting point. 
 
 We also recommend having a look at the [API documentation](https://ada-research.github.io/auto-verify/api/).
+
+### How do Auto-Verify and ADA-verona relate?
+
+- Auto-Verify wraps neural network verifiers and provides a unified interface for installing, configuring, and running them.
+- **[ADA-verona](https://pypi.org/project/ada-verona/)** uses Auto-Verify to easily set up formal verification experiments through its [`AutoVerifyModule`](https://github.com/ADA-research/VERONA/blob/main/ada_verona/verification_module/auto_verify_module.py) class.
+
+For concrete examples, refer to the examples provided in the [ada-verona tutorial](https://github.com/ADA-research/VERONA/blob/main/examples/notebooks/VERONA_tutorial_with_AutoAttack_and_AutoVerify.ipynb).
 
 ## CLI Commands
 
