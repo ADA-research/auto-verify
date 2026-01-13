@@ -99,7 +99,7 @@ class OvalBab(CompleteVerifier):
     ) -> Path:
         if isinstance(config, Configuration):
             json_config = OvalbabJsonConfig.from_config(config)
-        else: 
+        else:
             json_config = OvalbabJsonConfig.from_json(config)
 
         return Path(json_config.get_json_file_path())
