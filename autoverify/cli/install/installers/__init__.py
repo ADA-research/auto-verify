@@ -11,6 +11,8 @@ from .nnenum.install import NnenumRepoInfo
 from .nnenum.install import install as install_nnenum
 from .ovalbab.install import OvalBabRepoInfo
 from .ovalbab.install import install as install_ovalbab
+from .sdpcrown.install import SDPCrownRepoInfo
+from .sdpcrown.install import install as install_sdpcrown
 from .verinet.install import VerinetRepoInfo
 from .verinet.install import install as install_verinet
 
@@ -19,6 +21,7 @@ installers: dict[str, Callable[[Path, str | None, bool], None]] = {
     "abcrown": install_abcrown,
     "mnbab": install_mnbab,
     "ovalbab": install_ovalbab,
+    "sdpcrown": install_sdpcrown,
     "verinet": install_verinet,
 }
 
@@ -27,6 +30,7 @@ repo_infos: dict[str, GitRepoInfo] = {
     "abcrown": AbCrownRepoInfo,
     "mnbab": MnBabRepoInfo,
     "ovalbab": OvalBabRepoInfo,
+    "sdpcrown": SDPCrownRepoInfo,
     "verinet": VerinetRepoInfo,
 }
 

@@ -90,7 +90,7 @@ class Nnenum(CompleteVerifier):
         # nnenum use the dict of exact settings instead.
         settings_str = "none"
         if self._use_auto_settings:
-            settings_str = "auto"  # "auto" is the default
+            settings_str = "auto"
             config = {}
 
         run_cmd = f"""
@@ -111,8 +111,6 @@ class Nnenum(CompleteVerifier):
         *,
         config: Configuration | Path | None,
     ) -> list[CompleteVerificationResult]:
-        # source_cmd = get_conda_source_cmd()
-        # TODO:
         raise NotImplementedError("Batch verification not supported yet")
 
     def _init_config(

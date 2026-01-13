@@ -61,12 +61,10 @@ class OvalBab(CompleteVerifier):
             result_text = f.read()
 
         if find_substring("violated", result_text):
-            # TODO: Counterexample (not sure if its saved at all by ovalbab?)
             return "SAT", None
         elif find_substring("holds", result_text):
             return "UNSAT", None
-        # Fallback to timeout if we can't parse, but shouldnt we return "ERR" here?
-        return "TIMEOUT", None
+        return "ERR", None
 
     def _get_run_cmd(
         self,
@@ -101,10 +99,8 @@ class OvalBab(CompleteVerifier):
     ) -> Path:
         if isinstance(config, Configuration):
             json_config = OvalbabJsonConfig.from_config(config)
-        elif isinstance(config, Path):
-            json_config = OvalbabJsonConfig.from_json(config)
         else:
-            raise ValueError("Config should be a Configuration, Path or None")
+            json_config = OvalbabJsonConfig.from_json(config)
 
         return Path(json_config.get_json_file_path())
 
@@ -114,6 +110,4 @@ class OvalBab(CompleteVerifier):
         *,
         config: Configuration | Path | None,
     ) -> list[CompleteVerificationResult]:
-        # source_cmd = get_conda_source_cmd()
-        # TODO:
         raise NotImplementedError("Batch verification not supported yet")

@@ -1,4 +1,4 @@
-"""Ab-crown verifier."""
+"""SDP-CROWN verifier."""
 
 from collections.abc import Iterable
 from contextlib import AbstractContextManager
@@ -10,12 +10,11 @@ from ConfigSpace import Configuration, ConfigurationSpace
 from autoverify import DEFAULT_VERIFICATION_TIMEOUT_SEC
 from autoverify.util import find_substring
 from autoverify.util.conda import get_conda_path, get_conda_source_cmd
-from autoverify.util.env import cwd, pkill_matches
+from autoverify.util.env import cwd
+from autoverify.util.path import check_file_extension
 from autoverify.util.tempfiles import tmp_file
-from autoverify.verifier.complete.abcrown.abcrown_yaml_config import (
-    AbcrownYamlConfig,
-)
-from autoverify.verifier.complete.abcrown.configspace import AbCrownConfigspace
+from autoverify.verifier.complete.sdpcrown.configspace import SDPCrownConfigspace
+from autoverify.verifier.complete.sdpcrown.sdpcrown_yaml_config import SDPCrownYamlConfig
 from autoverify.verifier.verification_result import (
     CompleteVerificationResult,
     VerificationResultString,
@@ -23,11 +22,11 @@ from autoverify.verifier.verification_result import (
 from autoverify.verifier.verifier import CompleteVerifier
 
 
-class AbCrown(CompleteVerifier):
-    """AB-Crown."""
+class SDPCrown(CompleteVerifier):
+    """SDP-CROWN."""
 
-    name: str = "abcrown"
-    config_space: ConfigurationSpace = AbCrownConfigspace
+    name: str = "sdpcrown"
+    config_space: ConfigurationSpace = SDPCrownConfigspace
 
     def __init__(
         self,
@@ -35,18 +34,35 @@ class AbCrown(CompleteVerifier):
         cpu_gpu_allocation: tuple[int, int, int] | None = None,
         yaml_override: dict[str, Any] | None = None,
     ):
-        """New instance."""
+        """Init SDPCrown verifier."""
         if cpu_gpu_allocation and cpu_gpu_allocation[2] < 0:
-            raise ValueError("AB-Crown CPU only mode not yet supported")
+            raise ValueError("SDP-CROWN CPU only mode not yet supported")
 
         super().__init__(batch_size, cpu_gpu_allocation)
         self._yaml_override = yaml_override
 
+    @staticmethod
+    def _check_instance(network: Path, property: Path) -> None:
+        """Check that the network/property files exist and have supported formats.
+
+        SDP-CROWN supports:
+        - Networks saved as ONNX (`.onnx`) for the original workflow.
+        - Networks saved as PyTorch checkpoints (`.pth`), which are then
+          loaded by `sdp_crown.py --model <path>` (used in the VERONA
+          integration for adversarial-training-box models).
+        """
+        if not network.is_file():
+            raise FileNotFoundError(f"Network {network} does not exist.")
+        if network.suffix not in {".onnx", ".pth"}:
+            raise ValueError("Network should be in onnx or pth format")
+
+        if not check_file_extension(property, ".vnnlib"):
+            raise ValueError("Property should be in vnnlib format")
+
     @property
     def contexts(self) -> list[AbstractContextManager[None]]:
         return [
-            cwd(self.tool_path / "complete_verifier"),
-            pkill_matches(["python abcrown.py"]),
+            cwd(self.tool_path),
         ]
 
     def _parse_result(
@@ -55,8 +71,14 @@ class AbCrown(CompleteVerifier):
         result_file: Path | None,
     ) -> tuple[VerificationResultString, str | None]:
         if find_substring("Result: sat", output):
-            with open(str(result_file)) as f:
-                counter_example = f.read()
+            if result_file and result_file.exists():
+                with open(str(result_file)) as f:
+                    counter_example = f.read()
+
+            else:
+                # SDP-CROWN with compute_bounds only gives existence, not a specific
+                # adversarial input, hence counter_example will always be None
+                counter_example = None
 
             return "SAT", counter_example
         elif find_substring("Result: unsat", output):
@@ -81,20 +103,23 @@ class AbCrown(CompleteVerifier):
         run_cmd = f"""
         {" ".join(source_cmd)}
         conda activate {self.conda_env_name}
-        python abcrown.py --config {str(config)} \
-        --results_file {str(result_file)} \
-        --timeout {str(timeout)}
+        python sdp_crown.py \
+            --model {str(network)} \
+            --config {str(config)} \
+            --vnnlib_property {str(property)}
         """
 
         return run_cmd, result_file
 
+    #
     def _verify_batch(
         self,
         instances: Iterable[Any],
         *,
         config: Configuration | Path | None,
     ) -> list[CompleteVerificationResult]:
-        raise NotImplementedError("Batch verification not supported yet")
+        """Batch verification not supported yet."""
+        raise NotImplementedError("Batch verification not supported for SDP-CROWN.")
 
     def _init_config(
         self,
@@ -103,19 +128,13 @@ class AbCrown(CompleteVerifier):
         config: Configuration | Path,
     ) -> Path:
         if isinstance(config, Configuration):
-            yaml_config = AbcrownYamlConfig.from_config(
+            yaml_config = SDPCrownYamlConfig.from_config(
                 config,
-                network,
-                property,
-                batch_size=self._batch_size,
                 yaml_override=self._yaml_override,
             )
-        else:
-            yaml_config = AbcrownYamlConfig.from_yaml(
+        else:  # isinstance(config, Path)
+            yaml_config = SDPCrownYamlConfig.from_yaml(
                 config,
-                network,
-                property,
-                batch_size=self._batch_size,
                 yaml_override=self._yaml_override,
             )
 

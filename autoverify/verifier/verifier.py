@@ -177,8 +177,8 @@ class CompleteVerifier(Verifier):
         """Verify the property on the network.
 
         Runs the verifier and feeds the network/property instance as input.
-        Complete verification will result in one of the following three
-        possibilities: `SAT`, `UNSAT`, `TIMEOUT`.
+        Complete verification will result in one of the following four
+        possibilities: `SAT`, `UNSAT`, `TIMEOUT`, `ERR`.
 
         Args:
             network: The `Path` to the network in `.onnx` format.
@@ -202,9 +202,19 @@ class CompleteVerifier(Verifier):
 
         # Tools use different configuration formats and methods, so we let
         # them do some initialization here
-        config = self._init_config(network, property, config)
 
-        run_cmd, output_file = self._get_run_cmd(network, property, config=config, timeout=timeout)
+        config = self._init_config(
+            network,
+            property,
+            config,
+        )
+
+        run_cmd, output_file = self._get_run_cmd(
+            network,
+            property,
+            config=config,
+            timeout=timeout,
+        )
 
         outcome = self._run_verification(
             run_cmd,

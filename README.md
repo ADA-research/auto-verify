@@ -1,9 +1,26 @@
 # Auto-Verify
 
+[![PyPI version](https://img.shields.io/pypi/v/auto-verify.svg?color=green)](https://pypi.org/project/auto-verify/)
+[![Tests](https://github.com/ada-research/auto-verify/actions/workflows/tests.yml/badge.svg)](https://github.com/ada-research/auto-verify/actions/workflows/tests.yml)
+[![License](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](LICENSE)
+[![Docs](https://img.shields.io/badge/docs-auto--verify-blue)](https://ada-research.github.io/auto-verify/)
+
 ## What is Auto-Verify? 
 
 [Auto-Verify](https://pypi.org/project/auto-verify/) is a framework that provides an abstraction layer for a range of neural network verifiers, handling their installation, configuration, and execution. 
 The package can be used together with another package by our research group, [ada-verona](https://pypi.org/project/ada-verona/), to simplify the setup of neural network verification experiments for evaluating formal verification tools. For more details, see the [How does Auto-Verify work with ada-verona?](#how-does-auto-verify-work-with-ada-verona) section in [Getting Started](#getting-started).
+
+---
+
+> **Update November 2025:** As of the latest Auto-Verify release v1.0.0, the package also supports **L2 Verification** via integration of the SDP-CROWN verifier.
+>
+> See the original [SDP-CROWN research repository](https://github.com/Hong-Ming/SDP-CROWN) and the corresponding paper:
+>
+> **[SDP-CROWN: Efficient Bound Propagation for Neural Network Verification with Tightness of Semidefinite Programming](https://arxiv.org/pdf/2506.06665)**  
+> **ICML 2025**  
+> Hong-Ming Chiu, Hao Chen, Huan Zhang, Richard Y. Zhang
+
+---
 
 ## Installation
 We recommend using [miniforge](https://github.com/conda-forge/miniforge) to set up the environment for auto-verify.
@@ -35,19 +52,18 @@ You can access the help and examples for the command-line interface by using the
 auto-verify --help
 ```
 ### Installing Verifiers
-Currently, auto-verify supports four verifiers:
+Currently, auto-verify supports the following verifiers:
 
 - [nnenum](https://github.com/stanleybak/nnenum) (Stanley Bak)
-
-- [AB-CROWN](https://github.com/Verified-Intelligence/alpha-beta-CROWN) (Zhang et al)
-
+- [AB-CROWN](https://github.com/Verified-Intelligence/alpha-beta-CROWN) (Zhang et al.)
 - [VeriNet](https://github.com/vas-group-imperial/VeriNet) (VAS Group)
-
 - [Oval-BaB](https://github.com/oval-group/oval-bab) (OVAL Research Group)
-  
+- [SDP-CROWN](https://github.com/Hong-Ming/SDP-CROWN) (Chiu et al. - OVAL Research Group) – efficient L2-norm robustness verification via semidefinite-program-based bound propagation.
+ 
 These verifiers can be installed as follows:
 ```bash
 auto-verify install nnenum
+auto-verify install sdpcrown
 auto-verify install abcrown
 auto-verify install verinet
 auto-verify install ovalbab
@@ -56,7 +72,7 @@ auto-verify install ovalbab
 You can also install multiple verifiers in one go with the following command:
 
 ```bash
-auto-verify install nnenum abcrown ovalbab verinet
+auto-verify install nnenum abcrown ovalbab verinet sdpcrown
 ```
 
 #### Specifying Verifier Versions
