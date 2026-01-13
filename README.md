@@ -27,10 +27,13 @@ auto-verify --help
 ### Installing Verifiers
 Currently, auto-verify supports four verifiers:
 
-- (nnenum)[https://github.com/stanleybak/nnenum)] (Stanley Bak)
-- (AB-CROWN)[https://github.com/Verified-Intelligence/alpha-beta-CROWN] (Zhang et al)
-- (VeriNet)[https://github.com/vas-group-imperial/VeriNet] (VAS Group)
-- (Oval-BaB)[https://github.com/oval-group/oval-bab] (OVAL Research Group)
+- [nnenum](https://github.com/stanleybak/nnenum) (Stanley Bak)
+
+- [AB-CROWN](https://github.com/Verified-Intelligence/alpha-beta-CROWN) (Zhang et al)
+
+- [VeriNet](https://github.com/vas-group-imperial/VeriNet) (VAS Group)
+
+- [Oval-BaB](https://github.com/oval-group/oval-bab) (OVAL Research Group)
   
 These verifiers can be installed as follows:
 ```bash
