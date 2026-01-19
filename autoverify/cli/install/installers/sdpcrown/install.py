@@ -8,7 +8,7 @@ from autoverify.util.env import copy_env_file_to
 
 SDPCrownRepoInfo = GitRepoInfo(
     branch="main",
-    commit_hash="e31f1eaac5b582492322e524eb9077d7b869139b",
+    commit_hash="84d041375aaff3c2f872570438c564c97fcb7170",
     clone_url="https://github.com/henba1/SDP-CROWN_auto-verify.git",
 )
 
